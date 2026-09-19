@@ -1,0 +1,67 @@
+name: Acquire Blender 5.2.2 Runtime
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/acquire_blender_522.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  acquire:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Acquire exact official vendor files
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/blender522"
+          cd "$RUNNER_TEMP/blender522"
+
+          ARCHIVE_URL="https://download.blender.org/release/Blender5.2/blender-5.2.2-linux-x64.tar.xz"
+          MANIFEST_URL="https://download.blender.org/release/Blender5.2/blender-5.2.2.sha256"
+
+          curl --fail --location --silent --show-error --connect-timeout 30 --max-time 240 --output blender-5.2.2-linux-x64.tar.xz "$ARCHIVE_URL"
+          curl --fail --location --silent --show-error --connect-timeout 30 --max-time 60 --output blender-5.2.2.sha256 "$MANIFEST_URL"
+
+          test -s blender-5.2.2-linux-x64.tar.xz
+          test -s blender-5.2.2.sha256
+
+      - name: Verify archive against official vendor manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP/blender522"
+          grep 'blender-5.2.2-linux-x64.tar.xz' blender-5.2.2.sha256 | sha256sum -c -
+
+          {
+            echo "runtime=Blender 5.2.2"
+            echo "distribution=standalone-linux-x64"
+            echo "archive_filename=blender-5.2.2-linux-x64.tar.xz"
+            echo "manifest_filename=blender-5.2.2.sha256"
+            echo "archive_bytes=$(stat -c%s blender-5.2.2-linux-x64.tar.xz)"
+            echo "archive_sha256=$(sha256sum blender-5.2.2-linux-x64.tar.xz | cut -d' ' -f1)"
+            echo "manifest_sha256=$(sha256sum blender-5.2.2.sha256 | cut -d' ' -f1)"
+            echo "github_run_id=${GITHUB_RUN_ID}"
+            echo "github_run_attempt=${GITHUB_RUN_ATTEMPT}"
+            echo "github_sha=${GITHUB_SHA}"
+          } > ACQUISITION_RECEIPT.txt
+
+          cat ACQUISITION_RECEIPT.txt
+
+      - name: Upload exact vendor bytes
+        uses: actions/upload-artifact@v4
+        with:
+          name: blender-5.2.2-linux-x64-vendor-bytes
+          path: |
+            ${{ runner.temp }}/blender522/blender-5.2.2-linux-x64.tar.xz
+            ${{ runner.temp }}/blender522/blender-5.2.2.sha256
+            ${{ runner.temp }}/blender522/ACQUISITION_RECEIPT.txt
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: error

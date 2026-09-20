@@ -1,0 +1,28 @@
+name: Probe Wan2.2 S2V Space
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - "scripts/probe_wan_s2v.py"
+      - ".github/workflows/probe_wan_s2v.yml"
+  workflow_dispatch:
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Gradio client
+        run: python -m pip install --upgrade pip gradio_client
+
+      - name: Probe official Wan2.2 S2V Space
+        run: python scripts/probe_wan_s2v.py

@@ -1,0 +1,78 @@
+name: BARD Classical Motion Proof 001
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - ".github/workflows/bard_classical_motion_proof.yml"
+      - "scripts/build_bard_classical_motion_proof.py"
+      - "config/bard_classical_motion_proof_001.json"
+      - "assets/bard_ref_320.jpg"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install deterministic render dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip numpy opencv-python-headless
+          if ! command -v ffmpeg >/dev/null 2>&1; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq ffmpeg
+          fi
+
+      - name: Acquire frozen 4s CC0 vocal
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p tmp outputs_classical
+          AUDIO_URL="https://raw.githubusercontent.com/top-it-090304/Double_win/main/honor-of-aurora/audio/music/playlists/island_03/breves_dies_hominis_cc0_MagdalenKadel.ogg"
+          LICENSE_URL="https://raw.githubusercontent.com/top-it-090304/Double_win/main/honor-of-aurora/audio/LICENSE_SOURCES.txt"
+          curl --fail --location --silent --show-error --output tmp/full.ogg "$AUDIO_URL"
+          curl --fail --location --silent --show-error --output tmp/LICENSE_SOURCES.txt "$LICENSE_URL"
+          ffmpeg -hide_banner -loglevel error -y -ss 2 -t 4 -i tmp/full.ogg -ac 1 -ar 16000 tmp/bard_test_4s.wav
+          test -s tmp/bard_test_4s.wav
+
+      - name: Build deterministic classical motion proof
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/build_bard_classical_motion_proof.py
+
+      - name: Validate A/V contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          ffprobe -v error -show_entries format=duration -show_entries stream=codec_type,codec_name,width,height,r_frame_rate -of json outputs_classical/BARD_CLASSICAL_MOTION_PROOF_001.mp4 > outputs_classical/FFPROBE.json
+          ffmpeg -hide_banner -loglevel error -y -i outputs_classical/BARD_CLASSICAL_MOTION_PROOF_001.mp4 -vf "fps=2,scale=480:-1,tile=4x2" -frames:v 1 outputs_classical/CONTACT_SHEET.jpg
+          test -s outputs_classical/BARD_CLASSICAL_MOTION_PROOF_001.mp4
+          test -s outputs_classical/CONTACT_SHEET.jpg
+
+      - name: Upload proof artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: BARD_CLASSICAL_MOTION_PROOF_001
+          path: |
+            outputs_classical/
+            config/bard_classical_motion_proof_001.json
+            tmp/bard_test_4s.wav
+            tmp/LICENSE_SOURCES.txt
+          retention-days: 3
+          compression-level: 0
+          if-no-files-found: warn

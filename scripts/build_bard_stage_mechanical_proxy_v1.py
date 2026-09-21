@@ -149,10 +149,9 @@ for seg in DOPE['mouth_segments']:
     mouth.keyframe_insert(data_path='scale',frame=fr)
     # keep state until end
     mouth.keyframe_insert(data_path='scale',frame=max(fr,f(seg['end'])-1))
-# enforce stepped mouth poses
-if mouth.animation_data and mouth.animation_data.action:
-    for fc in mouth.animation_data.action.fcurves:
-        for kp in fc.keyframe_points: kp.interpolation='CONSTANT'
+# Blender 5.2 uses layered Actions; avoid direct fcurve access here.
+# The dope sheet already holds each pose until the frame immediately before
+# the next pose, so transitions remain effectively one-frame substitutions.
 
 # blinks: scale eyes vertically around centers
 for eye in (left_eye,right_eye):

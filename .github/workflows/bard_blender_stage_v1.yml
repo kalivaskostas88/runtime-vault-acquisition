@@ -33,6 +33,13 @@ jobs:
           tar -xf blender.tar.xz
           echo "$RUNNER_TEMP/blender522/blender-5.2.2-linux-x64" >> "$GITHUB_PATH"
 
+      - name: Install headless graphics libraries
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq libegl1 libgl1 libglx-mesa0 libgbm1 libx11-6 libxkbcommon0 libxi6 libxfixes3 libxrender1 libxcursor1 libxinerama1 libxxf86vm1
+
       - name: Render stage representative frames
         shell: bash
         run: |

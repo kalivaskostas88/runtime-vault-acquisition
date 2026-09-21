@@ -1,0 +1,262 @@
+{
+  "map_id": "BARD_VOCAL_PERFORMANCE_MAP_V2",
+  "fps": 25,
+  "duration_seconds": 8,
+  "alignment_evidence": {
+    "engine": "faster-whisper small / CPU int8",
+    "detected_language": "la",
+    "language_probability": 0.6973980665206909,
+    "transcript": "Breves dies hominis mundi vita umane...",
+    "usage_rule": "Use Whisper only for coarse word order/boundaries; known Latin lyrics and acoustic pause evidence govern final viseme mapping.",
+    "coarse_words": [
+      {
+        "word": "Breves",
+        "start": 0,
+        "end": 0.6
+      },
+      {
+        "word": "dies",
+        "start": 0.6,
+        "end": 1.18
+      },
+      {
+        "word": "hominis",
+        "start": 1.18,
+        "end": 3.6
+      },
+      {
+        "word": "PAUSE",
+        "start": 3.6,
+        "end": 4.68
+      },
+      {
+        "word": "mundi",
+        "start": 4.68,
+        "end": 5.5
+      },
+      {
+        "word": "vita",
+        "start": 5.5,
+        "end": 6.58
+      },
+      {
+        "word": "humane",
+        "start": 6.58,
+        "end": 8
+      }
+    ]
+  },
+  "mouth_segments": [
+    {
+      "start": 0,
+      "end": 0.08,
+      "state": "M0",
+      "label": "B"
+    },
+    {
+      "start": 0.08,
+      "end": 0.38,
+      "state": "ME",
+      "label": "bre"
+    },
+    {
+      "start": 0.38,
+      "end": 0.5,
+      "state": "M1",
+      "label": "v"
+    },
+    {
+      "start": 0.5,
+      "end": 0.6,
+      "state": "ME",
+      "label": "es"
+    },
+    {
+      "start": 0.6,
+      "end": 0.82,
+      "state": "M1",
+      "label": "di"
+    },
+    {
+      "start": 0.82,
+      "end": 1.18,
+      "state": "ME",
+      "label": "es"
+    },
+    {
+      "start": 1.18,
+      "end": 1.88,
+      "state": "MO",
+      "label": "ho"
+    },
+    {
+      "start": 1.88,
+      "end": 1.98,
+      "state": "M0",
+      "label": "m"
+    },
+    {
+      "start": 1.98,
+      "end": 2.62,
+      "state": "M1",
+      "label": "mi"
+    },
+    {
+      "start": 2.62,
+      "end": 2.72,
+      "state": "M1",
+      "label": "n"
+    },
+    {
+      "start": 2.72,
+      "end": 3.48,
+      "state": "M1",
+      "label": "is"
+    },
+    {
+      "start": 3.48,
+      "end": 3.6,
+      "state": "M1",
+      "label": "s release"
+    },
+    {
+      "start": 3.6,
+      "end": 4.68,
+      "state": "M0",
+      "label": "phrase pause"
+    },
+    {
+      "start": 4.68,
+      "end": 4.8,
+      "state": "M0",
+      "label": "m"
+    },
+    {
+      "start": 4.8,
+      "end": 5.15,
+      "state": "MO",
+      "label": "u"
+    },
+    {
+      "start": 5.15,
+      "end": 5.27,
+      "state": "M1",
+      "label": "nd"
+    },
+    {
+      "start": 5.27,
+      "end": 5.5,
+      "state": "M1",
+      "label": "i"
+    },
+    {
+      "start": 5.5,
+      "end": 6.1,
+      "state": "M1",
+      "label": "vi"
+    },
+    {
+      "start": 6.1,
+      "end": 6.22,
+      "state": "M1",
+      "label": "t"
+    },
+    {
+      "start": 6.22,
+      "end": 6.58,
+      "state": "M3",
+      "label": "a"
+    },
+    {
+      "start": 6.58,
+      "end": 7.08,
+      "state": "MO",
+      "label": "hu"
+    },
+    {
+      "start": 7.08,
+      "end": 7.18,
+      "state": "M0",
+      "label": "m"
+    },
+    {
+      "start": 7.18,
+      "end": 7.58,
+      "state": "M3",
+      "label": "a"
+    },
+    {
+      "start": 7.58,
+      "end": 7.68,
+      "state": "M1",
+      "label": "n"
+    },
+    {
+      "start": 7.68,
+      "end": 8,
+      "state": "ME",
+      "label": "e"
+    }
+  ],
+  "mouth_states": {
+    "M0": "closed/labial closure",
+    "M1": "narrow/light open",
+    "ME": "E-style spread vowel",
+    "MO": "rounded O/U vowel",
+    "M3": "wide A vowel"
+  },
+  "blink_centers_seconds": [
+    1.72,
+    4.18,
+    6.62
+  ],
+  "head_keys": [
+    {
+      "start": 0.34,
+      "end": 0.82,
+      "angle_deg": -0.34,
+      "vertical_px": -0.35
+    },
+    {
+      "start": 1.72,
+      "end": 2.18,
+      "angle_deg": 0.3,
+      "vertical_px": 0.28
+    },
+    {
+      "start": 5.15,
+      "end": 5.65,
+      "angle_deg": -0.26,
+      "vertical_px": -0.25
+    },
+    {
+      "start": 7.25,
+      "end": 7.8,
+      "angle_deg": 0.3,
+      "vertical_px": 0.22
+    }
+  ],
+  "strum_centers_seconds": [
+    0.4,
+    1,
+    1.96,
+    3.24,
+    5.36,
+    5.8,
+    6.56,
+    7.68
+  ],
+  "chord_centers_seconds": [
+    1.56,
+    2.88,
+    4.08
+  ],
+  "qa_evidence": {
+    "mouth_motion_singing_mean": 0.756,
+    "mouth_motion_pause_mean": 0.1327,
+    "singing_to_pause_ratio": 5.698,
+    "exact_duration_seconds": 8,
+    "fps": 25
+  },
+  "status": "MECHANICAL_VISEME_MAPPING_PROVEN_PENDING_INTEGRATED_VIEWER_QA"
+}

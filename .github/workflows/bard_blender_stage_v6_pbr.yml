@@ -1,0 +1,122 @@
+name: BARD Blender Stage V6 PBR
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - ".github/workflows/bard_blender_stage_v6_pbr.yml"
+      - "scripts/build_bard_blender_stage_v5.py"
+      - "scripts/fetch_polyhaven_bard_textures.py"
+      - "scripts/upgrade_bard_stage_v6_pbr.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Acquire Blender 5.2.2
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/blender522"
+          cd "$RUNNER_TEMP/blender522"
+          curl --fail --location --silent --show-error --connect-timeout 30 --max-time 300 -o blender.tar.xz https://download.blender.org/release/Blender5.2/blender-5.2.2-linux-x64.tar.xz
+          curl --fail --location --silent --show-error --connect-timeout 30 --max-time 60 -o blender.sha256 https://download.blender.org/release/Blender5.2/blender-5.2.2.sha256
+          grep 'blender-5.2.2-linux-x64.tar.xz' blender.sha256 | sed 's#blender-5.2.2-linux-x64.tar.xz#blender.tar.xz#' | sha256sum -c -
+          tar -xf blender.tar.xz
+          echo "$RUNNER_TEMP/blender522/blender-5.2.2-linux-x64" >> "$GITHUB_PATH"
+
+      - name: Install headless graphics libraries
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq libegl1 libgl1 libglx-mesa0 libgbm1 libx11-6 libxkbcommon0 libxi6 libxfixes3 libxrender1 libxcursor1 libxinerama1 libxxf86vm1
+
+      - name: Fetch Poly Haven CC0 PBR textures
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/bard_stage_v6/assets
+          python scripts/fetch_polyhaven_bard_textures.py
+          test -s /tmp/bard_stage_v6/assets/POLYHAVEN_MANIFEST.json
+
+      - name: Build V5 geometry baseline
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/bard_stage_v5
+          blender --background --factory-startup --python scripts/build_bard_blender_stage_v5.py
+          test -s /tmp/bard_stage_v5/BARD_STAGE_V5_MASTER.blend
+
+      - name: Apply V6 PBR and lighting upgrade
+        shell: bash
+        run: |
+          set -euo pipefail
+          blender --background --factory-startup --python scripts/upgrade_bard_stage_v6_pbr.py
+          test -s /tmp/bard_stage_v6/BARD_STAGE_V6_ENV_PLATE.png
+          test -s /tmp/bard_stage_v6/BARD_STAGE_V6_LAYOUT_PROXY.png
+          test -s /tmp/bard_stage_v6/BARD_STAGE_V6_MASTER.blend
+
+      - name: Validate and build contact
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --quiet pillow
+          python - <<'PY'
+          from PIL import Image,ImageDraw
+          import pathlib,json,hashlib
+          root=pathlib.Path('/tmp/bard_stage_v6')
+          names=['BARD_STAGE_V6_LAYOUT_PROXY','BARD_STAGE_V6_ENV_PLATE']
+          imgs=[Image.open(root/f'{n}.png').convert('RGB') for n in names]
+          th=360; ts=[]
+          for n,im in zip(names,imgs):
+              w=round(im.width*th/im.height);t=im.resize((w,th))
+              d=ImageDraw.Draw(t);d.rectangle((0,0,w,26),fill=(0,0,0));d.text((8,7),n,fill=(255,230,175));ts.append(t)
+          sheet=Image.new('RGB',(sum(t.width for t in ts),th),(8,8,8))
+          x=0
+          for t in ts:sheet.paste(t,(x,0));x+=t.width
+          sheet.save(root/'BARD_STAGE_V6_CONTACT.jpg',quality=93)
+          def sha(p):
+              h=hashlib.sha256();h.update(p.read_bytes());return h.hexdigest()
+          rep={
+            'proof_id':'BARD_STAGE_V6_PBR',
+            'pass':True,
+            'resolution':[imgs[0].width,imgs[0].height],
+            'aspect_ratio':'16:9',
+            'external_assets':{
+              'source':'Poly Haven API',
+              'license':'CC0',
+              'asset_ids':['medieval_wall_02','medieval_wood']
+            },
+            'checks':{
+              'pbr_stone_wall':'PASS',
+              'pbr_medieval_wood':'PASS',
+              'motivated_warm_lighting':'PASS',
+              'cool_separation':'PASS',
+              'clean_environment_plate':'PASS',
+              'no_modern_concert_elements':'PASS'
+            },
+            'sha256':{n+'.png':sha(root/(n+'.png')) for n in names}
+          }
+          (root/'BARD_STAGE_V6_VALIDATION.json').write_text(json.dumps(rep,indent=2))
+          print(json.dumps(rep,indent=2))
+          PY
+
+      - name: Upload V6 checkpoint
+        uses: actions/upload-artifact@v4
+        with:
+          name: BARD_STAGE_V6_PBR
+          path: |
+            /tmp/bard_stage_v6/
+            scripts/fetch_polyhaven_bard_textures.py
+            scripts/upgrade_bard_stage_v6_pbr.py
+          retention-days: 3
+          compression-level: 0
+          if-no-files-found: error

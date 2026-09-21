@@ -1,0 +1,63 @@
+name: BARD MuseTalk 1.5 LipSync Proof 001
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - ".github/workflows/bard_musetalk15_proof.yml"
+      - "scripts/run_bard_musetalk15.py"
+      - "assets/bard_ref_320.jpg"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install client tools
+        run: python -m pip install --upgrade pip gradio_client
+
+      - name: Acquire frozen 4s CC0 vocal sample
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p tmp outputs_musetalk
+          AUDIO_URL="https://raw.githubusercontent.com/top-it-090304/Double_win/main/honor-of-aurora/audio/music/playlists/island_03/breves_dies_hominis_cc0_MagdalenKadel.ogg"
+          LICENSE_URL="https://raw.githubusercontent.com/top-it-090304/Double_win/main/honor-of-aurora/audio/LICENSE_SOURCES.txt"
+          curl --fail --location --silent --show-error --output tmp/full.ogg "$AUDIO_URL"
+          curl --fail --location --silent --show-error --output tmp/LICENSE_SOURCES.txt "$LICENSE_URL"
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg
+          ffmpeg -hide_banner -loglevel error -y -ss 2 -t 4 -i tmp/full.ogg -ac 1 -ar 16000 tmp/bard_test_4s.wav
+          test -s tmp/bard_test_4s.wav
+          sha256sum assets/bard_ref_320.jpg tmp/bard_test_4s.wav > outputs_musetalk/INPUT_SHA256.txt
+
+      - name: Generate MuseTalk 1.5 lip-sync proof
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/run_bard_musetalk15.py
+
+      - name: Upload proof artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: BARD_LIPSYNC_PROOF_001_MUSETALK15
+          path: |
+            outputs_musetalk/
+            tmp/bard_test_4s.wav
+            tmp/LICENSE_SOURCES.txt
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: warn

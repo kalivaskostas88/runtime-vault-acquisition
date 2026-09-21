@@ -6,12 +6,13 @@ import time
 
 from gradio_client import Client, handle_file
 
-IMAGE = pathlib.Path("assets/bard_ref_320.jpg")
+IMAGE = pathlib.Path("assets/bard_ref_valid_384.jpg")
+VIDEO = pathlib.Path("tmp/bard_ref_static_4s.mp4")
 AUDIO = pathlib.Path("tmp/bard_test_4s.wav")
 OUTDIR = pathlib.Path("outputs_musetalk")
 OUTDIR.mkdir(parents=True, exist_ok=True)
-OUTPUT = OUTDIR / "BARD_LIPSYNC_PROOF_001_MUSETALK15.mp4"
-RECEIPT = OUTDIR / "BARD_LIPSYNC_PROOF_001_MUSETALK15_RECEIPT.json"
+OUTPUT = OUTDIR / "BARD_LIPSYNC_PROOF_002_MUSETALK15.mp4"
+RECEIPT = OUTDIR / "BARD_LIPSYNC_PROOF_002_MUSETALK15_RECEIPT.json"
 
 def sha256(path: pathlib.Path) -> str:
     h = hashlib.sha256()
@@ -42,8 +43,9 @@ def find_video_path(value):
                 return found
     return None
 
-print("BARD_LIPSYNC_PROOF_001_MUSETALK15_START", flush=True)
+print("BARD_LIPSYNC_PROOF_002_MUSETALK15_START", flush=True)
 print("image_sha256=", sha256(IMAGE), flush=True)
+print("video_sha256=", sha256(VIDEO), flush=True)
 print("audio_sha256=", sha256(AUDIO), flush=True)
 
 client = Client("henrybit/musetalk-1-5", verbose=True)
@@ -52,7 +54,7 @@ print("MUSETALK_CLIENT_CONNECTED", flush=True)
 t0 = time.time()
 result = client.predict(
     audio_path=handle_file(str(AUDIO)),
-    video_path=handle_file(str(IMAGE)),
+    video_path=handle_file(str(VIDEO)),
     bbox_shift=0,
     extra_margin=10,
     parsing_mode="jaw",
@@ -69,7 +71,7 @@ if video_path is None:
 
 shutil.copy2(video_path, OUTPUT)
 receipt = {
-    "proof_id": "BARD_LIPSYNC_PROOF_001_MUSETALK15",
+    "proof_id": "BARD_LIPSYNC_PROOF_002_MUSETALK15",
     "space": "henrybit/musetalk-1-5",
     "api_name": "/generate",
     "bbox_shift": 0,
@@ -78,6 +80,7 @@ receipt = {
     "left_cheek_width": 90,
     "right_cheek_width": 90,
     "image_sha256": sha256(IMAGE),
+    "video_sha256": sha256(VIDEO),
     "audio_sha256": sha256(AUDIO),
     "elapsed_seconds": round(elapsed, 3),
     "output": str(OUTPUT),
@@ -86,4 +89,4 @@ receipt = {
 }
 RECEIPT.write_text(json.dumps(receipt, indent=2), encoding="utf-8")
 print(json.dumps(receipt, indent=2), flush=True)
-print("BARD_LIPSYNC_PROOF_001_MUSETALK15_OK", flush=True)
+print("BARD_LIPSYNC_PROOF_002_MUSETALK15_OK", flush=True)

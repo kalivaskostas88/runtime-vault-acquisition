@@ -7,6 +7,7 @@ import wave
 
 import cv2
 import numpy as np
+from PIL import Image, ImageFile
 
 ROOT = pathlib.Path(".")
 CONFIG_PATH = ROOT / "config/bard_classical_motion_proof_001.json"
@@ -136,9 +137,12 @@ def main():
     duration = float(cfg["duration_seconds"])
     frame_count = int(round(fps * duration))
 
-    base = cv2.imread(str(IMAGE_PATH), cv2.IMREAD_COLOR)
-    if base is None:
-        raise RuntimeError(f"Could not load {IMAGE_PATH}")
+    ImageFile.LOAD_TRUNCATED_IMAGES = True
+    try:
+        pil = Image.open(IMAGE_PATH).convert("RGB")
+        base = cv2.cvtColor(np.array(pil), cv2.COLOR_RGB2BGR)
+    except Exception as e:
+        raise RuntimeError(f"Could not load {IMAGE_PATH}: {e}") from e
     H, W = base.shape[:2]
     face, face_detected = detect_face(base, cfg["face_fallback_norm"])
     fx, fy, fw, fh = face

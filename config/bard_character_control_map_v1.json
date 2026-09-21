@@ -1,0 +1,58 @@
+{
+  "control_map_id": "BARD_CHARACTER_CONTROL_MAP_V1",
+  "status": "SOURCE_BOUND_INTEGRATION_CONTROL_MAP",
+  "source": {
+    "role": "canonical_full_body_hooded_bard_with_lute",
+    "library_file_id": "libfile_a2a4f871a22081919e1a109e2ea4b5db",
+    "library_name": "file_000000008c4471f4adbb29be97237269(1).png",
+    "sha256": "7e28541eac025b511b589644a969d2e383a50dadaf0ce56fa9b2246a298fbb18",
+    "pixel_size": [1024,1536],
+    "rule": "Fail closed if source SHA-256 or dimensions differ."
+  },
+  "matte": {
+    "method": "seeded_grabcut_largest_component_v1",
+    "production_crop_xyxy": [115,35,930,1040],
+    "alpha_sha256_current": "74fd861e87f4a8fe7a306c42842185786e022cefc08744b448a5913dbfe3e411",
+    "usage_rule": "Upper-body matte is production-qualified for medium/close integration; standing legs must remain hidden by stage-front occlusion."
+  },
+  "source_space_landmarks": {
+    "face_rect_xywh": [425,125,125,125],
+    "eye_centers_xy": [[462,168],[499,168]],
+    "mouth_center_xy": [493,225],
+    "strum_hand_region_xyxy": [290,445,440,635],
+    "chord_hand_region_xyxy": [550,395,675,545]
+  },
+  "cropped_space_regions": {
+    "head_hood_xywh": [275,10,210,290],
+    "torso_breath_xywh": [230,280,285,305],
+    "strum_xywh": [175,410,150,190],
+    "chord_xywh": [435,360,125,150],
+    "jaw_xywh": [330,168,85,77],
+    "eye_centers_xy": [[347,133],[384,133]],
+    "mouth_center_xy": [378,190]
+  },
+  "mouth_geometry_source_pixels": {
+    "M0": {"width":28.0,"height":0.0,"jaw_dy":0.0},
+    "M1": {"width":30.0,"height":4.5,"jaw_dy":1.2},
+    "ME": {"width":38.0,"height":7.0,"jaw_dy":1.7},
+    "MO": {"width":22.0,"height":18.0,"jaw_dy":3.0},
+    "M3": {"width":38.0,"height":22.0,"jaw_dy":4.2}
+  },
+  "base_640x360_composition": {
+    "S1_MASTER": {"sprite_scale":0.205,"center_x":321,"top_y":52,"stage_occlusion_y":250,"shadow_y":246,"shadow_rx":65},
+    "S2_MEDIUM": {"sprite_scale":0.285,"center_x":321,"top_y":42,"stage_occlusion_y":283,"shadow_y":278,"shadow_rx":78},
+    "S3_CLOSE": {"sprite_scale":0.455,"center_x":321,"top_y":-12,"stage_occlusion_y":350,"shadow_y":346,"shadow_rx":105},
+    "S4_RETURN": {"sprite_scale":0.285,"center_x":320,"top_y":40,"stage_occlusion_y":283,"shadow_y":278,"shadow_rx":82}
+  },
+  "composition_rule": "Scale all 640x360 screen-space composition coordinates uniformly by output_width/640. Camera cut timing remains owned by config/bard_camera_coverage_v1.json.",
+  "hard_gates": [
+    "no_standing_leg_silhouette",
+    "no_matte_halo",
+    "no_whole_face_warp",
+    "blink_local_to_eyes",
+    "jaw_coupled_to_mouth",
+    "strum_event_bound",
+    "chord_event_bound",
+    "lute_contact_preserved"
+  ]
+}

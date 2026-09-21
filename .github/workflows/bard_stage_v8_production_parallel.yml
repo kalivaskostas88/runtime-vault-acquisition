@@ -1,0 +1,146 @@
+name: BARD Stage V8 Production Plates Parallel
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - ".github/workflows/bard_stage_v8_production_parallel.yml"
+      - "scripts/render_bard_stage_v8_production.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  render:
+    strategy:
+      fail-fast: false
+      matrix:
+        shot: [S1_MASTER, S2_MEDIUM, S3_CLOSE, S4_RETURN]
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      SHOT_ID: ${{ matrix.shot }}
+      RENDER_W: "960"
+      RENDER_H: "540"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Acquire packed V7 master artifact
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/v8src
+          curl --fail --location --silent --show-error \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            -o /tmp/v7.zip \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/artifacts/10663166432/zip"
+          unzip -q /tmp/v7.zip -d /tmp/v8src
+          master="$(find /tmp/v8src -type f -name BARD_STAGE_V7_MASTER.blend -print -quit)"
+          test -n "$master"
+          mkdir -p /tmp/v8src/bard_stage_v7
+          if [ "$master" != "/tmp/v8src/bard_stage_v7/BARD_STAGE_V7_MASTER.blend" ]; then
+            cp "$master" /tmp/v8src/bard_stage_v7/BARD_STAGE_V7_MASTER.blend
+          fi
+          test -s /tmp/v8src/bard_stage_v7/BARD_STAGE_V7_MASTER.blend
+          echo "PACKED_V7_MASTER_READY"
+
+      - name: Acquire Blender 5.2.2
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --silent --show-error \
+            -o /tmp/blender.tar.xz \
+            https://download.blender.org/release/Blender5.2/blender-5.2.2-linux-x64.tar.xz
+          tar -xf /tmp/blender.tar.xz -C /tmp
+          echo "/tmp/blender-5.2.2-linux-x64" >> "$GITHUB_PATH"
+
+      - name: Install headless graphics libraries
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq libegl1 libgl1 libx11-6 libxi6 libxrender1 libxfixes3 libxkbcommon0
+
+      - name: Render production ENV plate
+        shell: bash
+        run: |
+          set -euo pipefail
+          blender --background --factory-startup --python scripts/render_bard_stage_v8_production.py
+          test -s "/tmp/bard_stage_v8_production/${SHOT_ID}_ENV.png"
+          python - <<'PY'
+          from PIL import Image
+          import os
+          p=f"/tmp/bard_stage_v8_production/{os.environ['SHOT_ID']}_ENV.png"
+          im=Image.open(p)
+          assert im.size==(960,540), im.size
+          print("PRODUCTION_PLATE_OK",os.environ["SHOT_ID"],im.size)
+          PY
+
+      - name: Upload shot
+        uses: actions/upload-artifact@v4
+        with:
+          name: BARD_STAGE_V8_PROD_${{ matrix.shot }}
+          path: /tmp/bard_stage_v8_production/
+          retention-days: 3
+          if-no-files-found: error
+
+  collect:
+    needs: render
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: BARD_STAGE_V8_PROD_*
+          path: /tmp/collect
+          merge-multiple: true
+
+      - name: Validate and build production contact
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from PIL import Image,ImageOps,ImageDraw
+          import pathlib,json,hashlib
+          root=pathlib.Path("/tmp/collect")
+          shots=["S1_MASTER","S2_MEDIUM","S3_CLOSE","S4_RETURN"]
+          ims=[]
+          sha={}
+          for s in shots:
+              p=root/f"{s}_ENV.png"
+              assert p.is_file(), p
+              im=Image.open(p).convert("RGB")
+              assert im.size==(960,540), (s,im.size)
+              sha[p.name]=hashlib.sha256(p.read_bytes()).hexdigest()
+              t=im.resize((480,270))
+              d=ImageDraw.Draw(t)
+              d.rectangle((0,0,175,26),fill=(0,0,0))
+              d.text((8,7),s,fill=(240,240,240))
+              ims.append(t)
+          sheet=Image.new("RGB",(960,540))
+          for i,im in enumerate(ims):
+              sheet.paste(im,((i%2)*480,(i//2)*270))
+          sheet.save(root/"BARD_STAGE_V8_PRODUCTION_CONTACT.jpg",quality=94)
+          (root/"BARD_STAGE_V8_PRODUCTION_VALIDATION.json").write_text(json.dumps({
+              "status":"SUCCESS",
+              "resolution":[960,540],
+              "shot_count":4,
+              "same_camera_geometry_as_v8":True,
+              "packed_v7_artifact_id":10663166432,
+              "sha256":sha
+          },indent=2))
+          print("BARD_STAGE_V8_PRODUCTION_COLLECT_OK")
+          PY
+
+      - name: Upload collected production plates
+        uses: actions/upload-artifact@v4
+        with:
+          name: BARD_STAGE_V8_PRODUCTION_PARALLEL
+          path: /tmp/collect/
+          retention-days: 3
+          if-no-files-found: error

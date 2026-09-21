@@ -39,6 +39,21 @@ jobs:
           unzip -q /tmp/v7.zip -d /tmp/v8src
           test -s /tmp/v8src/bard_stage_v7/BARD_STAGE_V7_MASTER.blend
 
+          # Restore the exact absolute texture/model roots used when V7 was authored.
+          # V7 carries the CC0 prop models; V6 carries the PBR wall/wood textures.
+          curl --fail --location --silent --show-error \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            -o /tmp/v6.zip \
+            "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/artifacts/10656254348/zip"
+          mkdir -p /tmp/v8v6
+          unzip -q /tmp/v6.zip -d /tmp/v8v6
+          test -s /tmp/v8v6/tmp/bard_stage_v6/assets/medieval_wood/medieval_wood_diffuse.jpg
+          test -s /tmp/v8v6/tmp/bard_stage_v6/assets/medieval_wall_02/medieval_wall_02_diffuse.jpg
+          rm -rf /tmp/bard_stage_v7 /tmp/bard_stage_v6
+          ln -s /tmp/v8src/bard_stage_v7 /tmp/bard_stage_v7
+          ln -s /tmp/v8v6/tmp/bard_stage_v6 /tmp/bard_stage_v6
+
       - name: Acquire Blender 5.2.2
         shell: bash
         run: |

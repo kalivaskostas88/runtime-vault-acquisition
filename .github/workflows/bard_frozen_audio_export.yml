@@ -1,0 +1,37 @@
+name: BARD Frozen Audio Export
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - ".github/workflows/bard_frozen_audio_export.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Acquire exact frozen 8-second vocal fixture
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/bard_audio
+          curl --fail --location --silent --show-error -o /tmp/bard_audio/full.ogg             https://raw.githubusercontent.com/top-it-090304/Double_win/main/honor-of-aurora/audio/music/playlists/island_03/breves_dies_hominis_cc0_MagdalenKadel.ogg
+          curl --fail --location --silent --show-error -o /tmp/bard_audio/LICENSE_SOURCES.txt             https://raw.githubusercontent.com/top-it-090304/Double_win/main/honor-of-aurora/audio/LICENSE_SOURCES.txt
+          ffmpeg -hide_banner -loglevel error -y -ss 2 -t 8 -i /tmp/bard_audio/full.ogg             -ac 2 -ar 48000 -c:a pcm_s16le /tmp/bard_audio/BARD_FROZEN_AUDIO_8S.wav
+          ffprobe -v error -show_entries format=duration,size             -show_entries stream=codec_name,sample_rate,channels -of json             /tmp/bard_audio/BARD_FROZEN_AUDIO_8S.wav > /tmp/bard_audio/FFPROBE.json
+          sha256sum /tmp/bard_audio/BARD_FROZEN_AUDIO_8S.wav /tmp/bard_audio/full.ogg             > /tmp/bard_audio/SHA256.txt
+          test -s /tmp/bard_audio/BARD_FROZEN_AUDIO_8S.wav
+      - name: Upload frozen fixture
+        uses: actions/upload-artifact@v4
+        with:
+          name: BARD_FROZEN_AUDIO_8S
+          path: /tmp/bard_audio/
+          retention-days: 3
+          compression-level: 0
+          if-no-files-found: error

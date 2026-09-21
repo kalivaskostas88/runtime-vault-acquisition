@@ -1,0 +1,51 @@
+{
+  "coverage_id": "BARD_CAMERA_COVERAGE_V1",
+  "fps": 25,
+  "duration_seconds": 8.0,
+  "shots": [
+    {
+      "id": "S1_MASTER",
+      "start": 0.0,
+      "end": 2.2,
+      "framing": "wide_master",
+      "camera_intent": "establish intimate medieval inn stage, hearth and restrained audience",
+      "motion": "very_slow_push_in",
+      "priority": "environment_plus_performer"
+    },
+    {
+      "id": "S2_MEDIUM",
+      "start": 2.2,
+      "end": 4.25,
+      "framing": "medium_3q",
+      "camera_intent": "performance focus; mouth, jaw, right hand and lute readable together",
+      "motion": "locked_with_micro_drift",
+      "priority": "performance"
+    },
+    {
+      "id": "S3_CLOSE",
+      "start": 4.25,
+      "end": 6.25,
+      "framing": "face_chest_closeup",
+      "camera_intent": "singing credibility, eye life, breath and phrase emphasis",
+      "motion": "subtle_push_in",
+      "priority": "face"
+    },
+    {
+      "id": "S4_RETURN",
+      "start": 6.25,
+      "end": 8.0,
+      "framing": "medium_return",
+      "camera_intent": "resolve phrase with lute and warm stage context",
+      "motion": "very_slow_pull_back",
+      "priority": "performance_plus_environment"
+    }
+  ],
+  "rules": {
+    "no_cut_inside_blink": true,
+    "no_cut_at_max_mouth_open": true,
+    "no_cut_during_strum_contact_peak": true,
+    "preserve_audio_continuity": true,
+    "avoid_digital_zoom_feel": true,
+    "prefer_environment_camera_change_over_character_warp": true
+  }
+}

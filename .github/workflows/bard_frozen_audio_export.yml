@@ -16,7 +16,7 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-      - name: Acquire exact frozen 8-second vocal fixture
+      - name: Install FFmpeg\n        shell: bash\n        run: |\n          set -euo pipefail\n          sudo apt-get update -qq\n          sudo apt-get install -y -qq ffmpeg\n      - name: Acquire exact frozen 8-second vocal fixture
         shell: bash
         run: |
           set -euo pipefail

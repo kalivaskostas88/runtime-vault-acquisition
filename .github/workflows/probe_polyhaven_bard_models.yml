@@ -1,0 +1,15 @@
+name: Probe Poly Haven Bard Models
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - ".github/workflows/probe_polyhaven_bard_models.yml"
+      - "scripts/probe_polyhaven_bard_models.py"
+  workflow_dispatch:
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - run: python scripts/probe_polyhaven_bard_models.py

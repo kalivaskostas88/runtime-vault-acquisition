@@ -15,7 +15,7 @@ permissions:
 jobs:
   proof:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 20
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -45,7 +45,7 @@ jobs:
           curl --fail --location --silent --show-error --output tmp/full.ogg "$AUDIO_URL"
           curl --fail --location --silent --show-error --output tmp/LICENSE_SOURCES.txt "$LICENSE_URL"
           ffmpeg -hide_banner -loglevel error -y -ss 2 -t 4 -i tmp/full.ogg -ac 1 -ar 16000 tmp/bard_test_4s.wav
-          ffmpeg -hide_banner -loglevel error -y -loop 1 -i assets/bard_ref_valid_384.jpg -t 4 -r 25 -c:v libx264 -pix_fmt yuv420p tmp/bard_ref_static_4s.mp4
+          ffmpeg -hide_banner -loglevel error -y -loop 1 -framerate 25 -i assets/bard_ref_valid_384.jpg -frames:v 100 -c:v libx264 -pix_fmt yuv420p tmp/bard_ref_static_4s.mp4
           test -s tmp/bard_test_4s.wav
           test -s tmp/bard_ref_static_4s.mp4
           sha256sum assets/bard_ref_valid_384.jpg tmp/bard_ref_static_4s.mp4 tmp/bard_test_4s.wav > outputs_musetalk/INPUT_SHA256.txt

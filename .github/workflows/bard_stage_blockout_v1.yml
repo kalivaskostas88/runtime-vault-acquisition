@@ -1,0 +1,56 @@
+name: BARD Stage Blockout V1
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - ".github/workflows/bard_stage_blockout_v1.yml"
+      - "scripts/build_bard_stage_blockout_v1.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  blockout:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Acquire Blender 5.2.2
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/blender522"
+          cd "$RUNNER_TEMP/blender522"
+          curl --fail --location --silent --show-error --connect-timeout 30 --max-time 300 -o blender.tar.xz https://download.blender.org/release/Blender5.2/blender-5.2.2-linux-x64.tar.xz
+          curl --fail --location --silent --show-error --connect-timeout 30 --max-time 60 -o blender.sha256 https://download.blender.org/release/Blender5.2/blender-5.2.2.sha256
+          grep 'blender-5.2.2-linux-x64.tar.xz' blender.sha256 | sed 's#blender-5.2.2-linux-x64.tar.xz#blender.tar.xz#' | sha256sum -c -
+          tar -xf blender.tar.xz
+          echo "$RUNNER_TEMP/blender522/blender-5.2.2-linux-x64" >> "$GITHUB_PATH"
+
+      - name: Install headless graphics libraries
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq libegl1 libgl1 libglx-mesa0 libgbm1 libx11-6 libxkbcommon0 libxi6 libxfixes3 libxrender1 libxcursor1 libxinerama1 libxxf86vm1
+
+      - name: Render clay blockout
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/bard_stage_blockout_v1
+          blender --background --factory-startup --python scripts/build_bard_stage_blockout_v1.py
+          test -s /tmp/bard_stage_blockout_v1/BARD_STAGE_BLOCKOUT_V1.png
+          test -s /tmp/bard_stage_blockout_v1/BARD_STAGE_BLOCKOUT_V1.blend
+
+      - name: Upload blockout
+        uses: actions/upload-artifact@v4
+        with:
+          name: BARD_STAGE_BLOCKOUT_V1
+          path: /tmp/bard_stage_blockout_v1/
+          retention-days: 3
+          compression-level: 0
+          if-no-files-found: error

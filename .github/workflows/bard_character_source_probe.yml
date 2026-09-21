@@ -6,6 +6,7 @@ on:
     paths:
       - ".github/workflows/bard_character_source_probe.yml"
       - "assets/bard_ref_valid_384.jpg"
+      - "assets/bard_ref_320.jpg"
   workflow_dispatch:
 
 permissions:
@@ -17,19 +18,21 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
-      - name: Verify canonical bard source
+      - name: Verify bard source assets
         shell: bash
         run: |
           set -euo pipefail
           test -s assets/bard_ref_valid_384.jpg
-          sha256sum assets/bard_ref_valid_384.jpg | tee BARD_CHARACTER_SOURCE_SHA256.txt
-          file assets/bard_ref_valid_384.jpg | tee BARD_CHARACTER_SOURCE_FILEINFO.txt
-      - name: Upload canonical character source
+          test -s assets/bard_ref_320.jpg
+          sha256sum assets/bard_ref_valid_384.jpg assets/bard_ref_320.jpg | tee BARD_CHARACTER_SOURCE_SHA256.txt
+          file assets/bard_ref_valid_384.jpg assets/bard_ref_320.jpg | tee BARD_CHARACTER_SOURCE_FILEINFO.txt
+      - name: Upload bard source evidence
         uses: actions/upload-artifact@v4
         with:
           name: BARD_CHARACTER_SOURCE_EVIDENCE
           path: |
             assets/bard_ref_valid_384.jpg
+            assets/bard_ref_320.jpg
             BARD_CHARACTER_SOURCE_SHA256.txt
             BARD_CHARACTER_SOURCE_FILEINFO.txt
           retention-days: 3

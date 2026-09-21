@@ -1,0 +1,23 @@
+name: Probe MuseTalk 1.5 ZeroGPU
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - "scripts/probe_musetalk15.py"
+      - ".github/workflows/probe_musetalk15.yml"
+  workflow_dispatch:
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install Gradio client
+        run: python -m pip install --upgrade pip gradio_client
+      - name: Probe MuseTalk 1.5 ZeroGPU Space
+        run: python scripts/probe_musetalk15.py

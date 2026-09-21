@@ -2,17 +2,16 @@ import hashlib
 import json
 import pathlib
 import shutil
-import sys
 import time
 
 from gradio_client import Client, handle_file
 
 IMAGE = pathlib.Path("assets/bard_ref_320.jpg")
-AUDIO = pathlib.Path("tmp/bard_test_8s.wav")
+AUDIO = pathlib.Path("tmp/bard_test_4s.wav")
 OUTDIR = pathlib.Path("outputs")
 OUTDIR.mkdir(parents=True, exist_ok=True)
-OUTPUT = OUTDIR / "BARD_WAN_S2V_PROOF_001.mp4"
-RECEIPT = OUTDIR / "BARD_WAN_S2V_PROOF_001_RECEIPT.json"
+OUTPUT = OUTDIR / "BARD_WAN_S2V_PROOF_001A.mp4"
+RECEIPT = OUTDIR / "BARD_WAN_S2V_PROOF_001A_RECEIPT.json"
 
 def sha256(path: pathlib.Path) -> str:
     h = hashlib.sha256()
@@ -27,14 +26,11 @@ def find_video_path(value):
         if p.exists() and p.suffix.lower() in {".mp4", ".webm", ".mov", ".mkv"}:
             return p
     if isinstance(value, dict):
-        if "video" in value:
-            found = find_video_path(value["video"])
-            if found:
-                return found
-        if "path" in value:
-            found = find_video_path(value["path"])
-            if found:
-                return found
+        for key in ("video", "path"):
+            if key in value:
+                found = find_video_path(value[key])
+                if found:
+                    return found
         for v in value.values():
             found = find_video_path(v)
             if found:
@@ -46,7 +42,7 @@ def find_video_path(value):
                 return found
     return None
 
-print("BARD_WAN_S2V_PROOF_001_START", flush=True)
+print("BARD_WAN_S2V_PROOF_001A_START", flush=True)
 print("image_sha256=", sha256(IMAGE), flush=True)
 print("audio_sha256=", sha256(AUDIO), flush=True)
 
@@ -69,7 +65,7 @@ if video_path is None:
 
 shutil.copy2(video_path, OUTPUT)
 receipt = {
-    "proof_id": "BARD_WAN_S2V_PROOF_001",
+    "proof_id": "BARD_WAN_S2V_PROOF_001A",
     "space": "Wan-AI/Wan2.2-S2V",
     "api_name": "/predict",
     "resolution": "480P",
@@ -84,4 +80,4 @@ receipt = {
 }
 RECEIPT.write_text(json.dumps(receipt, indent=2), encoding="utf-8")
 print(json.dumps(receipt, indent=2), flush=True)
-print("BARD_WAN_S2V_PROOF_001_OK", flush=True)
+print("BARD_WAN_S2V_PROOF_001A_OK", flush=True)

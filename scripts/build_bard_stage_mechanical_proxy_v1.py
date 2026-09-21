@@ -197,13 +197,12 @@ camd=bpy.data.cameras.new('Camera');cam=bpy.data.objects.new('Camera',camd);bpy.
 cam.location=(.65,-9.25,3.0);cam.data.lens=44;cam.data.sensor_width=36
 aim(cam,(-.45,1.35,1.55))
 
-# video output
-scene.render.filepath=str(OUT/"BARD_STAGE_MECHANICAL_PROXY_V1.mp4")
-scene.render.image_settings.file_format='FFMPEG'
-scene.render.ffmpeg.format='MPEG4'
-scene.render.ffmpeg.codec='H264'
-scene.render.ffmpeg.constant_rate_factor='MEDIUM'
-scene.render.ffmpeg.ffmpeg_preset='GOOD'
+# Blender 5.2 standalone build exposes image-sequence formats here.
+# Render deterministic PNG frames; the workflow encodes/muxes with FFmpeg.
+frames_dir=OUT/"frames"
+frames_dir.mkdir(parents=True,exist_ok=True)
+scene.render.filepath=str(frames_dir/"frame_")
+scene.render.image_settings.file_format='PNG'
 bpy.ops.render.render(animation=True)
 bpy.ops.wm.save_as_mainfile(filepath=str(OUT/"BARD_STAGE_MECHANICAL_PROXY_V1.blend"))
 print('BARD_STAGE_MECHANICAL_PROXY_V1_OK')

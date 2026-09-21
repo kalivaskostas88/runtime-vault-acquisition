@@ -44,7 +44,8 @@ jobs:
           set -euo pipefail
           mkdir -p /tmp/bard_proxy_v1
           blender --background --factory-startup --python scripts/build_bard_stage_mechanical_proxy_v1.py
-          test -s /tmp/bard_proxy_v1/BARD_STAGE_MECHANICAL_PROXY_V1.mp4
+          test -s /tmp/bard_proxy_v1/frames/frame_0001.png
+          test -s /tmp/bard_proxy_v1/frames/frame_0200.png
           test -s /tmp/bard_proxy_v1/BARD_STAGE_MECHANICAL_PROXY_V1.blend
 
       - name: Acquire frozen 8s CC0 vocal and mux
@@ -55,6 +56,10 @@ jobs:
           LICENSE_URL="https://raw.githubusercontent.com/top-it-090304/Double_win/main/honor-of-aurora/audio/LICENSE_SOURCES.txt"
           curl --fail --location --silent --show-error -o /tmp/bard_proxy_v1/full.ogg "$AUDIO_URL"
           curl --fail --location --silent --show-error -o /tmp/bard_proxy_v1/LICENSE_SOURCES.txt "$LICENSE_URL"
+          ffmpeg -hide_banner -loglevel error -y \
+            -framerate 25 -start_number 1 -i /tmp/bard_proxy_v1/frames/frame_%04d.png \
+            -c:v libx264 -preset medium -crf 20 -pix_fmt yuv420p -r 25 \
+            /tmp/bard_proxy_v1/BARD_STAGE_MECHANICAL_PROXY_V1.mp4
           ffmpeg -hide_banner -loglevel error -y \
             -i /tmp/bard_proxy_v1/BARD_STAGE_MECHANICAL_PROXY_V1.mp4 \
             -ss 2 -t 8 -i /tmp/bard_proxy_v1/full.ogg \

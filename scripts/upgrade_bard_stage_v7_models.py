@@ -96,5 +96,8 @@ for o in proxy:o.hide_render=False
 scene.render.filepath=str(OUT/'BARD_STAGE_V7_LAYOUT_PROXY.png')
 bpy.ops.render.render(write_still=True)
 
+# Pack every used external image/resource so downstream camera renders are self-contained.
+# This avoids magenta missing-texture failures when the .blend leaves the build workspace.
+bpy.ops.file.pack_all()
 bpy.ops.wm.save_as_mainfile(filepath=str(OUT/'BARD_STAGE_V7_MASTER.blend'))
-print('BARD_STAGE_V7_MODELS_OK')
+print('BARD_STAGE_V7_MODELS_PACKED_OK')

@@ -7,8 +7,8 @@ OUT.mkdir(parents=True,exist_ok=True)
 
 bpy.ops.wm.open_mainfile(filepath=BLEND)
 scene=bpy.context.scene
-scene.render.resolution_x=960
-scene.render.resolution_y=540
+scene.render.resolution_x=int(os.environ.get('RENDER_W','640'))
+scene.render.resolution_y=int(os.environ.get('RENDER_H','360'))
 scene.render.resolution_percentage=100
 scene.render.image_settings.file_format='PNG'
 scene.render.film_transparent=False

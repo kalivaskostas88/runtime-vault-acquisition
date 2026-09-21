@@ -43,7 +43,9 @@ jobs:
           set -euo pipefail
           mkdir -p /tmp/bard_stage_v2_preview
           blender --background --factory-startup --python scripts/build_bard_blender_stage_v2_preview.py
-          for f in A_MASTER B_LEFT C_WIDE; do test -s "/tmp/bard_stage_v2_preview/\${f}.png"; done
+          test -s /tmp/bard_stage_v2_preview/A_MASTER.png
+          test -s /tmp/bard_stage_v2_preview/B_LEFT.png
+          test -s /tmp/bard_stage_v2_preview/C_WIDE.png
           test -s /tmp/bard_stage_v2_preview/BARD_STAGE_V2_PREVIEW.blend
 
       - name: Build contact sheet

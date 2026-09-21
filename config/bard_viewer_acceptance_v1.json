@@ -1,0 +1,41 @@
+{
+  "contract_id": "BARD_VIEWER_ACCEPTANCE_V1",
+  "scope": "8-second golden-slice cinematic proof",
+  "required_contract": {
+    "duration_seconds": 8,
+    "fps": 25,
+    "aspect_ratio": "16:9",
+    "audio_continuity": true
+  },
+  "mechanical_gates": {
+    "random_global_face_wobble": "FORBIDDEN",
+    "mouth_state_popping": "FORBIDDEN",
+    "jaw_motion_must_follow_mouth": true,
+    "blink_motion_must_be_local": true,
+    "strum_motion_must_be_event_bound": true,
+    "off_event_hand_motion_ratio_max": 0.2
+  },
+  "editorial_gates": {
+    "cut_inside_blink": "FORBIDDEN",
+    "cut_at_strum_contact_peak": "FORBIDDEN",
+    "cut_at_max_mouth_open": "AVOID",
+    "audio_discontinuity": "FORBIDDEN",
+    "camera_change_must_not_require_character_warp": true
+  },
+  "visual_gates": {
+    "matte_halo": "FORBIDDEN_AT_NORMAL_PLAYBACK",
+    "character_stage_scale_mismatch": "FORBIDDEN",
+    "contact_shadow_missing": "FORBIDDEN_WHEN_FLOOR_VISIBLE",
+    "modern_concert_visuals": "FORBIDDEN",
+    "obvious_blockout_prop_in_hero_frame": "FORBIDDEN"
+  },
+  "viewer_gate": {
+    "decision": "MANUAL",
+    "pass_condition": "A neutral viewer should not spontaneously report strange speech, strange body motion, puppet-like movement, floating character, bad hand/instrument contact, or visibly fake compositing.",
+    "verdict_values": [
+      "PASS",
+      "REPAIR",
+      "HOLD"
+    ]
+  }
+}

@@ -1,4 +1,4 @@
-import bpy, json, pathlib
+import bpy, json, pathlib, os
 from mathutils import Vector
 
 BLEND="/tmp/v8src/bard_stage_v7/BARD_STAGE_V7_MASTER.blend"
@@ -12,8 +12,10 @@ scene.render.resolution_y=540
 scene.render.resolution_percentage=100
 scene.render.image_settings.file_format='PNG'
 scene.render.film_transparent=False
-try: scene.view_settings.look='AgX - Medium High Contrast'
-except Exception: pass
+try:
+    scene.view_settings.look='AgX - Medium High Contrast'
+except Exception:
+    pass
 scene.view_settings.exposure=-0.98
 
 cam=scene.camera
@@ -34,17 +36,23 @@ shots=[
 def aim(obj,target):
     obj.rotation_euler=(Vector(target)-obj.location).to_track_quat('-Z','Y').to_euler()
 
-for sh in shots:
+requested=os.environ.get("SHOT_ID","ALL")
+selected=[s for s in shots if requested=="ALL" or s["id"]==requested]
+if not selected:
+    raise RuntimeError(f"Unknown SHOT_ID={requested}")
+
+for sh in selected:
     cam.location=sh["loc"]
     cam.data.lens=sh["lens"]
     aim(cam,sh["target"])
-    for o in proxy: o.hide_render=True
+    for o in proxy:
+        o.hide_render=True
     scene.render.filepath=str(OUT/f'{sh["id"]}_ENV.png')
     bpy.ops.render.render(write_still=True)
-    for o in proxy: o.hide_render=False
+    for o in proxy:
+        o.hide_render=False
     scene.render.filepath=str(OUT/f'{sh["id"]}_PROXY.png')
     bpy.ops.render.render(write_still=True)
 
-(OUT/"BARD_STAGE_V8_CAMERAS.json").write_text(json.dumps({"shots":shots},indent=2))
-bpy.ops.wm.save_as_mainfile(filepath=str(OUT/"BARD_STAGE_V8_CAMERAS.blend"))
-print("BARD_STAGE_V8_CAMERAS_OK")
+(OUT/"BARD_STAGE_V8_CAMERAS.json").write_text(json.dumps({"requested":requested,"shots":selected},indent=2))
+print(f"BARD_STAGE_V8_CAMERAS_OK requested={requested}")

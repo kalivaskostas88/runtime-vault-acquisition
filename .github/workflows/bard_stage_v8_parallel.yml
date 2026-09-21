@@ -1,0 +1,136 @@
+name: BARD Stage V8 Camera Plates Parallel
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - ".github/workflows/bard_stage_v8_parallel.yml"
+      - "scripts/render_bard_stage_v8_cameras.py"
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  render:
+    strategy:
+      fail-fast: false
+      matrix:
+        shot: [S1_MASTER, S2_MEDIUM, S3_CLOSE, S4_RETURN]
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      GH_TOKEN: ${{ github.token }}
+      SHOT_ID: ${{ matrix.shot }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Acquire V7 master artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/v8src
+          curl --fail --location --silent --show-error \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            -o /tmp/v7.zip \
+            "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/artifacts/10658041469/zip"
+          unzip -q /tmp/v7.zip -d /tmp/v8src
+          test -s /tmp/v8src/bard_stage_v7/BARD_STAGE_V7_MASTER.blend
+
+      - name: Acquire Blender 5.2.2
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/blender522"
+          cd "$RUNNER_TEMP/blender522"
+          curl --fail --location --silent --show-error --connect-timeout 30 --max-time 300 -o blender.tar.xz https://download.blender.org/release/Blender5.2/blender-5.2.2-linux-x64.tar.xz
+          curl --fail --location --silent --show-error --connect-timeout 30 --max-time 60 -o blender.sha256 https://download.blender.org/release/Blender5.2/blender-5.2.2.sha256
+          grep 'blender-5.2.2-linux-x64.tar.xz' blender.sha256 | sed 's#blender-5.2.2-linux-x64.tar.xz#blender.tar.xz#' | sha256sum -c -
+          tar -xf blender.tar.xz
+          echo "$RUNNER_TEMP/blender522/blender-5.2.2-linux-x64" >> "$GITHUB_PATH"
+
+      - name: Install headless graphics libraries
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq libegl1 libgl1 libglx-mesa0 libgbm1 libx11-6 libxkbcommon0 libxi6 libxfixes3 libxrender1 libxcursor1 libxinerama1 libxxf86vm1
+
+      - name: Render one V8 camera
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/bard_stage_v8
+          blender --background --factory-startup --python scripts/render_bard_stage_v8_cameras.py
+          test -s "/tmp/bard_stage_v8/${SHOT_ID}_ENV.png"
+          test -s "/tmp/bard_stage_v8/${SHOT_ID}_PROXY.png"
+
+      - name: Upload shot artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: BARD_STAGE_V8_${{ matrix.shot }}
+          path: |
+            /tmp/bard_stage_v8/${{ matrix.shot }}_ENV.png
+            /tmp/bard_stage_v8/${{ matrix.shot }}_PROXY.png
+            /tmp/bard_stage_v8/BARD_STAGE_V8_CAMERAS.json
+          retention-days: 3
+          compression-level: 0
+          if-no-files-found: error
+
+  collect:
+    needs: render
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: BARD_STAGE_V8_*
+          merge-multiple: true
+          path: /tmp/v8all
+
+      - name: Validate and build contact
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --quiet pillow numpy
+          python - <<'PY'
+          from PIL import Image,ImageDraw
+          import numpy as np, pathlib, json
+          root=pathlib.Path('/tmp/v8all')
+          ids=['S1_MASTER','S2_MEDIUM','S3_CLOSE','S4_RETURN']
+          thumbs=[]; report={'proof_id':'BARD_STAGE_V8_PARALLEL','pass':True,'shots':{}}
+          for sid in ids:
+              ep=root/f'{sid}_ENV.png'; pp=root/f'{sid}_PROXY.png'
+              if not ep.exists() or not pp.exists():
+                  raise RuntimeError(f'missing {sid}')
+              e=np.array(Image.open(ep).convert('RGB'))
+              p=np.array(Image.open(pp).convert('RGB'))
+              d=np.max(np.abs(p.astype(np.int16)-e.astype(np.int16)),axis=2)
+              ys,xs=np.where(d>10)
+              if len(xs)==0:
+                  raise RuntimeError(f'No proxy delta for {sid}')
+              bbox=[int(xs.min()),int(ys.min()),int(xs.max()+1),int(ys.max()+1)]
+              report['shots'][sid]={'proxy_bbox':bbox,'delta_pixels':int((d>10).sum())}
+              im=Image.fromarray(p).resize((480,270))
+              dr=ImageDraw.Draw(im)
+              dr.rectangle((0,0,190,24),fill=(0,0,0))
+              dr.text((7,6),sid,fill=(255,230,175))
+              thumbs.append(im)
+          sheet=Image.new('RGB',(960,540),(8,8,8))
+          for i,t in enumerate(thumbs):
+              sheet.paste(t,((i%2)*480,(i//2)*270))
+          sheet.save(root/'BARD_STAGE_V8_PARALLEL_CONTACT.jpg',quality=92)
+          (root/'BARD_STAGE_V8_PARALLEL_VALIDATION.json').write_text(json.dumps(report,indent=2))
+          print(json.dumps(report,indent=2))
+          PY
+
+      - name: Upload collected V8 package
+        uses: actions/upload-artifact@v4
+        with:
+          name: BARD_STAGE_V8_PARALLEL
+          path: /tmp/v8all/
+          retention-days: 3
+          compression-level: 0
+          if-no-files-found: error

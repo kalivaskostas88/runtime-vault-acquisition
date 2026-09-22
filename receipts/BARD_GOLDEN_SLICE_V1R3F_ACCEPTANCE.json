@@ -1,0 +1,53 @@
+{
+  "receipt_id": "BARD_GOLDEN_SLICE_V1R3F_ACCEPTANCE",
+  "highest_preserved_state": "PRODUCTION_GOLDEN_CANDIDATE_TECHNICAL_AND_SAMPLED_VIEWER_QA_PASS",
+  "promotion_state": "HOLD_ONLY_ON_FULL_SPEED_NEUTRAL_VIEWER_ACCEPTANCE",
+  "production": {
+    "resolution": [960, 540],
+    "fps": 25,
+    "duration_seconds": 8.0,
+    "video_codec": "h264",
+    "audio_codec": "aac",
+    "audio_sample_rate": 48000,
+    "output_sha256": "38ef86af0432c856847bdf05cdce0d8b8caf230607c91e17be0a5601a970086a"
+  },
+  "source_evidence": {
+    "canonical_character_sha256": "7e28541eac025b511b589644a969d2e383a50dadaf0ce56fa9b2246a298fbb18",
+    "frozen_audio_artifact_id": 10663329564,
+    "production_plates_workflow_run": 35671777617,
+    "production_plates_artifact_id": 10672151474,
+    "production_plates_workflow_conclusion": "success"
+  },
+  "event_qa": {
+    "mouth_singing_to_pause_ratio": 3.67144232219309,
+    "right_hand_off_to_event_ratio": 0.06743866586757583,
+    "left_hand_off_to_event_ratio": 0.12069604420780021,
+    "blink_to_off_ratio": 5.803083720328837,
+    "mouth_activity_separates_pause": "PASS",
+    "right_hand_event_bound": "PASS",
+    "blink_event_detectable": "PASS"
+  },
+  "sampled_viewer_qa": {
+    "blink_transition_sequence": "PASS",
+    "mouth_onset_sequence": "PASS",
+    "strum_contact_sequence": "PASS",
+    "random_global_face_wobble": "PASS_SAMPLED",
+    "mouth_transition_pop": "PASS_SAMPLED",
+    "seated_read": "PASS_SAMPLED",
+    "matte_edge": "PASS_SAMPLED",
+    "lighting_match": "PASS_SAMPLED",
+    "legacy_primitive_audience_occlusion": "PASS_SAMPLED",
+    "environment_life": "PASS_LOW_AMPLITUDE_MOTIVATED_LIGHT_FLICKER"
+  },
+  "remaining_gate": {
+    "full_speed_audio_visual_neutral_viewer": "PENDING",
+    "rule": "Do not promote to canonical PROFESSIONAL_VIEWER_READY until normal-speed A/V playback is watched end-to-end and no spontaneous uncanny/puppet/mouth/hand/composite objection occurs."
+  },
+  "canonical_recipe": {
+    "character_control_map": "config/bard_character_control_map_v1.json",
+    "vocal_map": "config/bard_vocal_performance_map_v2.json",
+    "camera_coverage": "config/bard_camera_coverage_v1.json",
+    "production_compositor": "scripts/build_bard_golden_slice_v1.py",
+    "event_qa": "scripts/bard_event_qa_v1.py"
+  }
+}

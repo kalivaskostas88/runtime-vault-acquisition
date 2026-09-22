@@ -1,4 +1,4 @@
-name: ACE S05F prior candidate source binding
+name: ACE S05F exact primary-source admission
 on:
   push:
     branches: [research/ace-s05e-20260922]
@@ -11,32 +11,41 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 3
     steps:
-      - name: Read only original-media references from the known navigation page
+      - name: Public original metadata only; no credentials or challenge bypass
         env:
-          OUT: ${{ runner.temp }}/ace-s05f-source
+          OUT: ${{ runner.temp }}/ace-s05f-admission
         run: |
           mkdir -p "$OUT"
           python3 - <<'PY'
-          import urllib.request,re,json,os,pathlib,hashlib,html,datetime
-          u='https://lilys.ai/ko/notes/755229';r={'navigation_source':u,'purpose':'recover original media identity only; not transcript evidence','requested_window':[440,505],'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'run_id':os.environ.get('GITHUB_RUN_ID'),'commit':os.environ.get('GITHUB_SHA')}
-          try:
-            with urllib.request.urlopen(urllib.request.Request(u,headers={'User-Agent':'ACE-public-media-research/1.0'}),timeout=25) as f:
-              b=f.read(3*1024*1024+1);r.update(http_status=f.status,final_url=f.url)
-            if len(b)>3*1024*1024:raise RuntimeError('navigation_size_limit')
-            t=html.unescape(b.decode('utf8','replace')).replace('\\/','/').replace('\\u0026','&');r['page_sha256']=hashlib.sha256(b).hexdigest()
-            patterns=[r'(?:youtube\.com/(?:watch\?v=|embed/)|youtu\.be/|(?:i\.)?ytimg\.com/(?:vi|vi_webp)/)([A-Za-z0-9_-]{11})',r'(?:videoId|youtubeId|video_id|youtube_id)[\\"\s:]+([A-Za-z0-9_-]{11})']
-            hits=[]
-            for pat in patterns:
-              for m in re.finditer(pat,t):hits.append({'video_id':m.group(1),'context':t[max(0,m.start()-140):m.end()+160]})
-            r['media_identity_candidates']=hits[:25];r['unique_video_ids']=sorted(set(h['video_id'] for h in hits));r['status']='NAVIGATION_REFERENCES_READ'
-          except Exception as e:r.update(status='NAVIGATION_BINDING_FAILED',error=str(e))
-          pathlib.Path(os.environ['OUT'],'source_binding.json').write_text(json.dumps(r,ensure_ascii=False,indent=2));print(json.dumps(r,ensure_ascii=False,indent=2))
+          import urllib.request,urllib.parse,re,json,os,pathlib,hashlib,datetime
+          out=pathlib.Path(os.environ['OUT']);rec={'run_id':os.environ.get('GITHUB_RUN_ID'),'commit':os.environ.get('GITHUB_SHA'),'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'purpose':'one alternate known original pronunciation source; not broad discovery','requests':[]}
+          def get(u,label):
+            r={'request_url':u,'role':label};rec['requests'].append(r)
+            try:
+              with urllib.request.urlopen(urllib.request.Request(u,headers={'User-Agent':'ACE-public-media-research/1.0'}),timeout=20) as f:b=f.read(2*1024*1024+1);r.update(http_status=f.status,final_url=f.url)
+              if len(b)>2*1024*1024:raise RuntimeError('size_limit')
+              r['sha256']=hashlib.sha256(b).hexdigest();j=json.loads(b);r['status']='JSON_READ';return j,r
+            except Exception as e:r.update(status='ACCESS_UNAVAILABLE',error=str(e));return None,r
+          bvid='BV1jX4y1e7LV';j,r=get('https://api.bilibili.com/x/web-interface/view?bvid='+bvid,'original_publisher_metadata')
+          if j is not None:
+            r.update(api_code=j.get('code'),api_message=j.get('message'));data=j.get('data') or {}
+            r['identity']={k:data.get(k) for k in ['bvid','aid','cid','title','pubdate','duration','owner','rights','pages']}
+            if j.get('code')==0 and data.get('cid') and not (data.get('rights') or {}).get('pay'):
+              u='https://api.bilibili.com/x/player/playurl?'+urllib.parse.urlencode({'bvid':bvid,'cid':data['cid'],'qn':32,'fnval':16,'fourk':0})
+              play,p=get(u,'ordinary_public_player_response')
+              if play is not None:
+                p.update(api_code=play.get('code'),api_message=play.get('message'));v=play.get('data') or {};p['player_flags']={k:v.get(k) for k in ['quality','timelength','format','accept_quality','is_preview']}
+                d=v.get('dash') or {};p['representations']={kind:[{k:s.get(k) for k in ['id','mimeType','codecs','width','height','bandwidth','frameRate']} for s in d.get(kind,[])] for kind in ['video','audio']};p['durl_count']=len(v.get('durl') or [])
+                p['media_urls_returned']=bool(d.get('video') or v.get('durl'))
+          meta,m=get('https://www.youtube.com/oembed?'+urllib.parse.urlencode({'url':'https://www.youtube.com/watch?v=l_MiuyhsgfU','format':'json'}),'prior_candidate_creator_identity_only')
+          if meta is not None:m['identity']={k:meta.get(k) for k in ['title','author_name','author_url','provider_name','provider_url']}
+          (out/'primary_admission.json').write_text(json.dumps(rec,ensure_ascii=False,indent=2));print(json.dumps(rec,ensure_ascii=False,indent=2))
           PY
-      - name: One-day navigation receipt
+      - name: One-day admission receipt
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: ace-s05f-source-binding-${{ github.run_id }}
-          path: ${{ runner.temp }}/ace-s05f-source/
+          name: ace-s05f-admission-${{ github.run_id }}
+          path: ${{ runner.temp }}/ace-s05f-admission/
           retention-days: 1
           if-no-files-found: warn

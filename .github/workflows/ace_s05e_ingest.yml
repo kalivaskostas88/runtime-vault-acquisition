@@ -25,8 +25,8 @@ jobs:
         run: |
           python3 - <<'PY'
           import urllib.request,urllib.parse,re,json,os,pathlib,hashlib,datetime,subprocess,signal,resource,socket,ipaddress
-          root=pathlib.Path(os.environ['ROOT']);out=root/'out';src='https://www.bilibili.com/video/BV1jX4y1e7LV/';bvid='BV1jX4y1e7LV';start=45.;end=135.
-          rec={'source_url':src,'source_id':bvid,'requested_source_window':[start,end],'need_video':True,'need_audio':True,'frame_strategy':'adaptive local review; no remote dense images','retention_policy':'one_day_transport','run_id':os.environ.get('GITHUB_RUN_ID'),'commit':os.environ.get('GITHUB_SHA'),'status':'SOURCE_INGEST_FAILED','evidence_boundary':'media admission only; action/playback/music regions unassigned'}
+          root=pathlib.Path(os.environ['ROOT']);out=root/'out';bvid='BV1Az4y1x7WU';src='https://www.bilibili.com/video/'+bvid+'/';start=70.;end=160.
+          rec={'source_url':src,'source_id':bvid,'requested_source_window':[start,end],'need_video':True,'need_audio':True,'frame_strategy':'adaptive local review; no remote dense images','retention_policy':'one_day_transport','run_id':os.environ.get('GITHUB_RUN_ID'),'commit':os.environ.get('GITHUB_SHA'),'status':'SOURCE_INGEST_FAILED','evidence_boundary':'known official pitch source; window navigation, action/playback/music regions unassigned'}
           def get(u):
             with urllib.request.urlopen(urllib.request.Request(u,headers={'User-Agent':'ACE-public-media-research/1.0'}),timeout=20) as f:b=f.read(2*1024*1024+1)
             if len(b)>2*1024*1024:raise RuntimeError('metadata_size_limit')
@@ -48,8 +48,9 @@ jobs:
             (out/(name+'.json')).write_text(json.dumps(j,indent=2));return j
           try:
             data,mh=get('https://api.bilibili.com/x/web-interface/view?bvid='+bvid)
-            if data.get('bvid')!=bvid or data.get('cid')!=1188399669 or (data.get('rights') or {}).get('pay'):raise RuntimeError('identity_or_public_access_mismatch')
+            if data.get('bvid')!=bvid or (data.get('owner') or {}).get('mid')!=290069256 or not data.get('cid') or (data.get('rights') or {}).get('pay'):raise RuntimeError('identity_or_public_access_mismatch')
             cid=data['cid'];rec.update(cid=cid,metadata_sha256=mh,title=data.get('title'),uploader=data.get('owner'),publication_unix=data.get('pubdate'),source_duration=data.get('duration'),rights=data.get('rights'))
+            if float(data.get('duration') or 0)<end:raise RuntimeError('requested_range_outside_source')
             player,ph=get('https://api.bilibili.com/x/player/playurl?'+urllib.parse.urlencode({'bvid':bvid,'cid':cid,'qn':32,'fnval':16,'fourk':0}))
             if player.get('is_preview'):raise RuntimeError('preview_not_admitted')
             dash=player.get('dash') or {};vs=[s for s in dash.get('video',[]) if s.get('height',9999)<=480 and str(s.get('codecs','')).startswith('avc')];ads=[s for s in dash.get('audio',[]) if s.get('codecs')=='mp4a.40.2']

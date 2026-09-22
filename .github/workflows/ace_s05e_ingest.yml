@@ -1,4 +1,4 @@
-name: ACE S05F2 existing short-source scan ingress
+name: ACE S05F2 official short expression ingress
 on:
   push:
     branches: [research/ace-s05e-20260922]
@@ -11,10 +11,6 @@ concurrency:
   cancel-in-progress: false
 jobs:
   ingest:
-    strategy:
-      fail-fast: false
-      matrix:
-        source: [pitch, pronunciation]
     runs-on: ubuntu-24.04
     timeout-minutes: 7
     steps:
@@ -23,17 +19,14 @@ jobs:
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/ace-s05f2-av/out"
           if ! command -v ffmpeg >/dev/null; then sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg; fi
-      - name: Reacquire the same short source with original AV timestamps
+      - name: Same-source expression media with original AV timestamps
         env:
           ROOT: ${{ runner.temp }}/ace-s05f2-av
-          SOURCE: ${{ matrix.source }}
         run: |
           python3 - <<'PY'
           import urllib.request,urllib.parse,re,json,os,pathlib,hashlib,datetime,subprocess,signal,resource,socket,ipaddress
-          root=pathlib.Path(os.environ['ROOT']);out=root/'out'
-          sources={'pitch':('BV1Az4y1x7WU',1207776866),'pronunciation':('BV1jX4y1e7LV',1188399669)}
-          bvid,expected_cid=sources[os.environ['SOURCE']];src='https://www.bilibili.com/video/'+bvid+'/'
-          rec={'source_url':src,'source_id':bvid,'need_video':True,'need_audio':True,'frame_strategy':'audio repeated-section detection first; visual review only candidates','retention_policy':'one_day_transport; full short source temporary','run_id':os.environ.get('GITHUB_RUN_ID'),'commit':os.environ.get('GITHUB_SHA'),'status':'SOURCE_INGEST_FAILED','evidence_boundary':'same known primary source; no before-after assertion before analysis'}
+          root=pathlib.Path(os.environ['ROOT']);out=root/'out';bvid='BV1VG411x7XK';expected_cid=761043546;src='https://www.bilibili.com/video/'+bvid+'/'
+          rec={'source_url':src,'source_id':bvid,'need_video':True,'need_audio':True,'frame_strategy':'audio repeated-section detection before candidate visuals','retention_policy':'one_day_transport; full short source temporary','run_id':os.environ.get('GITHUB_RUN_ID'),'commit':os.environ.get('GITHUB_SHA'),'status':'SOURCE_INGEST_FAILED','evidence_boundary':'one verified official expression alternative; NOT claimed same YouTube demonstration or accepted event'}
           def get(u):
             with urllib.request.urlopen(urllib.request.Request(u,headers={'User-Agent':'ACE-public-media-research/1.0'}),timeout=20) as f:b=f.read(2*1024*1024+1)
             if len(b)>2*1024*1024:raise RuntimeError('metadata_size_limit')
@@ -57,8 +50,8 @@ jobs:
             data,mh=get('https://api.bilibili.com/x/web-interface/view?bvid='+bvid)
             if data.get('bvid')!=bvid or (data.get('owner') or {}).get('mid')!=290069256 or data.get('cid')!=expected_cid or (data.get('rights') or {}).get('pay'):raise RuntimeError('identity_or_public_access_mismatch')
             duration=float(data.get('duration') or 0)
-            if not 0<duration<=300:raise RuntimeError('short_source_duration_limit')
-            rec.update(cid=expected_cid,metadata_sha256=mh,title=data.get('title'),uploader=data.get('owner'),publication_unix=data.get('pubdate'),source_duration=duration,rights=data.get('rights'),requested_source_window=[0,duration])
+            if not 0<duration<=90:raise RuntimeError('short_source_duration_limit')
+            rec.update(cid=expected_cid,metadata_sha256=mh,title=data.get('title'),description=data.get('desc'),uploader=data.get('owner'),publication_unix=data.get('pubdate'),source_duration=duration,rights=data.get('rights'),requested_source_window=[0,duration])
             player,ph=get('https://api.bilibili.com/x/player/playurl?'+urllib.parse.urlencode({'bvid':bvid,'cid':expected_cid,'qn':32,'fnval':16,'fourk':0}))
             if player.get('is_preview'):raise RuntimeError('preview_not_admitted')
             dash=player.get('dash') or {};vs=[s for s in dash.get('video',[]) if s.get('height',9999)<=480 and str(s.get('codecs','')).startswith('avc')];ads=[s for s in dash.get('audio',[]) if s.get('codecs')=='mp4a.40.2']
@@ -96,7 +89,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: ace-s05f2-existing-${{ matrix.source }}-${{ github.run_id }}
+          name: ace-s05f2-expression-${{ github.run_id }}
           path: ${{ runner.temp }}/ace-s05f2-av/out/
           retention-days: 1
           compression-level: 0

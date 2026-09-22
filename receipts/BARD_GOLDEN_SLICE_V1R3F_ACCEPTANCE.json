@@ -1,11 +1,14 @@
 {
   "receipt_id": "BARD_GOLDEN_SLICE_V1R3F_ACCEPTANCE",
-  "highest_preserved_state": "PRODUCTION_GOLDEN_CANDIDATE_TECHNICAL_AND_SAMPLED_VIEWER_QA_PASS",
+  "highest_preserved_state": "PRODUCTION_GOLDEN_CANDIDATE_REPRODUCIBILITY_PROVEN",
   "promotion_state": "HOLD_ONLY_ON_FULL_SPEED_NEUTRAL_VIEWER_ACCEPTANCE",
   "production": {
-    "resolution": [960, 540],
+    "resolution": [
+      960,
+      540
+    ],
     "fps": 25,
-    "duration_seconds": 8.0,
+    "duration_seconds": 8,
     "video_codec": "h264",
     "audio_codec": "aac",
     "audio_sample_rate": 48000,
@@ -49,5 +52,11 @@
     "camera_coverage": "config/bard_camera_coverage_v1.json",
     "production_compositor": "scripts/build_bard_golden_slice_v1.py",
     "event_qa": "scripts/bard_event_qa_v1.py"
+  },
+  "reproducibility": {
+    "two_consecutive_integrated_renders": "PASS",
+    "bit_identical_av": true,
+    "canonical_candidate_sha256": "38ef86af0432c856847bdf05cdce0d8b8caf230607c91e17be0a5601a970086a",
+    "receipt": "receipts/BARD_GOLDEN_SLICE_V1R3F_REPRODUCIBILITY.json"
   }
 }

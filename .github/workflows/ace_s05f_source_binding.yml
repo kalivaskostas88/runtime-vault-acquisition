@@ -1,4 +1,4 @@
-name: ACE S05F2 exact expression-source admission
+name: ACE S05F2 official counterpart lookup
 on:
   push:
     branches: [research/ace-s05e-20260922]
@@ -9,49 +9,32 @@ permissions:
 jobs:
   bind:
     runs-on: ubuntu-24.04
-    timeout-minutes: 5
+    timeout-minutes: 2
     steps:
-      - name: Existing bounded public media tool
-        run: |
-          mkdir -p "$RUNNER_TEMP/ace-s05f2-admission/out"
-          python3 -m venv "$RUNNER_TEMP/ace-s05f2-admission/venv"
-          "$RUNNER_TEMP/ace-s05f2-admission/venv/bin/pip" install --disable-pip-version-check 'yt-dlp[default]==2026.8.19'
-      - name: Exact priority demonstration and one official linked alternative
+      - name: One keyword in the already verified official publisher only
         env:
-          ROOT: ${{ runner.temp }}/ace-s05f2-admission
+          OUT: ${{ runner.temp }}/ace-s05f2-counterpart
         run: |
-          "$ROOT/venv/bin/python" - <<'PY'
-          import urllib.request,urllib.parse,re,json,os,pathlib,hashlib,datetime,subprocess,signal
-          root=pathlib.Path(os.environ['ROOT']);out=root/'out';rec={'run_id':os.environ.get('GITHUB_RUN_ID'),'commit':os.environ.get('GITHUB_SHA'),'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'scope':'after algorithmic existing-source scan; exact gentle-aggressive source plus one linked official expression demo; no broad discovery','requests':[]}
-          def clean(s):return re.sub(r'https?://[^\s\"\']+','[URL_REDACTED]',s)[-4500:]
-          def get(u,label):
-            r={'request_url':u,'role':label};rec['requests'].append(r)
-            try:
-              with urllib.request.urlopen(urllib.request.Request(u,headers={'User-Agent':'ACE-public-media-research/1.0'}),timeout=20) as f:b=f.read(2*1024*1024+1);r.update(http_status=f.status,final_url=f.url)
-              if len(b)>2*1024*1024:raise RuntimeError('size_limit')
-              r['sha256']=hashlib.sha256(b).hexdigest();j=json.loads(b);r['status']='JSON_READ';return j,r
-            except Exception as e:r.update(status='ACCESS_UNAVAILABLE',error=clean(str(e)));return None,r
-          u='https://www.youtube.com/watch?v=vTPYKyeKMTc';r={'source_url':u,'role':'requested_exact_primary_demonstration'};rec['requests'].append(r)
-          args=[str(root/'venv/bin/yt-dlp'),'--ignore-config','--no-playlist','--skip-download','--dump-single-json','--no-cache-dir','--socket-timeout','15','--retries','1','--extractor-retries','1','--js-runtimes','node',u]
-          p=subprocess.Popen(args,stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True,start_new_session=True)
-          try:s,e=p.communicate(timeout=75)
-          except subprocess.TimeoutExpired:os.killpg(p.pid,signal.SIGKILL);s,e=p.communicate();e+='\nTIME_LIMIT'
-          r.update(exit_code=p.returncode,diagnostic=clean(e))
-          if p.returncode==0:
-            j=json.loads(s);r.update(status='PUBLIC_METADATA_READ',identity={k:j.get(k) for k in ['id','title','uploader','channel_id','duration','upload_date','availability','is_live']})
-          else:r['status']='SOURCE_INGEST_FAILED_NO_BYPASS'
-          j,r=get('https://www.youtube.com/oembed?'+urllib.parse.urlencode({'url':u,'format':'json'}),'priority_original_creator_identity')
-          if j is not None:r['identity']={k:j.get(k) for k in ['title','author_name','author_url','provider_name']}
-          bvid='BV1VG411x7XK';j,r=get('https://api.bilibili.com/x/web-interface/view?bvid='+bvid,'one_linked_official_desktop_expression_demo_not_claimed_same_as_YouTube')
-          if j is not None:
-            r.update(api_code=j.get('code'),api_message=j.get('message'));d=j.get('data') or {};r['identity']={k:d.get(k) for k in ['bvid','aid','cid','title','pubdate','duration','owner','rights','pages','desc']}
-          (out/'admission.json').write_text(json.dumps(rec,ensure_ascii=False,indent=2));print(json.dumps(rec,ensure_ascii=False,indent=2))
+          mkdir -p "$OUT"
+          python3 - <<'PY'
+          import urllib.request,urllib.parse,json,pathlib,os,datetime,hashlib
+          u='https://api.bilibili.com/x/space/arc/search?'+urllib.parse.urlencode({'mid':290069256,'ps':5,'pn':1,'keyword':'温柔','order':'pubdate'})
+          r={'purpose':'exact gentle-demo counterpart in official ACE_Studio catalog only; no broad catalog download','url':u,'run_id':os.environ.get('GITHUB_RUN_ID'),'commit':os.environ.get('GITHUB_SHA'),'utc':datetime.datetime.now(datetime.timezone.utc).isoformat()}
+          try:
+            with urllib.request.urlopen(urllib.request.Request(u,headers={'User-Agent':'ACE-public-media-research/1.0'}),timeout=20) as f:b=f.read(512*1024+1);r['http_status']=f.status
+            if len(b)>512*1024:raise RuntimeError('response_size_limit')
+            j=json.loads(b);r.update(api_code=j.get('code'),api_message=j.get('message'),sha256=hashlib.sha256(b).hexdigest())
+            if j.get('code')!=0:r['status']='PUBLIC_LOOKUP_UNAVAILABLE_NO_BYPASS'
+            else:
+              d=j.get('data') or {};r.update(status='PUBLIC_LOOKUP_READ',page=d.get('page'),candidates=[{k:v.get(k) for k in ['bvid','title','author','mid','created','length','description']} for v in (d.get('list') or {}).get('vlist',[])[:5]])
+          except Exception as e:r.update(status='PUBLIC_LOOKUP_UNAVAILABLE_NO_BYPASS',error=str(e))
+          pathlib.Path(os.environ['OUT'],'counterpart_lookup.json').write_text(json.dumps(r,ensure_ascii=False,indent=2));print(json.dumps(r,ensure_ascii=False,indent=2))
           PY
-      - name: One-day admission receipt
+      - name: One-day receipt
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: ace-s05f2-admission-${{ github.run_id }}
-          path: ${{ runner.temp }}/ace-s05f2-admission/out/
+          name: ace-s05f2-counterpart-${{ github.run_id }}
+          path: ${{ runner.temp }}/ace-s05f2-counterpart/
           retention-days: 1
           if-no-files-found: warn

@@ -58,5 +58,10 @@
     "bit_identical_av": true,
     "canonical_candidate_sha256": "38ef86af0432c856847bdf05cdce0d8b8caf230607c91e17be0a5601a970086a",
     "receipt": "receipts/BARD_GOLDEN_SLICE_V1R3F_REPRODUCIBILITY.json"
+  },
+  "canonical_recipe_exact_lock": {
+    "build_bard_golden_slice_v1_git_blob": "93e5512f9ee7e4f37acfc421e49bba86f5fff00a",
+    "bard_event_qa_v1_git_blob": "4890c51a79b63e0c75f9154562055b36a2c2a56c",
+    "exact_recipe_lock": "PASS"
   }
 }

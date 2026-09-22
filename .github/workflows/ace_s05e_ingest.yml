@@ -1,0 +1,107 @@
+name: ACE S05E bounded public media ingress
+on:
+  push:
+    branches: [research/ace-s05e-20260922]
+    paths: ['.github/workflows/ace_s05e_ingest.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ace-s05e-ingress
+  cancel-in-progress: false
+jobs:
+  ingest:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - name: Install bounded media tools
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/ace-s05e/out"
+          if ! command -v ffmpeg >/dev/null; then sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg; fi
+          python3 -m venv "$RUNNER_TEMP/ace-s05e/venv"
+          "$RUNNER_TEMP/ace-s05e/venv/bin/pip" install --disable-pip-version-check 'yt-dlp[default]==2026.8.19'
+      - name: Acquire exact public sections and receipts
+        env:
+          ROOT: ${{ runner.temp }}/ace-s05e
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$ROOT/venv/bin/python" - <<'PY'
+          import datetime, hashlib, json, math, os, pathlib, re, resource, shutil, signal, subprocess, time
+          root=pathlib.Path(os.environ['ROOT']); out=root/'out'; out.mkdir(exist_ok=True)
+          ytdlp=root/'venv/bin/yt-dlp'
+          manifest={'run_label':'S05E_INGEST_R001','retention_policy':'one_day_transport_only','need_video':True,'need_audio':True,'frame_strategy':'none_remote; adaptive_local_after_admission','sources':[
+            {'source_id':'OV01_EXPRESSION','source_url':'https://www.youtube.com/watch?v=vTPYKyeKMTc','start_time':0,'end_time':60,'expected_content':'official expression demo; orientation window, causal boundaries NOT assumed'},
+            {'source_id':'OV02_PITCH','source_url':'https://www.bilibili.com/video/BV1Az4y1x7WU/','start_time':40,'end_time':120,'expected_content':'official pitch tutorial; bounded orientation window, causal boundaries NOT assumed'},
+            {'source_id':'OV03_PRONUNCIATION','source_url':'https://www.bilibili.com/video/BV1jX4y1e7LV/','start_time':35,'end_time':115,'expected_content':'official pronunciation tutorial; bounded orientation window, causal boundaries NOT assumed'}]}
+          (out/'source_manifest.json').write_text(json.dumps(manifest,indent=2))
+          base=[str(ytdlp),'--ignore-config','--no-playlist','--no-progress','--no-cache-dir','--socket-timeout','15','--retries','1','--fragment-retries','1','--extractor-retries','1','--js-runtimes','node']
+          def limits():
+              resource.setrlimit(resource.RLIMIT_FSIZE,(128*1024*1024,128*1024*1024))
+          def run(args,timeout):
+              p=subprocess.Popen(args,stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True,start_new_session=True,preexec_fn=limits)
+              try:
+                  a,b=p.communicate(timeout=timeout); return p.returncode,a,b
+              except subprocess.TimeoutExpired:
+                  os.killpg(p.pid,signal.SIGKILL); a,b=p.communicate(); return 124,a,b+'\nBOUNDED_TIMEOUT'
+          def safe_error(s):
+              return re.sub(r'https?://[^\s]+','[URL_REDACTED]',s)[-6000:]
+          env={'github_run_id':os.environ.get('GITHUB_RUN_ID'),'github_run_attempt':os.environ.get('GITHUB_RUN_ATTEMPT'),'github_sha':os.environ.get('GITHUB_SHA'),'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'yt_dlp':run([str(ytdlp),'--version'],10)[1].strip(),'ffmpeg':run(['ffmpeg','-version'],10)[1].splitlines()[0],'node':run(['node','--version'],10)[1].strip(),'perceptual_audio':'NOT_EVALUATED','own_ace_renders':0}
+          (out/'environment.json').write_text(json.dumps(env,indent=2))
+          results=[]
+          for src in manifest['sources']:
+              d=out/src['source_id']; d.mkdir(); rec={'request':src,'status':'SOURCE_INGEST_FAILED'}
+              try:
+                  start=float(src['start_time']); end=float(src['end_time'])
+                  assert math.isfinite(start) and math.isfinite(end) and 0<=start<end and end-start<=90
+                  assert re.fullmatch(r'https://www\.youtube\.com/watch\?v=[A-Za-z0-9_-]{11}|https://www\.bilibili\.com/video/BV[A-Za-z0-9]+/',src['source_url'])
+                  rc,stdout,stderr=run(base+['--skip-download','--dump-single-json',src['source_url']],70)
+                  (d/'probe.log').write_text(safe_error(stderr))
+                  if rc: raise RuntimeError('metadata_probe_failed:'+str(rc))
+                  info=json.loads(stdout)
+                  publicmeta={k:info.get(k) for k in ['id','title','uploader','uploader_id','channel','channel_id','webpage_url','upload_date','duration','availability','is_live','live_status','age_limit','chapters']}
+                  (d/'metadata.json').write_text(json.dumps(publicmeta,ensure_ascii=False,indent=2))
+                  if info.get('is_live') or info.get('live_status') in ['is_live','is_upcoming'] or (info.get('age_limit') or 0)>0 or info.get('availability') in ['private','needs_auth','subscriber_only','premium_only']:
+                      raise RuntimeError('source_not_admitted_public_nonrestricted')
+                  duration=info.get('duration')
+                  if duration is not None:
+                      if not math.isfinite(float(duration)) or float(duration)<=start: raise RuntimeError('requested_range_outside_source')
+                      end=min(end,float(duration))
+                  rec['requested_resolved_window_seconds']=[start,end]
+                  rc,stdout,stderr=run(base+['-f','bv*[height<=720]+ba/b[height<=720]','--download-sections',f'*{start}-{end}','--force-keyframes-at-cuts','--merge-output-format','mkv','-o',str(d/'segment.%(ext)s'),src['source_url']],160)
+                  (d/'ingest.log').write_text(safe_error(stdout+'\n'+stderr))
+                  if rc: raise RuntimeError('section_download_failed:'+str(rc))
+                  media=[p for p in d.glob('segment.*') if p.suffix in ['.mp4','.mkv','.webm','.mov']]
+                  if len(media)!=1: raise RuntimeError('one_segment_expected')
+                  m=media[0]
+                  rc,pj,err=run(['ffprobe','-v','error','-show_format','-show_streams','-of','json',str(m)],20)
+                  if rc: raise RuntimeError('ffprobe_failed')
+                  probe=json.loads(pj); (d/'ffprobe.json').write_text(json.dumps(probe,indent=2))
+                  streams={s.get('codec_type') for s in probe.get('streams',[])}
+                  if not {'video','audio'}.issubset(streams): raise RuntimeError('required_audio_video_not_both_present')
+                  if float(probe['format']['duration'])>end-start+2: raise RuntimeError('download_exceeded_requested_duration')
+                  if m.stat().st_size>100*1024*1024: raise RuntimeError('segment_size_cap')
+                  rc,a,b=run(['ffmpeg','-nostdin','-v','error','-i',str(m),'-map','0:a:0','-vn','-c:a','pcm_s16le',str(d/'audio.wav')],30)
+                  if rc: raise RuntimeError('audio_decode_failed')
+                  rec.update(status='MEDIA_AUDIO_VIDEO_INGESTED',segment_file=m.name,audio_file='audio.wav',audio_perceptually_evaluated=False,causal_boundaries='UNASSIGNED',source_start_seconds=start,source_end_seconds=end,transform='yt-dlp exact-section force-keyframe reencode; PCM16 decoded copy; no gain/denoise/timewarp',hashes={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in [m,d/'audio.wav']})
+              except Exception as e:
+                  rec['error']=safe_error(str(e))
+                  for p in d.glob('segment.*'): p.unlink(missing_ok=True)
+                  (d/'audio.wav').unlink(missing_ok=True)
+              (d/'receipt.json').write_text(json.dumps(rec,indent=2))
+              results.append(rec); print(src['source_id'],rec['status'],rec.get('error',''))
+          (out/'results.json').write_text(json.dumps(results,indent=2))
+          hashes={str(p.relative_to(out)):hashlib.sha256(p.read_bytes()).hexdigest() for p in out.rglob('*') if p.is_file()}
+          (out/'sha256.json').write_text(json.dumps(hashes,indent=2))
+          print('ingested_count',sum(r['status']=='MEDIA_AUDIO_VIDEO_INGESTED' for r in results))
+          PY
+      - name: Publish bounded temporary sensor artifacts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ace-s05e-sensor-r001-${{ github.run_id }}
+          path: ${{ runner.temp }}/ace-s05e/out/
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: warn

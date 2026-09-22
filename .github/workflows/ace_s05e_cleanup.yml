@@ -1,4 +1,4 @@
-name: ACE S05E exact temporary artifact cleanup
+name: ACE S05F exact temporary artifact cleanup
 on:
   push:
     branches: [research/ace-s05e-20260922]
@@ -12,16 +12,16 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 3
     steps:
-      - name: Verify identity then remove this research run's transport artifacts
+      - name: Verify exact S05F ownership then remove temporary transport
         env:
           GH_TOKEN: ${{ github.token }}
-          OUT: ${{ runner.temp }}/ace-s05e-cleanup
+          OUT: ${{ runner.temp }}/ace-s05f-cleanup
         run: |
           mkdir -p "$OUT"
           python3 - <<'PY'
           import urllib.request,urllib.error,json,os,pathlib,datetime
           repo='kalivaskostas88/runtime-vault-acquisition';branch='research/ace-s05e-20260922'
-          owned=[(35782027335,10718287926),(35782305034,10717919380),(35782519945,10718094215),(35782942742,10718157962),(35783193419,10718812625),(35783487168,10719730438)]
+          owned=[(35787270720,10719928202),(35787420044,10720608533),(35787759914,10720647244),(35787959988,10720319856),(35788349273,10720809800),(35788835352,10720943152),(35789415149,10721651836)]
           def request(url,method='GET'):
             req=urllib.request.Request(url,method=method,headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'})
             try:
@@ -29,23 +29,22 @@ jobs:
             except urllib.error.HTTPError as e:return e.code,e.read().decode()
           results=[]
           for run,artifact in owned:
-            url=f'https://api.github.com/repos/{repo}/actions/artifacts/{artifact}'
-            code,body=request(url);r={'run_id':run,'artifact_id':artifact,'precheck_status':code}
+            url=f'https://api.github.com/repos/{repo}/actions/artifacts/{artifact}';code,body=request(url);r={'run_id':run,'artifact_id':artifact,'precheck_status':code}
             if code!=200:
               r['result']='ALREADY_ABSENT' if code==404 else 'PRECHECK_FAILED';results.append(r);continue
             j=json.loads(body)
-            if j.get('workflow_run',{}).get('id')!=run or j.get('workflow_run',{}).get('head_branch')!=branch or not j.get('name','').startswith('ace-s05e-'):
+            if j.get('workflow_run',{}).get('id')!=run or j.get('workflow_run',{}).get('head_branch')!=branch or not j.get('name','').startswith('ace-s05f-'):
               r['result']='IDENTITY_MISMATCH_NOT_DELETED';results.append(r);continue
             r['artifact_name']=j['name'];r['size_in_bytes']=j.get('size_in_bytes');r['delete_http'],_=request(url,'DELETE');r['readback_http'],_=request(url)
             r['result']='DELETED_AND_ABSENT' if r['delete_http']==204 and r['readback_http']==404 else 'DELETE_NOT_VERIFIED';results.append(r)
-          report={'repository':repo,'branch':branch,'cleanup_run_id':os.environ.get('GITHUB_RUN_ID'),'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'records':results,'scope':'only exact allowlisted transport artifacts, no repository files/branches or user originals','all_verified':all(r['result'] in ['DELETED_AND_ABSENT','ALREADY_ABSENT'] for r in results)}
+          report={'repository':repo,'branch':branch,'cleanup_run_id':os.environ.get('GITHUB_RUN_ID'),'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'records':results,'scope':'exact S05F transport artifacts only; no production files, no user originals, no S05C/S05E canonical evidence','all_verified':all(r['result'] in ['DELETED_AND_ABSENT','ALREADY_ABSENT'] for r in results)}
           pathlib.Path(os.environ['OUT'],'cleanup_receipt.json').write_text(json.dumps(report,indent=2));print(json.dumps(report,indent=2))
           PY
       - name: Small cleanup receipt only
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: ace-s05e-cleanup-receipt-${{ github.run_id }}
-          path: ${{ runner.temp }}/ace-s05e-cleanup/
+          name: ace-s05f-cleanup-receipt-${{ github.run_id }}
+          path: ${{ runner.temp }}/ace-s05f-cleanup/
           retention-days: 1
           if-no-files-found: warn

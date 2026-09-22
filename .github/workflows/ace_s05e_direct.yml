@@ -1,0 +1,84 @@
+name: ACE S05E bounded alternative sources
+on:
+  push:
+    branches: [research/ace-s05e-20260922]
+    paths: ['.github/workflows/ace_s05e_direct.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  ingest:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - name: Prepare public media reader
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/ace-alternative/out"
+          if ! command -v ffmpeg >/dev/null; then sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg; fi
+          python3 -m venv "$RUNNER_TEMP/ace-alternative/venv"
+          "$RUNNER_TEMP/ace-alternative/venv/bin/pip" install --disable-pip-version-check 'yt-dlp[default]==2026.8.19'
+      - name: Bounded public audio and exact asset inspection
+        env:
+          ROOT: ${{ runner.temp }}/ace-alternative
+        run: |
+          "$ROOT/venv/bin/python" - <<'PY'
+          import os,json,pathlib,subprocess,signal,resource,hashlib,urllib.request,re,datetime
+          root=pathlib.Path(os.environ['ROOT']);out=root/'out';y=root/'venv/bin/yt-dlp'
+          def limit(): resource.setrlimit(resource.RLIMIT_FSIZE,(64*1024*1024,64*1024*1024))
+          def run(a,t):
+            p=subprocess.Popen(a,stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True,start_new_session=True,preexec_fn=limit)
+            try: x,e=p.communicate(timeout=t); return p.returncode,x,e
+            except subprocess.TimeoutExpired:
+              os.killpg(p.pid,signal.SIGKILL);x,e=p.communicate();return 124,x,e+'\nTIME_LIMIT'
+          def clean(t): return re.sub(r'https?://[^\s]+','[URL_REDACTED]',t)[-5000:]
+          pages=['https://acestudio.ai/ai-singing-voice-generator/','https://acestudio.ai/static/js/index.a3a84477-1790059030873.js']
+          htmlreceipts=[]
+          for i,u in enumerate(pages):
+            r={'url':u,'role':'navigation_only'}
+            try:
+              with urllib.request.urlopen(urllib.request.Request(u,headers={'User-Agent':'ACE-public-media-research/1.0'}),timeout=20) as f:
+                b=f.read(2*1024*1024+1);r.update(status=f.status,final_url=f.url)
+              if len(b)>2*1024*1024: raise RuntimeError('size_limit')
+              name='source_page.html' if i==0 else 'public_asset_script.js';(out/name).write_bytes(b);r.update(file=name,sha256=hashlib.sha256(b).hexdigest())
+            except Exception as e:r['error']=str(e)
+            htmlreceipts.append(r)
+          results=[]
+          for n in ['01','02','03']:
+            url=f'https://soundcloud.com/soundonsound/ace-studio-audio-example-{n}'
+            d=out/('SOS_'+n);d.mkdir();r={'source_url':url,'source_id':'SOS_'+n,'start_time':0,'end_time':25,'expected_content':'published ACE vocal-production sample; NOT assumed isolated before-after','need_audio':True,'need_video':False,'frame_strategy':'none_audio_only','retention_policy':'one_day_transport','status':'SOURCE_INGEST_FAILED'}
+            try:
+              base=[str(y),'--ignore-config','--no-playlist','--no-progress','--no-cache-dir','--socket-timeout','12','--retries','1','--extractor-retries','1']
+              rc,s,e=run(base+['--skip-download','--dump-single-json',url],55);(d/'probe.log').write_text(clean(e))
+              if rc: raise RuntimeError('metadata_failed:'+str(rc))
+              j=json.loads(s);meta={k:j.get(k) for k in ['id','title','uploader','webpage_url','upload_date','duration','availability','description']};(d/'metadata.json').write_text(json.dumps(meta,ensure_ascii=False,indent=2))
+              if j.get('availability') in ['private','needs_auth','subscriber_only','premium_only'] or j.get('is_live'):raise RuntimeError('not_public')
+              rc,s,e=run(base+['-f','bestaudio','--download-sections','*0-25','--force-keyframes-at-cuts','-o',str(d/'segment.%(ext)s'),url],95);(d/'ingest.log').write_text(clean(e))
+              if rc:raise RuntimeError('section_failed:'+str(rc))
+              m=[p for p in d.glob('segment.*') if p.suffix in ['.mp3','.m4a','.opus','.ogg','.webm','.wav']]
+              if len(m)!=1:raise RuntimeError('one_media_expected')
+              rc,s,e=run(['ffprobe','-v','error','-show_format','-show_streams','-of','json',str(m[0])],15)
+              if rc:raise RuntimeError('probe_failed')
+              pr=json.loads(s);(d/'ffprobe.json').write_text(json.dumps(pr,indent=2))
+              if not any(st['codec_type']=='audio' for st in pr['streams']):raise RuntimeError('no_audio')
+              if float(pr['format']['duration'])>27:raise RuntimeError('section_duration_limit')
+              rc,s,e=run(['ffmpeg','-nostdin','-v','error','-i',str(m[0]),'-t','25','-vn','-c:a','pcm_s16le',str(d/'audio.wav')],20)
+              if rc:raise RuntimeError('decode_failed')
+              r.update(status='AUDIO_ONLY_INGESTED',segment=m[0].name,audio='audio.wav',perceptual='NOT_EVALUATED',causal_pair='UNASSIGNED',sha256={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in [m[0],d/'audio.wav']})
+            except Exception as e:
+              r['error']=clean(str(e))
+              for p in d.glob('segment.*'):p.unlink(missing_ok=True)
+              (d/'audio.wav').unlink(missing_ok=True)
+            (d/'receipt.json').write_text(json.dumps(r,indent=2));results.append(r);print(r['source_id'],r['status'],r.get('error',''))
+          (out/'results.json').write_text(json.dumps({'github_run_id':os.environ.get('GITHUB_RUN_ID'),'github_sha':os.environ.get('GITHUB_SHA'),'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'source_pages':htmlreceipts,'audio_sources':results},indent=2))
+          (out/'sha256.json').write_text(json.dumps({str(p.relative_to(out)):hashlib.sha256(p.read_bytes()).hexdigest() for p in out.rglob('*') if p.is_file()},indent=2))
+          PY
+      - name: Temporary alternative sensor bundle
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ace-s05e-alternative-${{ github.run_id }}
+          path: ${{ runner.temp }}/ace-alternative/out/
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: warn

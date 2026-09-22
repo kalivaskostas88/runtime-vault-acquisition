@@ -24,7 +24,7 @@ jobs:
           ROOT: ${{ runner.temp }}/ace-s05f-av
         run: |
           python3 - <<'PY'
-          import urllib.request,urllib.parse,re,json,os,pathlib,hashlib,datetime,subprocess,signal,resource
+          import urllib.request,urllib.parse,re,json,os,pathlib,hashlib,datetime,subprocess,signal,resource,socket,ipaddress
           root=pathlib.Path(os.environ['ROOT']);out=root/'out';src='https://www.bilibili.com/video/BV1jX4y1e7LV/';bvid='BV1jX4y1e7LV';start=45.;end=135.
           rec={'source_url':src,'source_id':bvid,'requested_source_window':[start,end],'need_video':True,'need_audio':True,'frame_strategy':'adaptive local review; no remote dense images','retention_policy':'one_day_transport','run_id':os.environ.get('GITHUB_RUN_ID'),'commit':os.environ.get('GITHUB_SHA'),'status':'SOURCE_INGEST_FAILED','evidence_boundary':'media admission only; action/playback/music regions unassigned'}
           def get(u):
@@ -54,12 +54,15 @@ jobs:
             if player.get('is_preview'):raise RuntimeError('preview_not_admitted')
             dash=player.get('dash') or {};vs=[s for s in dash.get('video',[]) if s.get('height',9999)<=480 and str(s.get('codecs','')).startswith('avc')];ads=[s for s in dash.get('audio',[]) if s.get('codecs')=='mp4a.40.2']
             if not vs or not ads:raise RuntimeError('public_AV_representations_missing')
-            v=max(vs,key=lambda s:s.get('height',0));a=max(ads,key=lambda s:s.get('bandwidth',0));streams=[v,a];urls=[];metas=[]
+            v=max(vs,key=lambda s:s.get('height',0));a=max(ads,key=lambda s:s.get('bandwidth',0));streams=[v,a];urls=[];metas=[];rec['selected_streams']=metas
             for s in streams:
-              u=s.get('baseUrl') or s.get('base_url');parts=urllib.parse.urlsplit(u)
-              if parts.scheme!='https' or not parts.hostname.endswith(('.bilivideo.com','.bilivideo.cn')):raise RuntimeError('unexpected_CDN_source')
-              urls.append(u);metas.append({**{k:s.get(k) for k in ['id','codecs','mimeType','width','height','bandwidth','frameRate','SegmentBase']},'public_url_sha256':hashlib.sha256(u.encode()).hexdigest(),'cdn_host':parts.hostname,'cdn_path':parts.path})
-            rec.update(player_response_sha256=ph,selected_streams=metas,stream_pairing='same authenticated-free player response, same bvid+cid; original source media clock',transform='stream-copy remux; copyts; no video/audio encoder, gain, resampling, speed change or effects')
+              u=urllib.parse.urljoin(src,s.get('baseUrl') or s.get('base_url'));parts=urllib.parse.urlsplit(u)
+              m={**{k:s.get(k) for k in ['id','codecs','mimeType','width','height','bandwidth','frameRate','SegmentBase']},'public_url_sha256':hashlib.sha256(u.encode()).hexdigest(),'cdn_scheme':parts.scheme,'cdn_host':parts.hostname,'cdn_path':parts.path};metas.append(m)
+              if parts.scheme not in ['https','http'] or not parts.hostname or parts.username or parts.password:raise RuntimeError('invalid_public_player_media_url')
+              addresses={x[4][0] for x in socket.getaddrinfo(parts.hostname,parts.port or (443 if parts.scheme=='https' else 80))}
+              if not addresses or any(not ipaddress.ip_address(x).is_global for x in addresses):raise RuntimeError('nonpublic_destination_rejected')
+              urls.append(u)
+            rec.update(player_response_sha256=ph,stream_pairing='same unauthenticated public player response, same bvid+cid; original source media clock',transform='stream-copy remux; copyts; no video/audio encoder, gain, resampling, speed change or effects')
             headers=['-user_agent','ACE-public-media-research/1.0','-headers','Referer: https://www.bilibili.com/\r\n','-rw_timeout','20000000']
             for idx,u in enumerate(urls):probe(headers+['-show_format','-show_streams',u],'original_stream_'+str(idx),35)
             args=['ffmpeg','-nostdin','-v','warning','-copyts']+headers+['-ss',str(start),'-i',urls[0]]+headers+['-ss',str(start),'-i',urls[1],'-map','0:v:0','-map','1:a:0','-c','copy','-copytb','1','-avoid_negative_ts','disabled','-to',str(end),str(out/'segment.mkv')]

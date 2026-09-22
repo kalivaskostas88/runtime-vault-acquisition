@@ -1,6 +1,6 @@
 {
   "control_map_id": "BARD_CHARACTER_CONTROL_MAP_V1",
-  "status": "SOURCE_BOUND_INTEGRATION_CONTROL_MAP",
+  "status": "SOURCE_BOUND_PRODUCTION_CALIBRATED_V1R3F",
   "source": {
     "role": "canonical_full_body_hooded_bard_with_lute",
     "library_file_id": "libfile_a2a4f871a22081919e1a109e2ea4b5db",
@@ -12,7 +12,6 @@
   "matte": {
     "method": "seeded_grabcut_largest_component_v1",
     "production_crop_xyxy": [115,35,930,1040],
-    "alpha_sha256_current": "74fd861e87f4a8fe7a306c42842185786e022cefc08744b448a5913dbfe3e411",
     "usage_rule": "Upper-body matte is production-qualified for medium/close integration; standing legs must remain hidden by stage-front occlusion."
   },
   "source_space_landmarks": {
@@ -38,11 +37,22 @@
     "MO": {"width":22.0,"height":18.0,"jaw_dy":3.0},
     "M3": {"width":38.0,"height":22.0,"jaw_dy":4.2}
   },
+  "visual_calibration": {
+    "mouth_open_scale": 0.42,
+    "jaw_motion_scale": 0.44,
+    "mouth_state_transition_smoothing_alpha": 0.58,
+    "blink_half_width_seconds": 0.115,
+    "strum_half_width_seconds": 0.115,
+    "torso_breath_horizontal_amplitude": 0.0025,
+    "torso_breath_vertical_amplitude": 0.0018,
+    "environment_light_flicker": "motivated_bright_warm_regions_only_low_amplitude",
+    "foreground_audience_rule": "S1 legacy primitive audience is occluded by one defocused foreground patron silhouette."
+  },
   "base_640x360_composition": {
-    "S1_MASTER": {"sprite_scale":0.205,"center_x":321,"top_y":52,"stage_occlusion_y":250,"shadow_y":246,"shadow_rx":65},
-    "S2_MEDIUM": {"sprite_scale":0.285,"center_x":321,"top_y":42,"stage_occlusion_y":283,"shadow_y":278,"shadow_rx":78},
+    "S1_MASTER": {"sprite_scale":0.205,"center_x":321,"top_y":64,"stage_occlusion_y":250,"shadow_y":246,"shadow_rx":65},
+    "S2_MEDIUM": {"sprite_scale":0.285,"center_x":321,"top_y":60,"stage_occlusion_y":283,"shadow_y":278,"shadow_rx":78},
     "S3_CLOSE": {"sprite_scale":0.455,"center_x":321,"top_y":-12,"stage_occlusion_y":350,"shadow_y":346,"shadow_rx":105},
-    "S4_RETURN": {"sprite_scale":0.285,"center_x":320,"top_y":40,"stage_occlusion_y":283,"shadow_y":278,"shadow_rx":82}
+    "S4_RETURN": {"sprite_scale":0.285,"center_x":320,"top_y":58,"stage_occlusion_y":283,"shadow_y":278,"shadow_rx":82}
   },
   "composition_rule": "Scale all 640x360 screen-space composition coordinates uniformly by output_width/640. Camera cut timing remains owned by config/bard_camera_coverage_v1.json.",
   "hard_gates": [

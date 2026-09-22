@@ -73,15 +73,19 @@ jobs:
           blender --background --factory-startup --python scripts/render_bard_stage_v8_production.py
           test -s "/tmp/bard_stage_v8_production/${SHOT_ID}_ENV.png"
           python - <<'PY'
-          from PIL import Image
-          import os
+          import os, struct
           p=f"/tmp/bard_stage_v8_production/{os.environ['SHOT_ID']}_ENV.png"
-          im=Image.open(p)
-          assert im.size==(960,540), im.size
-          print("PRODUCTION_PLATE_OK",os.environ["SHOT_ID"],im.size)
+          with open(p,"rb") as f:
+              sig=f.read(24)
+          if sig[:8] != b"\x89PNG\r\n\x1a\n":
+              raise RuntimeError("not a PNG")
+          w,h=struct.unpack(">II",sig[16:24])
+          assert (w,h)==(960,540),(w,h)
+          print("PRODUCTION_PLATE_OK",os.environ["SHOT_ID"],(w,h))
           PY
 
       - name: Upload shot
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: BARD_STAGE_V8_PROD_${{ matrix.shot }}
@@ -104,6 +108,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          python -m pip install --quiet pillow
           python - <<'PY'
           from PIL import Image,ImageOps,ImageDraw
           import pathlib,json,hashlib

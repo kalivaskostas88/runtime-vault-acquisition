@@ -1,0 +1,61 @@
+name: ACE S05E public asset discovery
+on:
+  push:
+    branches: [research/ace-s05e-20260922]
+    paths: ['.github/workflows/ace_s05e_discover.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Inspect exact public source pages and bounded first-party scripts
+        env:
+          OUT: ${{ runner.temp }}/ace-discovery
+        run: |
+          mkdir -p "$OUT"
+          python3 - <<'PY'
+          import os,json,re,urllib.request,urllib.parse,html,hashlib,pathlib,datetime
+          out=pathlib.Path(os.environ['OUT'])
+          pages=['https://acestudio.ai/blog/control-ai-vocal-performance/','https://acestudio.ai/ai-singing-voice-generator/','https://acestudio.ai/','https://www.soundonsound.com/reviews/ace-studio-audio-examples','https://soundcloud.com/soundonsound/sets/ace-studio','https://insider.dbsinstitute.ac.uk/new-how-to-generate-insane-ai-vocals-with-ace-studio']
+          records=[]; scripts=[]
+          def inspect(url,kind):
+            rec={'url':url,'kind':kind}
+            try:
+              req=urllib.request.Request(url,headers={'User-Agent':'ACE-public-media-research/1.0'})
+              with urllib.request.urlopen(req,timeout=20) as r:
+                raw=r.read(4*1024*1024+1); rec.update(http_status=r.status,final_url=r.url,content_type=r.headers.get('Content-Type'))
+              if len(raw)>4*1024*1024: raise RuntimeError('bounded_response_limit')
+              text=raw.decode('utf8','replace'); rec.update(bytes=len(raw),sha256=hashlib.sha256(raw).hexdigest())
+              rec['media_tags']=re.findall(r'<(?:video|audio|source|iframe)\b[^>]*>',text,re.I)[:40]
+              pattern=r'''(?:https?:)?//[^\s<>"'`\\]+?\.(?:mp4|webm|mov|mp3|m4a|wav|ogg|m3u8)(?:\?[^\s<>"'`\\]*)?|["']([^"'\s]+\.(?:mp4|webm|mov|mp3|m4a|wav|ogg|m3u8))["']'''
+              hits=[]
+              for m in re.finditer(pattern,text,re.I):
+                v=m.group(1) or m.group(0); v=html.unescape(v)
+                hits.append({'url':urllib.parse.urljoin(rec['final_url'],v),'context':text[max(0,m.start()-180):min(len(text),m.end()+200)]})
+              seen=set();rec['media_links']=[]
+              for h in hits:
+                if h['url'] not in seen: seen.add(h['url']); rec['media_links'].append(h)
+              rec['media_links']=rec['media_links'][:120]
+              rec['youtube_ids']=sorted(set(re.findall(r'(?:youtube\.com/(?:embed/|watch\?v=)|youtu\.be/)([A-Za-z0-9_-]{11})',text)))
+              if kind=='source_page' and urllib.parse.urlsplit(url).hostname=='acestudio.ai':
+                for s in re.findall(r'<script\b[^>]*src=["\']([^"\']+)',text,re.I):
+                  u=urllib.parse.urljoin(rec['final_url'],html.unescape(s))
+                  if urllib.parse.urlsplit(u).hostname in ['acestudio.ai','www.acestudio.ai'] and u not in scripts: scripts.append(u)
+              rec['status']='PUBLIC_PAGE_READ'
+            except Exception as e: rec.update(status='SOURCE_INGEST_FAILED',error=str(e))
+            records.append(rec); print(kind,url,rec['status'],len(rec.get('media_links',[])))
+          for p in pages: inspect(p,'source_page')
+          for p in scripts[:6]: inspect(p,'first_party_script')
+          (out/'asset_discovery.json').write_text(json.dumps({'run_id':os.environ.get('GITHUB_RUN_ID'),'sha':os.environ.get('GITHUB_SHA'),'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'records':records},ensure_ascii=False,indent=2))
+          PY
+      - name: Temporary discovery artifact
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ace-s05e-discovery-${{ github.run_id }}
+          path: ${{ runner.temp }}/ace-discovery/
+          retention-days: 1
+          if-no-files-found: warn

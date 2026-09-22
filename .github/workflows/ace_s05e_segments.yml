@@ -1,0 +1,86 @@
+name: ACE S05E short official clips and staged audio
+on:
+  push:
+    branches: [research/ace-s05e-20260922]
+    paths: ['.github/workflows/ace_s05e_segments.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  ingest:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 9
+    steps:
+      - name: Prepare bounded tools
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/ace-segments/out"
+          if ! command -v ffmpeg >/dev/null; then sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg; fi
+          python3 -m venv "$RUNNER_TEMP/ace-segments/venv"
+          "$RUNNER_TEMP/ace-segments/venv/bin/pip" install --disable-pip-version-check 'yt-dlp[default]==2026.8.19'
+      - name: Retrieve small published media without auth bypass
+        env:
+          ROOT: ${{ runner.temp }}/ace-segments
+        run: |
+          "$ROOT/venv/bin/python" - <<'PY'
+          import os,json,pathlib,subprocess,signal,resource,hashlib,urllib.request,re,datetime
+          root=pathlib.Path(os.environ['ROOT']);out=root/'out';y=root/'venv/bin/yt-dlp';results=[]
+          def limit():resource.setrlimit(resource.RLIMIT_FSIZE,(64*1024*1024,64*1024*1024))
+          def run(a,t):
+            p=subprocess.Popen(a,stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True,start_new_session=True,preexec_fn=limit)
+            try:x,e=p.communicate(timeout=t);return p.returncode,x,e
+            except subprocess.TimeoutExpired:
+              os.killpg(p.pid,signal.SIGKILL);x,e=p.communicate();return 124,x,e+'\nTIME_LIMIT'
+          def clean(t):return re.sub(r'https?://[^\s]+','[URL_REDACTED]',t)[-4000:]
+          for sid,path in [('ACE_HOW1','how-use-step-1-small.264b7556-1790059030873.mp4'),('ACE_HOW2','how-use-step-2-small.64852621-1790059030873.mp4'),('ACE_HOW3','how-use-step-3-small.4f78ca0e-1790059030873.mp4')]:
+            url='https://acestudio.ai/static/mp4/'+path;d=out/sid;d.mkdir();r={'source_id':sid,'source_url':url,'provenance':'exact media reference in public singing-page route chunk','status':'SOURCE_INGEST_FAILED','need_video':True,'need_audio':'inspect_presence','retention_policy':'one_day_transport'};tmp=root/(sid+'.mp4')
+            try:
+              with urllib.request.urlopen(urllib.request.Request(url,headers={'User-Agent':'ACE-public-media-research/1.0'}),timeout=20) as resp:
+                if int(resp.headers.get('Content-Length','0'))>20*1024*1024:raise RuntimeError('source_size_limit')
+                data=resp.read(20*1024*1024+1)
+              if len(data)>20*1024*1024:raise RuntimeError('source_size_limit')
+              tmp.write_bytes(data);r.update(original_size=len(data),source_sha256=hashlib.sha256(data).hexdigest())
+              rc,s,e=run(['ffprobe','-v','error','-show_format','-show_streams','-of','json',str(tmp)],20)
+              if rc:raise RuntimeError('source_not_valid_media')
+              pr=json.loads(s);(d/'source_ffprobe.json').write_text(json.dumps(pr,indent=2));dur=float(pr['format']['duration']);r['source_duration_seconds']=dur
+              if dur<=30:tmp.replace(d/'segment.mp4');r['transform']='original bytes; whole short clip <=30 seconds'
+              else:
+                rc,s,e=run(['ffmpeg','-nostdin','-v','error','-i',str(tmp),'-t','25','-c:v','libx264','-crf','18','-preset','fast','-c:a','aac',str(d/'segment.mp4')],60)
+                if rc:raise RuntimeError('bounded_clip_failed')
+                r['transform']='first25s reencoded';tmp.unlink()
+              audio=any(q['codec_type']=='audio' for q in pr['streams']);r['audio_present']=audio
+              if audio:
+                rc,s,e=run(['ffmpeg','-nostdin','-v','error','-i',str(d/'segment.mp4'),'-vn','-c:a','pcm_s16le',str(d/'audio.wav')],20)
+                if rc:raise RuntimeError('audio_decode_failed')
+              r.update(status='VIDEO_INGESTED',perceptual_audio='NOT_EVALUATED',causal_pair='UNASSIGNED',source_window_seconds=[0,min(dur,25) if dur>30 else dur])
+            except Exception as e:r['error']=clean(str(e));tmp.unlink(missing_ok=True)
+            r['files_sha256']={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in d.iterdir() if p.is_file()};(d/'receipt.json').write_text(json.dumps(r,indent=2));results.append(r);print(sid,r['status'],r.get('audio_present'))
+          base=[str(y),'--ignore-config','--no-playlist','--no-progress','--no-cache-dir','--socket-timeout','12','--retries','1','--extractor-retries','1']
+          url='https://soundcloud.com/soundonsound/ace-studio-audio-example-03'
+          for sid,start,end in [('SOS3_NAV_B',32,55),('SOS3_NAV_C',69,92),('SOS3_NAV_D',106,129)]:
+            d=out/sid;d.mkdir();r={'source_id':sid,'source_url':url,'source_window_seconds':[start,end],'expected_content':'navigation to staged sections described by publisher; exact section labels and alignment UNVERIFIED','need_audio':True,'need_video':False,'status':'SOURCE_INGEST_FAILED','retention_policy':'one_day_transport'}
+            try:
+              rc,s,e=run(base+['-f','bestaudio','--download-sections',f'*{start}-{end}','--force-keyframes-at-cuts','-o',str(d/'segment.%(ext)s'),url],100);(d/'ingest.log').write_text(clean(e))
+              if rc:raise RuntimeError('section_failed:'+str(rc))
+              ms=[p for p in d.glob('segment.*') if p.suffix in ['.m4a','.mp3','.opus','.ogg','.webm']]
+              if len(ms)!=1:raise RuntimeError('one_segment_required')
+              rc,s,e=run(['ffprobe','-v','error','-show_format','-show_streams','-of','json',str(ms[0])],15)
+              if rc:raise RuntimeError('media_probe_failed')
+              pr=json.loads(s);(d/'ffprobe.json').write_text(json.dumps(pr,indent=2))
+              if float(pr['format']['duration'])>end-start+2:raise RuntimeError('range_limit')
+              rc,s,e=run(['ffmpeg','-nostdin','-v','error','-i',str(ms[0]),'-t',str(end-start),'-vn','-c:a','pcm_s16le',str(d/'audio.wav')],20)
+              if rc:raise RuntimeError('decode_failed')
+              r.update(status='AUDIO_ONLY_INGESTED',transform='exact section reencode + PCM16 decode; no gain/effects/timewarp',perceptual_audio='NOT_EVALUATED',causality='UNASSIGNED')
+            except Exception as e:r['error']=clean(str(e))
+            r['files_sha256']={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in d.iterdir() if p.is_file()};(d/'receipt.json').write_text(json.dumps(r,indent=2));results.append(r);print(sid,r['status'])
+          (out/'results.json').write_text(json.dumps({'run_id':os.environ.get('GITHUB_RUN_ID'),'commit':os.environ.get('GITHUB_SHA'),'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'results':results},indent=2))
+          PY
+      - name: Temporary exact-media transport
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ace-s05e-segments-${{ github.run_id }}
+          path: ${{ runner.temp }}/ace-segments/out/
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: warn

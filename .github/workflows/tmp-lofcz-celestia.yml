@@ -15,7 +15,7 @@ jobs:
           set -euo pipefail
           python -m pip install -q numpy==1.26.4 scipy==1.13.1 librosa==0.10.2.post1 onnxruntime huggingface_hub requests
           mkdir -p out
-          python - <<'PY' > out/run.txt 2>&1
+          python - <<'PY' > out/run.txt 2>&1 || true
           import json, requests, numpy as np, librosa, onnxruntime as ort
           from pathlib import Path
           from scipy.ndimage import minimum_filter1d
@@ -38,8 +38,8 @@ jobs:
             return float(sess.run(None,{inp:fp.reshape(1,-1)})[0][0,0])
           out={}
           for name,u in urls.items():
-            b=requests.get(u,timeout=60).content; p=Path('/tmp')/(name+'.m4a');p.write_bytes(b)
-            out[name]={'bytes':len(b),'lofcz_ai_probability':prob(str(p))}
+            rr=requests.get(u,timeout=60); rr.raise_for_status(); p=Path('/tmp')/(name+'.m4a');p.write_bytes(rr.content)
+            out[name]={'bytes':len(rr.content),'lofcz_ai_probability':prob(str(p))}
           Path('out/results.json').write_text(json.dumps(out,indent=2),encoding='utf-8')
           print(json.dumps(out))
           PY
@@ -47,5 +47,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: lofcz-celestia-results
-          path: out/results.json
+          path: out/
           retention-days: 1

@@ -1,0 +1,21 @@
+name: Package WavLM checkpoint
+
+on:
+  push:
+    paths:
+      - '.github/workflows/package_wavlm_checkpoint.yml'
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download WavLM Base Plus checkpoint
+        run: |
+          curl -L --fail --retry 3 -o wavlm_base_plus.pth https://download.pytorch.org/torchaudio/models/wavlm_base_plus.pth
+          ls -lh wavlm_base_plus.pth
+      - name: Upload checkpoint artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: wavlm-base-plus-checkpoint
+          path: wavlm_base_plus.pth
+          retention-days: 1

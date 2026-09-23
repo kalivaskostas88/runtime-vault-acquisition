@@ -1,4 +1,4 @@
-name: ACE S05F2 official short expression ingress
+name: ACE S08 targeted official expression source search
 on:
   push:
     branches: [research/ace-s05e-20260922]
@@ -6,91 +6,50 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
-concurrency:
-  group: ace-s05e-ingress
-  cancel-in-progress: false
 jobs:
-  ingest:
+  search:
     runs-on: ubuntu-24.04
-    timeout-minutes: 7
+    timeout-minutes: 5
     steps:
-      - name: Existing ffmpeg toolchain
-        run: |
-          set -euo pipefail
-          mkdir -p "$RUNNER_TEMP/ace-s05f2-av/out"
-          if ! command -v ffmpeg >/dev/null; then sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg; fi
-      - name: Same-source expression media with original AV timestamps
+      - name: Search verified official ACE_Studio archive only
         env:
-          ROOT: ${{ runner.temp }}/ace-s05f2-av
+          OUT: ${{ runner.temp }}/ace-s08
         run: |
+          mkdir -p "$OUT"
           python3 - <<'PY'
-          import urllib.request,urllib.parse,re,json,os,pathlib,hashlib,datetime,subprocess,signal,resource,socket,ipaddress
-          root=pathlib.Path(os.environ['ROOT']);out=root/'out';bvid='BV1VG411x7XK';expected_cid=761043546;src='https://www.bilibili.com/video/'+bvid+'/'
-          rec={'source_url':src,'source_id':bvid,'need_video':True,'need_audio':True,'frame_strategy':'audio repeated-section detection before candidate visuals','retention_policy':'one_day_transport; full short source temporary','run_id':os.environ.get('GITHUB_RUN_ID'),'commit':os.environ.get('GITHUB_SHA'),'status':'SOURCE_INGEST_FAILED','evidence_boundary':'one verified official expression alternative; NOT claimed same YouTube demonstration or accepted event'}
-          def get(u):
-            with urllib.request.urlopen(urllib.request.Request(u,headers={'User-Agent':'ACE-public-media-research/1.0'}),timeout=20) as f:b=f.read(2*1024*1024+1)
-            if len(b)>2*1024*1024:raise RuntimeError('metadata_size_limit')
-            j=json.loads(b)
-            if j.get('code')!=0:raise RuntimeError('public_api_denied:'+str(j.get('code'))+':'+str(j.get('message')))
-            return j['data'],hashlib.sha256(b).hexdigest()
-          def limits():resource.setrlimit(resource.RLIMIT_FSIZE,(128*1024*1024,128*1024*1024))
-          def run(a,t):
-            p=subprocess.Popen(a,stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True,start_new_session=True,preexec_fn=limits)
-            try:s,e=p.communicate(timeout=t);return p.returncode,s,e
-            except subprocess.TimeoutExpired:
-              os.killpg(p.pid,signal.SIGKILL);s,e=p.communicate();return 124,s,e+'\nTIME_LIMIT'
-          def clean(s):return re.sub(r'https?://[^\s\"\']+','[MEDIA_URL_REDACTED]',s)[-6000:]
-          def probe(args,name,t=30):
-            rc,s,e=run(['ffprobe','-v','error']+args+['-of','json'],t)
-            if rc:raise RuntimeError(name+':'+clean(e))
-            j=json.loads(s)
-            if 'format' in j:j['format'].pop('filename',None)
-            (out/(name+'.json')).write_text(json.dumps(j,indent=2));return j
+          import urllib.request,urllib.parse,json,os,pathlib,hashlib,datetime,time
+          out=pathlib.Path(os.environ['OUT']); mid='290069256'
+          keywords=['情感','温柔','激烈','呼吸','假声','张力','能量','参数']
+          records=[]
+          def get(url,cap=1024*1024):
+            req=urllib.request.Request(url,headers={'User-Agent':'ACE-public-media-research/1.0'})
+            with urllib.request.urlopen(req,timeout=20) as f:b=f.read(cap+1)
+            if len(b)>cap: raise RuntimeError('size_limit')
+            return b,json.loads(b)
+          for kw in keywords:
+            u='https://api.bilibili.com/x/space/arc/search?'+urllib.parse.urlencode({'mid':mid,'ps':10,'pn':1,'keyword':kw,'order':'pubdate'})
+            r={'keyword':kw,'url':u}
+            try:
+              raw,j=get(u); r.update(api_code=j.get('code'),api_message=j.get('message'),sha256=hashlib.sha256(raw).hexdigest())
+              if j.get('code')==0:
+                items=((j.get('data') or {}).get('list') or {}).get('vlist') or []
+                r.update(status='PUBLIC_OFFICIAL_SEARCH_READ',candidates=[{k:x.get(k) for k in ['bvid','title','created','length','description','author','mid']} for x in items[:10]])
+              else:r['status']='PUBLIC_LOOKUP_UNAVAILABLE_NO_BYPASS'
+            except Exception as e:r.update(status='PUBLIC_LOOKUP_UNAVAILABLE_NO_BYPASS',error=str(e))
+            records.append(r); print(kw,r['status'],len(r.get('candidates',[]))); time.sleep(.4)
+          # exact current priority demo identity check only
+          yurl='https://www.youtube.com/watch?v=vTPYKyeKMTc'; oe='https://www.youtube.com/oembed?'+urllib.parse.urlencode({'url':yurl,'format':'json'})
+          y={'source_url':yurl,'role':'current official priority expression demo'}
           try:
-            data,mh=get('https://api.bilibili.com/x/web-interface/view?bvid='+bvid)
-            if data.get('bvid')!=bvid or (data.get('owner') or {}).get('mid')!=290069256 or data.get('cid')!=expected_cid or (data.get('rights') or {}).get('pay'):raise RuntimeError('identity_or_public_access_mismatch')
-            duration=float(data.get('duration') or 0)
-            if not 0<duration<=90:raise RuntimeError('short_source_duration_limit')
-            rec.update(cid=expected_cid,metadata_sha256=mh,title=data.get('title'),description=data.get('desc'),uploader=data.get('owner'),publication_unix=data.get('pubdate'),source_duration=duration,rights=data.get('rights'),requested_source_window=[0,duration])
-            player,ph=get('https://api.bilibili.com/x/player/playurl?'+urllib.parse.urlencode({'bvid':bvid,'cid':expected_cid,'qn':32,'fnval':16,'fourk':0}))
-            if player.get('is_preview'):raise RuntimeError('preview_not_admitted')
-            dash=player.get('dash') or {};vs=[s for s in dash.get('video',[]) if s.get('height',9999)<=480 and str(s.get('codecs','')).startswith('avc')];ads=[s for s in dash.get('audio',[]) if s.get('codecs')=='mp4a.40.2']
-            if not vs or not ads:raise RuntimeError('public_AV_representations_missing')
-            v=max(vs,key=lambda s:s.get('height',0));a=max(ads,key=lambda s:s.get('bandwidth',0));urls=[];metas=[];rec['selected_streams']=metas
-            for s in [v,a]:
-              u=urllib.parse.urljoin(src,s.get('baseUrl') or s.get('base_url'));parts=urllib.parse.urlsplit(u)
-              metas.append({**{k:s.get(k) for k in ['id','codecs','mimeType','width','height','bandwidth','frameRate','SegmentBase']},'public_url_sha256':hashlib.sha256(u.encode()).hexdigest(),'cdn_scheme':parts.scheme,'cdn_host':parts.hostname,'cdn_path':parts.path})
-              if parts.scheme not in ['https','http'] or not parts.hostname or parts.username or parts.password:raise RuntimeError('invalid_public_player_media_url')
-              addresses={x[4][0] for x in socket.getaddrinfo(parts.hostname,parts.port or (443 if parts.scheme=='https' else 80))}
-              if not addresses or any(not ipaddress.ip_address(x).is_global for x in addresses):raise RuntimeError('nonpublic_destination_rejected')
-              urls.append(u)
-            rec.update(player_response_sha256=ph,stream_pairing='same unauthenticated public response and bvid/CID',transform='stream-copy remux with original PTS; no gain/resampling/timewarp/effects')
-            headers=['-user_agent','ACE-public-media-research/1.0','-headers','Referer: https://www.bilibili.com/\r\n','-rw_timeout','20000000']
-            for idx,u in enumerate(urls):probe(headers+['-show_format','-show_streams',u],'original_stream_'+str(idx),35)
-            args=['ffmpeg','-nostdin','-v','warning','-copyts']+headers+['-i',urls[0]]+headers+['-i',urls[1],'-map','0:v:0','-map','1:a:0','-c','copy','-copytb','1','-avoid_negative_ts','disabled','-to',str(duration+0.5),str(out/'segment.mkv')]
-            rc,s,e=run(args,180);(out/'remux.log').write_text(clean(e));rec['acquisition_command']=clean(' '.join(args))
-            if rc:raise RuntimeError('short_source_remux_failed:'+str(rc))
-            p=probe(['-show_format','-show_streams',str(out/'segment.mkv')],'ffprobe_segment',20)
-            if not {'video','audio'}.issubset({x.get('codec_type') for x in p.get('streams',[])}):raise RuntimeError('missing_AV')
-            f=probe(['-show_frames','-show_entries','frame=media_type,stream_index,pts,pts_time,best_effort_timestamp,best_effort_timestamp_time,pkt_duration_time,nb_samples',str(out/'segment.mkv')],'frame_audio_pts',60)
-            video=[x for x in f.get('frames',[]) if x.get('media_type')=='video'];audio=[x for x in f.get('frames',[]) if x.get('media_type')=='audio']
-            if not video or not audio:raise RuntimeError('no_decoded_AV')
-            rec['actual_pts_bounds']={kind:[float(seq[0]['pts_time']),float(seq[-1]['pts_time'])] for kind,seq in [('video',video),('audio',audio)]}
-            if max(x[1] for x in rec['actual_pts_bounds'].values())>duration+1:raise RuntimeError('duration_bound_exceeded')
-            rc,s,e=run(['ffmpeg','-nostdin','-v','error','-i',str(out/'segment.mkv'),'-map','0:a:0','-vn','-c:a','pcm_s16le',str(out/'audio.wav')],40)
-            if rc:raise RuntimeError('PCM_decode_failed')
-            rec.update(status='SAME_SOURCE_AV_INGESTED',source_timeline='original PTS retained; audio sample zero explicitly mapped',pcm_sample_zero_source_pts=float(audio[0]['pts_time']),decoded_audio_samples=sum(x.get('nb_samples',0) for x in audio),video_frame_count=len(video),perceptual_audio='NOT_EVALUATED',hashes={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in [out/'segment.mkv',out/'audio.wav']})
-          except Exception as e:
-            rec['error']=clean(str(e))
-            for n in ['segment.mkv','audio.wav']:(out/n).unlink(missing_ok=True)
-          rec['utc']=datetime.datetime.now(datetime.timezone.utc).isoformat();(out/'receipt.json').write_text(json.dumps(rec,ensure_ascii=False,indent=2));print(json.dumps(rec,ensure_ascii=False,indent=2))
+            raw,j=get(oe); y.update(status='OEMBED_READ',sha256=hashlib.sha256(raw).hexdigest(),identity={k:j.get(k) for k in ['title','author_name','author_url','provider_name']})
+          except Exception as e:y.update(status='OEMBED_UNAVAILABLE',error=str(e))
+          result={'run_id':os.environ.get('GITHUB_RUN_ID'),'commit':os.environ.get('GITHUB_SHA'),'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'scope':'official ACE_Studio expression/breath source selection only','official_mid':mid,'records':records,'youtube_priority':y}
+          (out/'official_expression_search.json').write_text(json.dumps(result,ensure_ascii=False,indent=2))
           PY
-      - name: One-day transport
-        if: always()
+      - name: One-day search receipt
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: ace-s05f2-expression-${{ github.run_id }}
-          path: ${{ runner.temp }}/ace-s05f2-av/out/
+          name: ace-s08-expression-search-${{ github.run_id }}
+          path: ${{ runner.temp }}/ace-s08/
           retention-days: 1
-          compression-level: 0
           if-no-files-found: warn

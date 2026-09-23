@@ -1,4 +1,4 @@
-name: ACE S09 historical parameter effect learning multipage ingest
+name: ACE S09 full public progressive source recovery
 on:
   push:
     branches: [research/ace-s05e-20260922]
@@ -11,75 +11,67 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
-      - name: Prepare bounded ffmpeg
+      - name: Prepare ffmpeg
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/ace-s09/out"
           if ! command -v ffmpeg >/dev/null; then sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg; fi
-      - name: Acquire only breathy falsetto relaxation pages from exact preview
+      - name: Recover exact full public progressive stream and verify duration
         env:
           ROOT: ${{ runner.temp }}/ace-s09
         run: |
           python3 - <<'PY'
-          import urllib.request,urllib.parse,json,os,pathlib,hashlib,datetime,subprocess,signal,resource,socket,ipaddress,re
-          root=pathlib.Path(os.environ['ROOT']);out=root/'out'; bvid='BV1za411C7vw'; src='https://www.bilibili.com/video/'+bvid+'/'
-          expected_title='【ACE技术预览】AI吐字、气声、假声、松弛参数调节'
-          manifest={'source_url':src,'source_id':bvid,'status':'SOURCE_INGEST_FAILED','scope':'historical ACE technology preview pages for Air/Falsetto/Relaxation effect learning only; not current UI/calibration','run_id':os.environ.get('GITHUB_RUN_ID'),'commit':os.environ.get('GITHUB_SHA'),'parts':[]}
-          def get(u):
-            req=urllib.request.Request(u,headers={'User-Agent':'ACE-public-media-research/1.0'})
-            with urllib.request.urlopen(req,timeout=20) as f:b=f.read(2*1024*1024+1)
-            if len(b)>2*1024*1024:raise RuntimeError('size_limit')
+          import urllib.request,urllib.parse,json,os,pathlib,hashlib,datetime,subprocess,signal,resource,re
+          root=pathlib.Path(os.environ['ROOT']);out=root/'out'; bvid='BV1za411C7vw';src='https://www.bilibili.com/video/'+bvid+'/';expected='【ACE技术预览】AI吐字、气声、假声、松弛参数调节'
+          rec={'source_url':src,'source_id':bvid,'status':'SOURCE_INGEST_FAILED','scope':'full historical ACE parameter-preview recovery for effect learning only','run_id':os.environ.get('GITHUB_RUN_ID'),'commit':os.environ.get('GITHUB_SHA')}
+          def get(u,cap=4*1024*1024):
+            req=urllib.request.Request(u,headers={'User-Agent':'ACE-public-media-research/1.0','Referer':'https://www.bilibili.com/'})
+            with urllib.request.urlopen(req,timeout=25) as f:b=f.read(cap+1)
+            if len(b)>cap:raise RuntimeError('metadata_size_limit')
             j=json.loads(b)
             if j.get('code')!=0:raise RuntimeError('api_denied:'+str(j.get('code'))+':'+str(j.get('message')))
             return j['data'],hashlib.sha256(b).hexdigest()
-          def limits():resource.setrlimit(resource.RLIMIT_FSIZE,(160*1024*1024,160*1024*1024))
+          def limits():resource.setrlimit(resource.RLIMIT_FSIZE,(256*1024*1024,256*1024*1024))
           def run(a,t):
             p=subprocess.Popen(a,stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True,start_new_session=True,preexec_fn=limits)
             try:s,e=p.communicate(timeout=t);return p.returncode,s,e
             except subprocess.TimeoutExpired:
               os.killpg(p.pid,signal.SIGKILL);s,e=p.communicate();return 124,s,e+'\nTIME_LIMIT'
-          def clean(s):return re.sub(r'https?://[^\s\"\']+','[MEDIA_URL_REDACTED]',s)[-5000:]
+          def clean(s):return re.sub(r'https?://[^\s\"\']+','[MEDIA_URL_REDACTED]',s)[-6000:]
           try:
-            data,mh=get('https://api.bilibili.com/x/web-interface/view?bvid='+bvid)
-            if data.get('bvid')!=bvid or data.get('title')!=expected_title or (data.get('rights') or {}).get('pay'):raise RuntimeError('identity_or_access_mismatch')
-            manifest.update(title=data.get('title'),description=data.get('desc'),duration=data.get('duration'),pubdate=data.get('pubdate'),owner=data.get('owner'),metadata_sha256=mh,pages=[{k:p.get(k) for k in ['page','cid','part','duration']} for p in data.get('pages',[])])
-            pages=data.get('pages') or []
-            if len(pages)<4:raise RuntimeError('expected_four_parameter_pages')
-            # description defines page order: pronunciation, breathy, falsetto, relaxation
-            wanted=[('AIR',pages[1]),('FALSETTO',pages[2]),('RELAXATION',pages[3])]
-            headers=['-user_agent','ACE-public-media-research/1.0','-headers','Referer: https://www.bilibili.com/\r\n','-rw_timeout','20000000']
-            for label,page in wanted:
-              d=out/label;d.mkdir();rec={'label':label,'page':page.get('page'),'cid':page.get('cid'),'part':page.get('part'),'duration':page.get('duration'),'status':'FAILED'}
-              player,ph=get('https://api.bilibili.com/x/player/playurl?'+urllib.parse.urlencode({'bvid':bvid,'cid':page.get('cid'),'qn':32,'fnval':16,'fourk':0}))
-              dash=player.get('dash') or {};vs=[s for s in dash.get('video',[]) if s.get('height',9999)<=480 and str(s.get('codecs','')).startswith('avc')];ads=[s for s in dash.get('audio',[]) if s.get('codecs')=='mp4a.40.2']
-              if not vs or not ads:raise RuntimeError(label+':public_AV_missing')
-              urls=[]
-              for s in [max(vs,key=lambda x:x.get('height',0)),max(ads,key=lambda x:x.get('bandwidth',0))]:
-                u=urllib.parse.urljoin(src,s.get('baseUrl') or s.get('base_url'));parts=urllib.parse.urlsplit(u)
-                if parts.scheme not in ['http','https'] or not parts.hostname:raise RuntimeError(label+':invalid_url')
-                addrs={x[4][0] for x in socket.getaddrinfo(parts.hostname,parts.port or (443 if parts.scheme=='https' else 80))}
-                if any(not ipaddress.ip_address(x).is_global for x in addrs):raise RuntimeError(label+':nonpublic_destination')
-                urls.append(u)
-              dur=float(page.get('duration') or 0)
-              args=['ffmpeg','-nostdin','-v','warning','-copyts']+headers+['-i',urls[0]]+headers+['-i',urls[1],'-map','0:v:0','-map','1:a:0','-c','copy','-copytb','1','-avoid_negative_ts','disabled','-to',str(dur+0.5),str(d/'source.mkv')]
-              rc,s,e=run(args,150);(d/'remux.log').write_text(clean(e))
-              if rc:raise RuntimeError(label+':remux_failed')
-              rc,s,e=run(['ffmpeg','-nostdin','-v','error','-i',str(d/'source.mkv'),'-map','0:a:0','-vn','-c:a','pcm_s16le',str(d/'audio.wav')],30)
-              if rc:raise RuntimeError(label+':audio_decode_failed')
-              fr=d/'frames';fr.mkdir()
-              rc,s,e=run(['ffmpeg','-nostdin','-v','error','-i',str(d/'source.mkv'),'-vf','fps=1/1','-q:v','2',str(fr/'f_%03d.jpg')],45)
-              if rc:raise RuntimeError(label+':frames_failed')
-              rec.update(status='SAME_SOURCE_AV_INGESTED',player_response_sha256=ph,hashes={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in [d/'source.mkv',d/'audio.wav']})
-              manifest['parts'].append(rec);print(label,rec)
-            manifest['status']='ALL_THREE_PARAMETER_PARTS_INGESTED'
-          except Exception as e:manifest['error']=clean(str(e))
-          manifest['utc']=datetime.datetime.now(datetime.timezone.utc).isoformat();(out/'manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2));print(json.dumps(manifest,ensure_ascii=False,indent=2))
+            meta,mh=get('https://api.bilibili.com/x/web-interface/view?bvid='+bvid)
+            if meta.get('title')!=expected or (meta.get('rights') or {}).get('pay'):raise RuntimeError('identity_or_access_mismatch')
+            duration=float(meta.get('duration') or 0);cid=meta.get('cid');rec.update(title=meta.get('title'),description=meta.get('desc'),duration=duration,cid=cid,owner=meta.get('owner'),metadata_sha256=mh)
+            player,ph=get('https://api.bilibili.com/x/player/playurl?'+urllib.parse.urlencode({'bvid':bvid,'cid':cid,'qn':16,'fnval':0,'fourk':0}))
+            durl=player.get('durl') or []
+            if not durl:raise RuntimeError('progressive_durl_missing')
+            rec['player_flags']={k:player.get(k) for k in ['quality','format','timelength','accept_quality','is_preview']}
+            if player.get('is_preview'):raise RuntimeError('preview_response_not_admitted')
+            url=durl[0].get('url')
+            args=['ffmpeg','-nostdin','-v','warning','-user_agent','ACE-public-media-research/1.0','-headers','Referer: https://www.bilibili.com/\r\n','-i',url,'-map','0:v:0?','-map','0:a:0?','-c','copy',str(out/'full.mp4')]
+            rc,s,e=run(args,220);(out/'download.log').write_text(clean(e))
+            if rc:raise RuntimeError('progressive_download_failed:'+str(rc))
+            rc,s,e=run(['ffprobe','-v','error','-show_format','-show_streams','-of','json',str(out/'full.mp4')],25)
+            if rc:raise RuntimeError('probe_failed')
+            probe=json.loads(s);(out/'ffprobe.json').write_text(json.dumps(probe,indent=2));got=float(probe['format']['duration'])
+            if abs(got-duration)>2.0:raise RuntimeError('recovered_duration_mismatch:'+str(got)+' vs '+str(duration))
+            streams={x.get('codec_type') for x in probe.get('streams',[])}
+            if not {'video','audio'}.issubset(streams):raise RuntimeError('full_AV_missing')
+            rc,s,e=run(['ffmpeg','-nostdin','-v','error','-i',str(out/'full.mp4'),'-map','0:a:0','-vn','-c:a','pcm_s16le',str(out/'audio.wav')],45)
+            if rc:raise RuntimeError('audio_decode_failed')
+            fr=out/'frames';fr.mkdir()
+            rc,s,e=run(['ffmpeg','-nostdin','-v','error','-i',str(out/'full.mp4'),'-vf','fps=1/2','-q:v','2',str(fr/'f_%03d.jpg')],90)
+            if rc:raise RuntimeError('frames_failed')
+            rec.update(status='FULL_SAME_SOURCE_AV_INGESTED',player_response_sha256=ph,recovered_duration=got,durl_count=len(durl),transform='progressive source copy; PCM16 decode; orientation frames 0.5fps',hashes={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in [out/'full.mp4',out/'audio.wav']})
+          except Exception as e:
+            rec['error']=clean(str(e));(out/'full.mp4').unlink(missing_ok=True);(out/'audio.wav').unlink(missing_ok=True)
+          rec['utc']=datetime.datetime.now(datetime.timezone.utc).isoformat();(out/'receipt.json').write_text(json.dumps(rec,ensure_ascii=False,indent=2));print(json.dumps(rec,ensure_ascii=False,indent=2))
           PY
-      - name: One-day S09 relevant-parts transport
+      - name: One-day full source transport
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: ace-s09-parameter-parts-${{ github.run_id }}
+          name: ace-s09-full-preview-${{ github.run_id }}
           path: ${{ runner.temp }}/ace-s09/out/
           retention-days: 1
           compression-level: 0

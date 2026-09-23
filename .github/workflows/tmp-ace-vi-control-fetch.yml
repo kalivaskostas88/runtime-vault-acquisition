@@ -1,4 +1,4 @@
-name: temp-ace-vi-control-fetch
+name: temp-ace-independent-reference-fetch
 on:
   push:
     paths:
@@ -14,45 +14,31 @@ jobs:
         run: |
           set -euo pipefail
           python -m pip install -q --upgrade pip
-          python -m pip install -q curl-cffi
+          python -m pip install -q 'yt-dlp[default,curl-cffi]' curl-cffi
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg
           mkdir -p out
-      - name: Fetch public VI-Control ACE comparison attachments
+      - name: Fetch independent declared ACE references
         shell: bash
         run: |
           set -u
-          cat > /tmp/fetch.py <<'PY'
-          from curl_cffi import requests
-          from pathlib import Path
-          import time, json
-
-          thread='https://vi-control.net/community/threads/synthesizer-v-studio-2.160492/page-20'
-          targets={
-            'elirah':'https://vi-control.net/community/attachments/groban_-elirah-mp3.147563/',
-            'ember_rose':'https://vi-control.net/community/attachments/groban_-ember-rose-mp3.147564/',
-            'emma':'https://vi-control.net/community/attachments/groban_-emma-mp3.147565/',
-            'karolyn':'https://vi-control.net/community/attachments/groban_-karolyn-mp3.147566/',
-          }
-          out=Path('out')
-          s=requests.Session(impersonate='chrome')
-          r=s.get(thread, timeout=60)
-          print('THREAD', r.status_code, len(r.content), r.url)
-          (out/'thread.html').write_bytes(r.content)
-          summary=[]
-          for name,url in targets.items():
-              rr=s.get(url, headers={'Referer':thread}, timeout=90, allow_redirects=True)
-              ct=rr.headers.get('content-type','')
-              print(name, rr.status_code, ct, len(rr.content), rr.url)
-              summary.append({'name':name,'status':rr.status_code,'content_type':ct,'bytes':len(rr.content),'final_url':str(rr.url)})
-              ext='.mp3' if ('audio' in ct.lower() or rr.content[:3]==b'ID3') else '.bin'
-              (out/f'{name}{ext}').write_bytes(rr.content)
-              time.sleep(1)
-          (out/'summary.json').write_text(json.dumps(summary, indent=2), encoding='utf-8')
-          PY
-          python /tmp/fetch.py
+          declare -A URLS
+          URLS[emma_spark]='https://www.youtube.com/watch?v=Siz-rZOvR84'
+          URLS[emma_happens]='https://www.youtube.com/watch?v=UZlpvXsM3-s'
+          URLS[bianca_arms]='https://www.youtube.com/watch?v=MMyYQyjJZPc'
+          for name in "${!URLS[@]}"; do
+            echo "=== $name ==="
+            yt-dlp --impersonate chrome --no-playlist -f 'bestaudio/best' -x --audio-format wav --audio-quality 0 -o "out/${name}.%(ext)s" "${URLS[$name]}" || true
+          done
+          for f in out/*.wav; do
+            [ -e "$f" ] || continue
+            ffprobe -v error -show_entries format=duration,size,format_name:stream=codec_name,codec_type,sample_rate,channels -of default=noprint_wrappers=1 "$f" > "$f.ffprobe.txt"
+          done
           ls -lah out
+          test $(find out -maxdepth 1 -type f -name '*.wav' | wc -l) -ge 2
       - name: Upload temporary artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ace-vi-control-comparison
+          name: ace-independent-references
           path: out/
           retention-days: 1

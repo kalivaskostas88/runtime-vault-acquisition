@@ -1,4 +1,4 @@
-name: temp-ace-official-bundle-fetch
+name: temp-ace-official-route-chunks
 on:
   push:
     paths:
@@ -9,17 +9,21 @@ jobs:
   discover:
     runs-on: ubuntu-latest
     steps:
-      - name: Fetch official ACE site script
+      - name: Fetch official ACE route chunks
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p out
-          curl -L --fail --retry 2 'https://acestudio.ai/static/js/index.f87a253d-1790155126435.js' -o out/index.js
-          wc -c out/index.js
-          grep -oiE '.{0,300}(Emma|Celestia|Elirah|Bianca|Valentina|Karolyn|preview|audio).{0,700}' out/index.js | head -n 500 > out/matches.txt || true
-      - name: Upload result
+          curl -L --fail 'https://acestudio.ai/static/js/index.752b0b5e-1790155126435.js' -o out/slug.js
+          curl -L --fail 'https://acestudio.ai/static/js/cmsApi.598165eb-1790155126435.js' -o out/cmsApi.js
+          curl -L --fail 'https://acestudio.ai/static/js/index.97d592b7-1790155126435.js' -o out/vocal.js
+          wc -c out/*.js
+          grep -oiE '.{0,250}(preview|audio|voice|singer|cms|api|slug).{0,800}' out/slug.js | head -n 700 > out/slug_matches.txt || true
+          grep -oiE '.{0,250}(http|api|cms).{0,800}' out/cmsApi.js | head -n 300 > out/cms_matches.txt || true
+          grep -oiE '.{0,250}(Emma|Celestia|Elirah|Bianca|Valentina|Karolyn|preview|audio|voice).{0,800}' out/vocal.js | head -n 700 > out/vocal_matches.txt || true
+      - name: Upload chunks
         uses: actions/upload-artifact@v4
         with:
-          name: ace-official-bundle
+          name: ace-official-route-chunks
           path: out/
           retention-days: 1

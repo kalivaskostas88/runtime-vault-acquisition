@@ -1,4 +1,4 @@
-name: temp-ai-detector-client-inspect
+name: temp-ai-detector-calibration
 on:
   push:
     paths:
@@ -6,31 +6,72 @@ on:
 permissions:
   contents: read
 jobs:
-  inspect:
+  calibrate:
     runs-on: ubuntu-latest
     steps:
-      - name: Fetch detector function bundle
+      - name: Prepare known-AI ACE references and call public detector
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p out
-          curl -L --fail --retry 2 'https://aimusicdetector.co/assets/detect.functions-JIdp_0T3.js' -o out/detect.functions.js
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg
+          curl -L --fail --retry 2 'https://aimusicdetector.co/assets/detect.functions-JIdp_0T3.js' -o out/detect.functions.mjs
           python - <<'PY'
-          from pathlib import Path
-          import re,json
-          t=Path('out/detect.functions.js').read_text(encoding='utf-8',errors='ignore')
-          pats=['_serverFn','supabase','functions/v1','detect','analy','provider','audioBase64','contentHash']
-          hits=[]
-          for p in pats:
-              for m in re.finditer(p,t,re.I):
-                  a=max(0,m.start()-1000);b=min(len(t),m.end()+1800)
-                  hits.append({'term':p,'offset':m.start(),'snippet':t[a:b]})
-          Path('out/hits.json').write_text(json.dumps(hits[:120],indent=2),encoding='utf-8')
-          print('CLIENT_INSPECTED',len(t),len(hits))
+          import json, urllib.request, pathlib, re
+          api='https://studio-cms.acestudio.cn/api/voice-library-pages?locale=en&filters%5Bslug%5D%5B%24eq%5D=female&pLevel=*&populate%5Blocalizations%5D%5Bfields%5D%5B0%5D=locale&status=published'
+          d=json.load(urllib.request.urlopen(urllib.request.Request(api,headers={'User-Agent':'Mozilla/5.0'}),timeout=60))
+          wanted={'Lien','Amber Rose','Bianca'}
+          rows=[]
+          for g in d['data'][0].get('voiceGroups',[]):
+            for v in g.get('voices',[]):
+              if v.get('name') not in wanted: continue
+              u=(v.get('audioFile') or {}).get('url')
+              if not u: continue
+              slug=re.sub(r'[^a-z0-9]+','_',v['name'].lower()).strip('_')
+              p=pathlib.Path('out')/(slug+'.mp3')
+              req=urllib.request.Request(u,headers={'User-Agent':'Mozilla/5.0','Referer':'https://acestudio.ai/'})
+              p.write_bytes(urllib.request.urlopen(req,timeout=90).read())
+              rows.append({'name':v['name'],'file':str(p)})
+          pathlib.Path('out/known_ai.json').write_text(json.dumps(rows,indent=2),encoding='utf-8')
+          print('KNOWN_AI_FILES',len(rows))
           PY
-      - name: Upload inspection
+          cat > out/run_detector.mjs <<'NODE'
+          import fs from 'node:fs';
+          import crypto from 'node:crypto';
+          import {execFileSync} from 'node:child_process';
+          const nativeFetch=globalThis.fetch;
+          globalThis.fetch=(input,init)=>{
+            let u=input;
+            if (typeof input==='string' && input.startsWith('/')) u='https://aimusicdetector.co'+input;
+            else if (input instanceof URL && input.origin==='null') u=new URL(input.pathname+input.search,'https://aimusicdetector.co');
+            return nativeFetch(u,init);
+          };
+          const mod=await import('./detect.functions.mjs');
+          const refs=JSON.parse(fs.readFileSync('out/known_ai.json','utf8'));
+          const results=[];
+          for (const r of refs){
+            const b=fs.readFileSync(r.file);
+            let dur=0;
+            try {dur=parseFloat(execFileSync('ffprobe',['-v','error','-show_entries','format=duration','-of','default=nw=1:nk=1',r.file],{encoding:'utf8'}).trim());} catch {}
+            const payload={audioBase64:b.toString('base64'),filename:r.file.split('/').pop(),mimeType:'audio/mpeg',contentHash:crypto.createHash('sha256').update(b).digest('hex'),sourceDuration:dur};
+            try {
+              const ans=await mod.t({data:payload});
+              results.push({name:r.name,duration:dur,answer:ans});
+              console.log('RESULT',r.name,JSON.stringify(ans));
+            } catch(e) {
+              results.push({name:r.name,duration:dur,error:String(e),stack:e?.stack});
+              console.log('ERROR',r.name,String(e));
+            }
+          }
+          fs.writeFileSync('out/calibration_results.json',JSON.stringify(results,null,2));
+          NODE
+          node out/run_detector.mjs
+      - name: Upload calibration result
         uses: actions/upload-artifact@v4
         with:
-          name: ai-detector-client-inspect
-          path: out/
+          name: ai-detector-calibration
+          path: |
+            out/calibration_results.json
+            out/known_ai.json
           retention-days: 1

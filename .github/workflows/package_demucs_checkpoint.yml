@@ -1,0 +1,21 @@
+name: Package Demucs checkpoint
+
+on:
+  push:
+    paths:
+      - '.github/workflows/package_demucs_checkpoint.yml'
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download htdemucs checkpoint
+        run: |
+          curl -L --fail --retry 3 -o 955717e8-8726e21a.th https://dl.fbaipublicfiles.com/demucs/hybrid_transformer/955717e8-8726e21a.th
+          ls -lh 955717e8-8726e21a.th
+      - name: Upload checkpoint artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: demucs-htdemucs-checkpoint
+          path: 955717e8-8726e21a.th
+          retention-days: 1

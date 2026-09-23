@@ -1,0 +1,58 @@
+name: temp-ace-vi-control-fetch
+on:
+  push:
+    paths:
+      - '.github/workflows/tmp-ace-vi-control-fetch.yml'
+permissions:
+  contents: read
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Prepare tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install -q --upgrade pip
+          python -m pip install -q curl-cffi
+          mkdir -p out
+      - name: Fetch public VI-Control ACE comparison attachments
+        shell: bash
+        run: |
+          set -u
+          cat > /tmp/fetch.py <<'PY'
+          from curl_cffi import requests
+          from pathlib import Path
+          import time, json
+
+          thread='https://vi-control.net/community/threads/synthesizer-v-studio-2.160492/page-20'
+          targets={
+            'elirah':'https://vi-control.net/community/attachments/groban_-elirah-mp3.147563/',
+            'ember_rose':'https://vi-control.net/community/attachments/groban_-ember-rose-mp3.147564/',
+            'emma':'https://vi-control.net/community/attachments/groban_-emma-mp3.147565/',
+            'karolyn':'https://vi-control.net/community/attachments/groban_-karolyn-mp3.147566/',
+          }
+          out=Path('out')
+          s=requests.Session(impersonate='chrome')
+          r=s.get(thread, timeout=60)
+          print('THREAD', r.status_code, len(r.content), r.url)
+          (out/'thread.html').write_bytes(r.content)
+          summary=[]
+          for name,url in targets.items():
+              rr=s.get(url, headers={'Referer':thread}, timeout=90, allow_redirects=True)
+              ct=rr.headers.get('content-type','')
+              print(name, rr.status_code, ct, len(rr.content), rr.url)
+              summary.append({'name':name,'status':rr.status_code,'content_type':ct,'bytes':len(rr.content),'final_url':str(rr.url)})
+              ext='.mp3' if ('audio' in ct.lower() or rr.content[:3]==b'ID3') else '.bin'
+              (out/f'{name}{ext}').write_bytes(rr.content)
+              time.sleep(1)
+          (out/'summary.json').write_text(json.dumps(summary, indent=2), encoding='utf-8')
+          PY
+          python /tmp/fetch.py
+          ls -lah out
+      - name: Upload temporary artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ace-vi-control-comparison
+          path: out/
+          retention-days: 1

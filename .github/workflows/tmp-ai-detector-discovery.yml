@@ -1,4 +1,4 @@
-name: temp-ai-detector-calibration
+name: temp-ai-detector-ui-calibration
 on:
   push:
     paths:
@@ -9,69 +9,67 @@ jobs:
   calibrate:
     runs-on: ubuntu-latest
     steps:
-      - name: Prepare known-AI ACE references and call public detector
+      - name: Run public detector UI on known ACE AI preview
         shell: bash
         run: |
-          set -euo pipefail
+          set -u
           mkdir -p out
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq ffmpeg
-          curl -L --fail --retry 2 'https://aimusicdetector.co/assets/detect.functions-JIdp_0T3.js' -o out/detect.functions.mjs
-          python - <<'PY'
-          import json, urllib.request, pathlib, re
-          api='https://studio-cms.acestudio.cn/api/voice-library-pages?locale=en&filters%5Bslug%5D%5B%24eq%5D=female&pLevel=*&populate%5Blocalizations%5D%5Bfields%5D%5B0%5D=locale&status=published'
-          d=json.load(urllib.request.urlopen(urllib.request.Request(api,headers={'User-Agent':'Mozilla/5.0'}),timeout=60))
-          wanted={'Lien','Amber Rose','Bianca'}
-          rows=[]
-          for g in d['data'][0].get('voiceGroups',[]):
-            for v in g.get('voices',[]):
-              if v.get('name') not in wanted: continue
-              u=(v.get('audioFile') or {}).get('url')
-              if not u: continue
-              slug=re.sub(r'[^a-z0-9]+','_',v['name'].lower()).strip('_')
-              p=pathlib.Path('out')/(slug+'.mp3')
-              req=urllib.request.Request(u,headers={'User-Agent':'Mozilla/5.0','Referer':'https://acestudio.ai/'})
-              p.write_bytes(urllib.request.urlopen(req,timeout=90).read())
-              rows.append({'name':v['name'],'file':str(p)})
-          pathlib.Path('out/known_ai.json').write_text(json.dumps(rows,indent=2),encoding='utf-8')
-          print('KNOWN_AI_FILES',len(rows))
+          python -m pip install -q selenium
+          python - <<'PY' > out/run.log 2>&1
+          import json, urllib.request, pathlib, time, re, traceback
+          from selenium import webdriver
+          from selenium.webdriver.common.by import By
+          from selenium.webdriver.chrome.options import Options
+          from selenium.webdriver.support.ui import WebDriverWait
+          from selenium.webdriver.support import expected_conditions as EC
+          result={}
+          try:
+              api='https://studio-cms.acestudio.cn/api/voice-library-pages?locale=en&filters%5Bslug%5D%5B%24eq%5D=female&pLevel=*&populate%5Blocalizations%5D%5Bfields%5D%5B0%5D=locale&status=published'
+              d=json.load(urllib.request.urlopen(urllib.request.Request(api,headers={'User-Agent':'Mozilla/5.0'}),timeout=60))
+              url=None
+              for g in d['data'][0].get('voiceGroups',[]):
+                  for v in g.get('voices',[]):
+                      if v.get('name')=='Lien': url=(v.get('audioFile') or {}).get('url')
+              assert url
+              audio=pathlib.Path('out/lien_known_ai.mp3').resolve()
+              req=urllib.request.Request(url,headers={'User-Agent':'Mozilla/5.0','Referer':'https://acestudio.ai/'})
+              audio.write_bytes(urllib.request.urlopen(req,timeout=90).read())
+              result['audio_bytes']=audio.stat().st_size
+              opts=Options(); opts.add_argument('--headless=new'); opts.add_argument('--no-sandbox'); opts.add_argument('--disable-dev-shm-usage'); opts.add_argument('--window-size=1400,1200')
+              drv=webdriver.Chrome(options=opts)
+              drv.get('https://aimusicdetector.co/')
+              wait=WebDriverWait(drv,40)
+              inp=wait.until(EC.presence_of_element_located((By.CSS_SELECTOR,'input[type=file]')))
+              inp.send_keys(str(audio))
+              btn=wait.until(lambda d: next((b for b in d.find_elements(By.TAG_NAME,'button') if 'Analyse for AI music' in b.text),None))
+              drv.execute_script('arguments[0].click()',btn)
+              deadline=time.time()+150
+              body=''
+              while time.time()<deadline:
+                  body=drv.find_element(By.TAG_NAME,'body').text
+                  if any(x in body for x in ['AI probability','Inconclusive','AI-generated music','Not AI-generated','Analysis could not be completed']):
+                      if 'Analysing…' not in body: break
+                  time.sleep(3)
+              result['body_text']=body[-12000:]
+              pathlib.Path('out/page_text.txt').write_text(body,encoding='utf-8')
+              drv.save_screenshot('out/result.png')
+              drv.quit()
+              result['ok']=True
+          except Exception as e:
+              result['ok']=False; result['error']=repr(e); result['traceback']=traceback.format_exc()
+          pathlib.Path('out/result.json').write_text(json.dumps(result,indent=2),encoding='utf-8')
+          print(json.dumps(result))
           PY
-          cat > out/run_detector.mjs <<'NODE'
-          import fs from 'node:fs';
-          import crypto from 'node:crypto';
-          import {execFileSync} from 'node:child_process';
-          const nativeFetch=globalThis.fetch;
-          globalThis.fetch=(input,init)=>{
-            let u=input;
-            if (typeof input==='string' && input.startsWith('/')) u='https://aimusicdetector.co'+input;
-            else if (input instanceof URL && input.origin==='null') u=new URL(input.pathname+input.search,'https://aimusicdetector.co');
-            return nativeFetch(u,init);
-          };
-          const mod=await import('./detect.functions.mjs');
-          const refs=JSON.parse(fs.readFileSync('out/known_ai.json','utf8'));
-          const results=[];
-          for (const r of refs){
-            const b=fs.readFileSync(r.file);
-            let dur=0;
-            try {dur=parseFloat(execFileSync('ffprobe',['-v','error','-show_entries','format=duration','-of','default=nw=1:nk=1',r.file],{encoding:'utf8'}).trim());} catch {}
-            const payload={audioBase64:b.toString('base64'),filename:r.file.split('/').pop(),mimeType:'audio/mpeg',contentHash:crypto.createHash('sha256').update(b).digest('hex'),sourceDuration:dur};
-            try {
-              const ans=await mod.t({data:payload});
-              results.push({name:r.name,duration:dur,answer:ans});
-              console.log('RESULT',r.name,JSON.stringify(ans));
-            } catch(e) {
-              results.push({name:r.name,duration:dur,error:String(e),stack:e?.stack});
-              console.log('ERROR',r.name,String(e));
-            }
-          }
-          fs.writeFileSync('out/calibration_results.json',JSON.stringify(results,null,2));
-          NODE
-          node out/run_detector.mjs
+          cat out/result.json
       - name: Upload calibration result
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ai-detector-calibration
+          name: ai-detector-ui-calibration
           path: |
-            out/calibration_results.json
-            out/known_ai.json
+            out/result.json
+            out/page_text.txt
+            out/result.png
+            out/run.log
+          if-no-files-found: ignore
           retention-days: 1

@@ -17,25 +17,60 @@ jobs:
       - name: Resolve and download public Audio.com reference
         shell: python
         run: |
-          import json, re, urllib.parse, urllib.request
+          import json, re, urllib.parse, urllib.request, urllib.error
           from pathlib import Path
 
           page = 'https://audio.com/schnickltoven/audio/can-you-understand-me'
-          oembed = 'https://api.audio.com/oembed?url=' + urllib.parse.quote(page, safe='')
-          with urllib.request.urlopen(oembed, timeout=30) as r:
-              payload = json.load(r)
-          html = payload.get('html', '')
-          m = re.search(r'audio\.com/embed/audio/([0-9]{6,24})', html)
-          if not m:
-              raise RuntimeError('Could not resolve Audio.com audio id')
-          audio_id = m.group(1)
+          headers = {
+              'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/140 Safari/537.36',
+              'Accept': 'application/json,text/html;q=0.9,*/*;q=0.8',
+              'Referer': 'https://audio.com/',
+          }
 
-          with urllib.request.urlopen(f'https://api.audio.com/audio/{audio_id}', timeout=30) as r:
+          def get(url, accept=None):
+              h = dict(headers)
+              if accept:
+                  h['Accept'] = accept
+              req = urllib.request.Request(url, headers=h)
+              return urllib.request.urlopen(req, timeout=60)
+
+          audio_id = None
+          oembed = 'https://api.audio.com/oembed?url=' + urllib.parse.quote(page, safe='') + '&format=json'
+          try:
+              with get(oembed, 'application/json') as r:
+                  payload = json.load(r)
+              html = payload.get('html', '') if isinstance(payload, dict) else ''
+              m = re.search(r'audio\.com/(?:embed/)?audio/([0-9]{6,24})', html)
+              if m:
+                  audio_id = m.group(1)
+          except Exception as e:
+              print('oembed failed:', repr(e))
+
+          if not audio_id:
+              with get(page, 'text/html') as r:
+                  page_html = r.read().decode('utf-8', 'ignore')
+              patterns = [
+                  r'audio\.com/embed/audio/([0-9]{6,24})',
+                  r'"audioId"\s*:\s*"?([0-9]{6,24})"?',
+                  r'"audio_id"\s*:\s*"?([0-9]{6,24})"?',
+                  r'/audio/([0-9]{6,24})',
+              ]
+              for pat in patterns:
+                  m = re.search(pat, page_html)
+                  if m:
+                      audio_id = m.group(1)
+                      break
+              print('page bytes:', len(page_html), 'resolved id:', audio_id)
+
+          if not audio_id:
+              raise RuntimeError('Could not resolve Audio.com audio id')
+
+          with get(f'https://api.audio.com/audio/{audio_id}', 'application/json') as r:
               meta = json.load(r)
 
           candidates = []
           for key in ('transcodings', 'sources'):
-              value = meta.get(key)
+              value = meta.get(key) if isinstance(meta, dict) else None
               if isinstance(value, list):
                   for item in value:
                       if isinstance(item, dict) and isinstance(item.get('url'), str):
@@ -49,8 +84,7 @@ jobs:
           suffix = '.mp3' if (chosen.get('format') == 'mp3' or chosen.get('type') == 'audio/mpeg') else '.audio'
           out = Path('ace_celestia_multivoice_reference' + suffix)
 
-          req = urllib.request.Request(stream_url, headers={'User-Agent': 'Mozilla/5.0'})
-          with urllib.request.urlopen(req, timeout=120) as r, out.open('wb') as f:
+          with get(stream_url, '*/*') as r, out.open('wb') as f:
               while True:
                   chunk = r.read(1024 * 1024)
                   if not chunk:
@@ -60,7 +94,7 @@ jobs:
           Path('ace_reference_metadata.json').write_text(json.dumps({
               'source_page': page,
               'audio_id': audio_id,
-              'title': meta.get('title'),
+              'title': meta.get('title') if isinstance(meta, dict) else None,
               'chosen': {k: chosen.get(k) for k in ('format','type')},
               'bytes': out.stat().st_size,
               'file': out.name,

@@ -1,4 +1,4 @@
-name: temp-ace-official-voice-json
+name: temp-ace-official-audio-set
 on:
   push:
     paths:
@@ -9,28 +9,42 @@ jobs:
   fetch:
     runs-on: ubuntu-latest
     steps:
-      - name: Fetch official ACE female voice library JSON
+      - name: Fetch official ACE female preview set
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p out
-          curl -L --fail --get 'https://studio-cms.acestudio.cn/api/voice-library-pages' \
-            --data-urlencode 'locale=en' \
-            --data-urlencode 'filters[slug][$eq]=female' \
-            --data-urlencode 'pLevel=*' \
-            --data-urlencode 'populate[localizations][fields][0]=locale' \
-            --data-urlencode 'status=published' \
-            -o out/female.json
           python - <<'PY'
-          import json
-          p='out/female.json'
-          d=json.load(open(p,encoding='utf-8'))
-          print('top',d.keys())
-          print(json.dumps(d,ensure_ascii=False)[:20000])
+          import json, subprocess, pathlib, re
+          import urllib.request
+          api='https://studio-cms.acestudio.cn/api/voice-library-pages?locale=en&filters%5Bslug%5D%5B%24eq%5D=female&pLevel=*&populate%5Blocalizations%5D%5Bfields%5D%5B0%5D=locale&status=published'
+          req=urllib.request.Request(api,headers={'User-Agent':'Mozilla/5.0'})
+          data=json.load(urllib.request.urlopen(req,timeout=60))
+          rows=[]
+          for g in data['data'][0].get('voiceGroups',[]):
+              for v in g.get('voices',[]):
+                  name=v.get('name') or 'unknown'
+                  url=(v.get('audioFile') or {}).get('url')
+                  if not url: continue
+                  slug=re.sub(r'[^a-z0-9]+','_',name.lower()).strip('_')
+                  dest=pathlib.Path('out')/(slug+'.mp3')
+                  rr=urllib.request.Request(url,headers={'User-Agent':'Mozilla/5.0','Referer':'https://acestudio.ai/'})
+                  with urllib.request.urlopen(rr,timeout=90) as r, open(dest,'wb') as f:
+                      f.write(r.read())
+                  rows.append({'name':name,'style':v.get('style'),'url':url,'file':dest.name,'bytes':dest.stat().st_size})
+                  print(name,dest.stat().st_size)
+          pathlib.Path('out/manifest.json').write_text(json.dumps(rows,indent=2,ensure_ascii=False),encoding='utf-8')
           PY
-      - name: Upload official JSON
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg
+          for f in out/*.mp3; do
+            ffprobe -v error -show_entries format=duration,size,format_name:stream=codec_name,codec_type,sample_rate,channels -of compact=p=0:nk=0 "$f" >> out/ffprobe_all.txt || true
+            echo "FILE=$f" >> out/ffprobe_all.txt
+          done
+          ls -lh out
+      - name: Upload official ACE previews
         uses: actions/upload-artifact@v4
         with:
-          name: ace-official-female-json
+          name: ace-official-female-previews
           path: out/
           retention-days: 1

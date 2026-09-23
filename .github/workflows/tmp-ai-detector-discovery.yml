@@ -1,4 +1,4 @@
-name: temp-celestia-apple-preview-detector
+name: temp-celestia-apple-preview-export
 on:
   push:
     paths:
@@ -6,92 +6,33 @@ on:
 permissions:
   contents: read
 jobs:
-  analyse:
+  export:
     runs-on: ubuntu-latest
     steps:
-      - name: Acquire Apple previews and run detector UI
+      - name: Download official Apple previews
         shell: bash
         run: |
-          set -u
-          mkdir -p out/audio out/results
-          python -m pip install -q selenium
-          python - <<'PY' > out/run.log 2>&1
-          import urllib.request, urllib.parse, json, pathlib, time, traceback
-          from selenium import webdriver
-          from selenium.webdriver.common.by import By
-          from selenium.webdriver.chrome.options import Options
-          from selenium.webdriver.support.ui import WebDriverWait
-          from selenium.webdriver.support import expected_conditions as EC
-          UA={'User-Agent':'Mozilla/5.0'}
-          def getjson(url):
-              return json.load(urllib.request.urlopen(urllib.request.Request(url,headers=UA),timeout=60))
-          targets={
-            't1_tavern_whispers':'Tavern Whispers',
-            't2_echoes_silver_moon':'Echoes Through the Silver Moon',
-            't3_lionhall':'The Lionhall Celebration',
+          set -euo pipefail
+          mkdir -p out/audio
+          python - <<'PY'
+          import urllib.request, pathlib, json
+          urls={
+            't1_tavern_whispers':'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/2a/11/2a/2a112a00-6cb6-2770-d616-aed7dcf6d079/mzaf_10538498162576585059.plus.aac.p.m4a',
+            't2_echoes_silver_moon':'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/e2/29/2c/e2292cac-8fed-7501-02db-96cab64b9dfe/mzaf_1910871341432373704.plus.aac.p.m4a',
+            't3_lionhall':'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/9b/6d/e1/9b6de16f-a2b9-d7de-e969-dbd3bc5c5c2a/mzaf_136679358601734416.plus.aac.p.m4a'
           }
-          candidates=[]
-          # Known 2025 album id
-          try: candidates += getjson('https://itunes.apple.com/lookup?id=1822458876&entity=song&limit=200').get('results',[])
-          except Exception as e: print('LOOKUP_ERR',repr(e))
-          # Search broad enough to include 2026 release
-          for term in ['celestia song Tavern Whispers','celestia song The Lionhall Celebration','celestia song Echoes Through the Silver Moon']:
-              try:
-                  u='https://itunes.apple.com/search?'+urllib.parse.urlencode({'term':term,'entity':'song','limit':100})
-                  candidates += getjson(u).get('results',[])
-              except Exception as e: print('SEARCH_ERR',term,repr(e))
-          acquired={}
-          for key,title in targets.items():
-              rows=[r for r in candidates if (r.get('trackName') or '').casefold()==title.casefold() and 'celestia song' in (r.get('artistName') or '').casefold()]
-              r=rows[0] if rows else None
-              if not r or not r.get('previewUrl'):
-                  acquired[key]={'title':title,'error':'preview_not_found','matches':len(rows)}; continue
-              url=r['previewUrl']; ext='.m4a' if '.m4a' in url.lower() else '.mp4'
-              p=pathlib.Path('out/audio')/(key+ext)
-              req=urllib.request.Request(url,headers=UA); p.write_bytes(urllib.request.urlopen(req,timeout=90).read())
-              acquired[key]={'title':title,'trackId':r.get('trackId'),'collectionName':r.get('collectionName'),'previewUrl':url,'file':str(p),'bytes':p.stat().st_size}
-          pathlib.Path('out/acquisition.json').write_text(json.dumps(acquired,indent=2),encoding='utf-8')
-          opts=Options(); opts.add_argument('--headless=new'); opts.add_argument('--no-sandbox'); opts.add_argument('--disable-dev-shm-usage'); opts.add_argument('--window-size=1400,1200')
-          allres={}
-          for key,meta in acquired.items():
-              if not meta.get('file'): allres[key]={'error':meta.get('error')}; continue
-              drv=None
-              try:
-                  audio=pathlib.Path(meta['file']).resolve(); drv=webdriver.Chrome(options=opts); drv.get('https://aimusicdetector.co/')
-                  wait=WebDriverWait(drv,50); inp=wait.until(EC.presence_of_element_located((By.CSS_SELECTOR,'input[type=file]'))); inp.send_keys(str(audio))
-                  btn=wait.until(lambda d: next((b for b in d.find_elements(By.TAG_NAME,'button') if 'Analyse for AI music' in b.text),None)); drv.execute_script('arguments[0].click()',btn)
-                  deadline=time.time()+180; body=''
-                  while time.time()<deadline:
-                      body=drv.find_element(By.TAG_NAME,'body').text
-                      if 'AI MUSIC DETECTION RESULT' in body and 'Analysing…' not in body: break
-                      if 'Analysis could not be completed' in body: break
-                      time.sleep(3)
-                  pathlib.Path(f'out/results/{key}.txt').write_text(body,encoding='utf-8'); drv.save_screenshot(f'out/results/{key}.png')
-                  lines=[x.strip() for x in body.splitlines() if x.strip()]
-                  try:
-                      i=lines.index('AI MUSIC DETECTION RESULT'); report=lines[i:i+55]
-                  except ValueError: report=[]
-                  allres[key]={'ok':bool(report),'bytes':audio.stat().st_size,'report':report}
-              except Exception as e: allres[key]={'ok':False,'error':repr(e),'traceback':traceback.format_exc()}
-              finally:
-                  if drv:
-                      try: drv.quit()
-                      except: pass
-          pathlib.Path('out/results.json').write_text(json.dumps(allres,indent=2),encoding='utf-8')
-          print(json.dumps({'acquired':acquired,'results':allres},indent=2))
+          rows=[]
+          for name,url in urls.items():
+              p=pathlib.Path('out/audio')/(name+'.m4a')
+              req=urllib.request.Request(url,headers={'User-Agent':'Mozilla/5.0'})
+              p.write_bytes(urllib.request.urlopen(req,timeout=90).read())
+              rows.append({'name':name,'file':str(p),'bytes':p.stat().st_size})
+          pathlib.Path('out/manifest.json').write_text(json.dumps(rows,indent=2),encoding='utf-8')
+          print('EXPORTED',len(rows))
           PY
-          cat out/acquisition.json
-          cat out/results.json
-      - name: Upload evidence
-        if: always()
+      - name: Upload target previews
         uses: actions/upload-artifact@v4
         with:
-          name: celestia-apple-preview-detector
-          path: |
-            out/acquisition.json
-            out/results.json
-            out/results/*.txt
-            out/results/*.png
-            out/run.log
-          if-no-files-found: ignore
+          name: celestia-apple-target-audio
+          path: out/
           retention-days: 1

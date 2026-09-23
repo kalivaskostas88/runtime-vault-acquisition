@@ -1,4 +1,4 @@
-name: tmp-lofcz-cross-engine
+name: tmp-lofcz-album-map
 on:
   push:
     paths:
@@ -6,10 +6,10 @@ on:
 permissions:
   contents: read
 jobs:
-  calibrate:
+  map:
     runs-on: ubuntu-latest
     steps:
-      - name: Run frozen cross-engine calibration
+      - name: Run frozen detector across albums
         shell: bash
         run: |
           set -euo pipefail
@@ -17,38 +17,27 @@ jobs:
           sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg >/dev/null
           mkdir -p out
           python - <<'PY' > out/run.txt 2>&1 || true
-          import json, requests, numpy as np, librosa, onnxruntime as ort, subprocess
+          import json,requests,re,subprocess,numpy as np,librosa,onnxruntime as ort
           from pathlib import Path
           from scipy.ndimage import minimum_filter1d
           from huggingface_hub import hf_hub_download
-          urls={
-            'voisona_chisa':'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview116/v4/02/c5/0a/02c50ac7-abd0-09cd-8805-dec66cc02324/mzaf_16809527180063886103.plus.aac.p.m4a',
-            'synthv_solaria':'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview116/v4/61/28/84/6128844c-7765-6982-7f2b-86e6599fb8ed/mzaf_2368609268686162311.plus.aac.p.m4a',
-            'synthv_gumi':'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/0c/4d/8e/0c4d8e74-494f-4618-4f45-b537ae4d6b4d/mzaf_1012684914922818411.plus.aac.p.m4a',
-            'vocaloid_miku':'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview116/v4/fa/0a/b0/fa0ab04b-223f-c465-a9a1-2d73d5ca5a9f/mzaf_5753177513402513265.plus.aac.p.m4a'
-          }
-          model=hf_hub_download('lofcz/ai-music-detector','ai_music_detector.onnx')
-          sess=ort.InferenceSession(model,providers=['CPUExecutionProvider']); inp=sess.get_inputs()[0].name; nf=sess.get_inputs()[0].shape[1]
+          albums=['Fjord Lullaby','Harbor Bright','Whispers Beyond Time','Firelight and Fiddles','Tavern Whispers','The Lionhall Celebration','Black Tide Serenade']
+          model=hf_hub_download('lofcz/ai-music-detector','ai_music_detector.onnx'); sess=ort.InferenceSession(model,providers=['CPUExecutionProvider']); inp=sess.get_inputs()[0].name; nf=sess.get_inputs()[0].shape[1]
           sr=16000;nfft=8192;freq=np.linspace(0,sr/2,nfft//2+1);mask=(freq>=1000)&(freq<=8000)
           def prob(wav):
-            y,_=librosa.load(wav,sr=sr,mono=True,duration=30)
-            S=np.abs(librosa.stft(y,n_fft=nfft,hop_length=nfft//2,win_length=nfft,window='hann',center=True,pad_mode='reflect'))**2
-            db=10*np.log10(np.clip(S,1e-10,1e6)); fs=db.mean(axis=1)[mask]
-            hull=np.clip(minimum_filter1d(fs,size=10,mode='nearest'),-45,None)
-            fp=np.clip(np.clip(fs-hull,0,None),0,5); fp=(fp/(fp.max()+1e-6)).astype(np.float32)
+            y,_=librosa.load(wav,sr=sr,mono=True,duration=30); S=np.abs(librosa.stft(y,n_fft=nfft,hop_length=nfft//2,win_length=nfft,window='hann',center=True,pad_mode='reflect'))**2; db=10*np.log10(np.clip(S,1e-10,1e6)); fs=db.mean(axis=1)[mask]; hull=np.clip(minimum_filter1d(fs,size=10,mode='nearest'),-45,None); fp=np.clip(np.clip(fs-hull,0,None),0,5); fp=(fp/(fp.max()+1e-6)).astype(np.float32)
             if len(fp)!=nf: fp=np.interp(np.linspace(0,1,nf),np.linspace(0,1,len(fp)),fp).astype(np.float32)
             return float(sess.run(None,{inp:fp.reshape(1,-1)})[0][0,0])
-          out={}
-          for name,u in urls.items():
-            rr=requests.get(u,timeout=60); rr.raise_for_status(); src=Path('/tmp')/(name+'.m4a'); wav=Path('/tmp')/(name+'.wav'); src.write_bytes(rr.content)
-            subprocess.run(['ffmpeg','-loglevel','error','-y','-i',str(src),'-ac','1','-ar','16000',str(wav)],check=True)
-            out[name]={'bytes':len(rr.content),'probability':prob(str(wav))}
-          Path('out/cross_engine.json').write_text(json.dumps(out,indent=2),encoding='utf-8')
-          print(json.dumps(out))
+          rows=[]
+          for album in albums:
+            j=requests.get('https://itunes.apple.com/search',params={'term':f'celestia song {album}','entity':'song','limit':100,'country':'US'},timeout=60).json(); xs=[x for x in j.get('results',[]) if x.get('previewUrl') and (x.get('artistName') or '').lower()=='celestia song' and (x.get('collectionName') or '').lower()==album.lower()]; xs=sorted(xs,key=lambda x:x.get('trackNumber') or 999)[:2]
+            for x in xs:
+              n=re.sub(r'[^a-z0-9]+','_',album.lower()).strip('_')+f"_{x.get('trackNumber',0):02d}"; rr=requests.get(x['previewUrl'],timeout=60); rr.raise_for_status(); src=Path('/tmp')/(n+'.m4a'); wav=Path('/tmp')/(n+'.wav'); src.write_bytes(rr.content); subprocess.run(['ffmpeg','-loglevel','error','-y','-i',str(src),'-ac','1','-ar','16000',str(wav)],check=True); rows.append({'album':album,'track':x.get('trackName'),'trackNumber':x.get('trackNumber'),'releaseDate':x.get('releaseDate'),'probability':prob(str(wav))})
+          Path('out/album_map.json').write_text(json.dumps(rows,indent=2),encoding='utf-8'); print(json.dumps(rows))
           PY
-      - name: Upload calibration
+      - name: Upload map
         uses: actions/upload-artifact@v4
         with:
-          name: lofcz-cross-engine
+          name: lofcz-album-map
           path: out/
           retention-days: 1

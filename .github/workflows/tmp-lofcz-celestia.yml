@@ -1,4 +1,4 @@
-name: tmp-lofcz-calibration
+name: tmp-lofcz-cross-engine
 on:
   push:
     paths:
@@ -9,7 +9,7 @@ jobs:
   calibrate:
     runs-on: ubuntu-latest
     steps:
-      - name: Run frozen fakeprint calibration
+      - name: Run frozen cross-engine calibration
         shell: bash
         run: |
           set -euo pipefail
@@ -17,28 +17,15 @@ jobs:
           sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg >/dev/null
           mkdir -p out
           python - <<'PY' > out/run.txt 2>&1 || true
-          import json, requests, numpy as np, librosa, onnxruntime as ort, subprocess, re
+          import json, requests, numpy as np, librosa, onnxruntime as ort, subprocess
           from pathlib import Path
           from scipy.ndimage import minimum_filter1d
           from huggingface_hub import hf_hub_download
-          ace={
-            'ace_karolyn':'https://as-api-ws-cdn-1.tdacestudio.com/web/content/67f30a0698cca2700710c62067745d0a.mp3',
-            'ace_livia':'https://as-api-ws-cdn-1.tdacestudio.com/web/content/9bc33f4f9329e666f082354431e2b4ef.mp3',
-            'ace_jessica':'https://as-api-ws-cdn-1.tdacestudio.com/web/content/597b881ea511e3ce8ff06325e82492b8.mp3',
-            'ace_amber_rose':'https://as-api-ws-cdn-1.tdacestudio.com/web/content/413c190e1ab2778e948b8cfd388b9d64.mp3',
-            'ace_emma':'https://as-api-ws-cdn-1.tdacestudio.com/web/content/0ee417b30fe0427584652a57e1c518fe.mp3',
-            'ace_elirah':'https://as-api-ws-cdn-1.tdacestudio.com/web/content/c60f5482e1fa723c968605339f946608.mp3',
-            'ace_bianca':'https://as-api-ws-cdn-1.tdacestudio.com/web/content/45d2ed01b45610fa40d506ffa14cc962.mp3',
-            'ace_lien':'https://as-api-ws-cdn-1.tdacestudio.com/web/content/2ac7f4384d4b8d77d3ee087ac805e001.mp3',
-            'ace_celestia':'https://as-api-ws-cdn-1.tdacestudio.com/web/content/e7af455b58b236fb303411488b4df6ec.mp3',
-            'ace_valentina':'https://as-api-ws-cdn-1.tdacestudio.com/web/content/afa32b8e1094fcc7e86628c434b9b2fb.mp3'
-          }
-          human_queries={
-            'human_adele_hello':'Adele Hello',
-            'human_norah_dont_know_why':'Norah Jones Don t Know Why',
-            'human_fleetwood_dreams':'Fleetwood Mac Dreams',
-            'human_whitney_dance':'Whitney Houston I Wanna Dance With Somebody',
-            'human_ladygaga_shallow':'Lady Gaga Bradley Cooper Shallow'
+          urls={
+            'voisona_chisa':'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview116/v4/02/c5/0a/02c50ac7-abd0-09cd-8805-dec66cc02324/mzaf_16809527180063886103.plus.aac.p.m4a',
+            'synthv_solaria':'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview116/v4/61/28/84/6128844c-7765-6982-7f2b-86e6599fb8ed/mzaf_2368609268686162311.plus.aac.p.m4a',
+            'synthv_gumi':'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/0c/4d/8e/0c4d8e74-494f-4618-4f45-b537ae4d6b4d/mzaf_1012684914922818411.plus.aac.p.m4a',
+            'vocaloid_miku':'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview116/v4/fa/0a/b0/fa0ab04b-223f-c465-a9a1-2d73d5ca5a9f/mzaf_5753177513402513265.plus.aac.p.m4a'
           }
           model=hf_hub_download('lofcz/ai-music-detector','ai_music_detector.onnx')
           sess=ort.InferenceSession(model,providers=['CPUExecutionProvider']); inp=sess.get_inputs()[0].name; nf=sess.get_inputs()[0].shape[1]
@@ -51,24 +38,17 @@ jobs:
             fp=np.clip(np.clip(fs-hull,0,None),0,5); fp=(fp/(fp.max()+1e-6)).astype(np.float32)
             if len(fp)!=nf: fp=np.interp(np.linspace(0,1,nf),np.linspace(0,1,len(fp)),fp).astype(np.float32)
             return float(sess.run(None,{inp:fp.reshape(1,-1)})[0][0,0])
-          def download_score(name,url):
-            rr=requests.get(url,timeout=60); rr.raise_for_status(); src=Path('/tmp')/(name+Path(url.split('?')[0]).suffix); src.write_bytes(rr.content); wav=Path('/tmp')/(name+'.wav')
+          out={}
+          for name,u in urls.items():
+            rr=requests.get(u,timeout=60); rr.raise_for_status(); src=Path('/tmp')/(name+'.m4a'); wav=Path('/tmp')/(name+'.wav'); src.write_bytes(rr.content)
             subprocess.run(['ffmpeg','-loglevel','error','-y','-i',str(src),'-ac','1','-ar','16000',str(wav)],check=True)
-            return {'bytes':len(rr.content),'probability':prob(str(wav))}
-          out={'ace':{},'human':{}}
-          for name,url in ace.items(): out['ace'][name]=download_score(name,url)
-          for name,q in human_queries.items():
-            j=requests.get('https://itunes.apple.com/search',params={'term':q,'entity':'song','limit':10,'country':'US'},timeout=60).json()
-            candidates=[x for x in j.get('results',[]) if x.get('previewUrl')]
-            if not candidates: out['human'][name]={'error':'no preview'}; continue
-            x=candidates[0]
-            r=download_score(name,x['previewUrl']); r.update({'artist':x.get('artistName'),'track':x.get('trackName'),'collection':x.get('collectionName'),'trackId':x.get('trackId')}); out['human'][name]=r
-          Path('out/calibration.json').write_text(json.dumps(out,indent=2,ensure_ascii=False),encoding='utf-8')
+            out[name]={'bytes':len(rr.content),'probability':prob(str(wav))}
+          Path('out/cross_engine.json').write_text(json.dumps(out,indent=2),encoding='utf-8')
           print(json.dumps(out))
           PY
       - name: Upload calibration
         uses: actions/upload-artifact@v4
         with:
-          name: lofcz-calibration
+          name: lofcz-cross-engine
           path: out/
           retention-days: 1

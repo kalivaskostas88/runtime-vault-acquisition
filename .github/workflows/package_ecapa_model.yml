@@ -1,0 +1,23 @@
+name: Package ECAPA speaker model
+
+on:
+  push:
+    paths:
+      - '.github/workflows/package_ecapa_model.yml'
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone public SpeechBrain ECAPA model
+        run: |
+          git lfs install
+          git clone --depth 1 https://huggingface.co/speechbrain/spkrec-ecapa-voxceleb ecapa_model
+          rm -rf ecapa_model/.git
+          find ecapa_model -maxdepth 2 -type f -printf '%p %s bytes\n'
+      - name: Upload ECAPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: speechbrain-ecapa-voxceleb
+          path: ecapa_model
+          retention-days: 1

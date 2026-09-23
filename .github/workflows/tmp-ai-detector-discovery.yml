@@ -1,4 +1,4 @@
-name: temp-celestia-apple-preview-export
+name: temp-nonace-control-export
 on:
   push:
     paths:
@@ -9,30 +9,36 @@ jobs:
   export:
     runs-on: ubuntu-latest
     steps:
-      - name: Download official Apple previews
+      - name: Download Apple previews for declared non-ACE synth vocals
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p out/audio
           python - <<'PY'
-          import urllib.request, pathlib, json
-          urls={
-            't1_tavern_whispers':'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/2a/11/2a/2a112a00-6cb6-2770-d616-aed7dcf6d079/mzaf_10538498162576585059.plus.aac.p.m4a',
-            't2_echoes_silver_moon':'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/e2/29/2c/e2292cac-8fed-7501-02db-96cab64b9dfe/mzaf_1910871341432373704.plus.aac.p.m4a',
-            't3_lionhall':'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/9b/6d/e1/9b6de16f-a2b9-d7de-e969-dbd3bc5c5c2a/mzaf_136679358601734416.plus.aac.p.m4a'
+          import urllib.request, json, pathlib
+          ids={
+            'voisona_chisa_golden_afternoon':1673687775,
+            'synthv_solaria_dawn':1604618122,
+            'synthv_gumi_copycat_sv':1764201902,
+            'vocaloid_miku_puzzle':1688188316,
           }
           rows=[]
-          for name,url in urls.items():
+          for name,tid in ids.items():
+              api=f'https://itunes.apple.com/lookup?id={tid}'
+              d=json.load(urllib.request.urlopen(urllib.request.Request(api,headers={'User-Agent':'Mozilla/5.0'}),timeout=60))
+              r=d['results'][0]
+              url=r.get('previewUrl')
+              if not url:
+                  rows.append({'name':name,'trackId':tid,'error':'no_preview'}); continue
               p=pathlib.Path('out/audio')/(name+'.m4a')
-              req=urllib.request.Request(url,headers={'User-Agent':'Mozilla/5.0'})
-              p.write_bytes(urllib.request.urlopen(req,timeout=90).read())
-              rows.append({'name':name,'file':str(p),'bytes':p.stat().st_size})
+              p.write_bytes(urllib.request.urlopen(urllib.request.Request(url,headers={'User-Agent':'Mozilla/5.0'}),timeout=90).read())
+              rows.append({'name':name,'trackId':tid,'trackName':r.get('trackName'),'artistName':r.get('artistName'),'previewUrl':url,'file':str(p),'bytes':p.stat().st_size})
           pathlib.Path('out/manifest.json').write_text(json.dumps(rows,indent=2),encoding='utf-8')
-          print('EXPORTED',len(rows))
+          print(json.dumps(rows,indent=2))
           PY
-      - name: Upload target previews
+      - name: Upload controls
         uses: actions/upload-artifact@v4
         with:
-          name: celestia-apple-target-audio
+          name: nonace-synthetic-controls
           path: out/
           retention-days: 1

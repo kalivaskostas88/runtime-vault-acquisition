@@ -1,4 +1,4 @@
-name: ACE S06 exact temporary artifact cleanup
+name: ACE S08 exact temporary artifact cleanup
 on:
   push:
     branches: [research/ace-s05e-20260922]
@@ -12,16 +12,16 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 3
     steps:
-      - name: Verify exact S06 ownership then remove temporary transport
+      - name: Verify exact S08 ownership then remove temporary transport
         env:
           GH_TOKEN: ${{ github.token }}
-          OUT: ${{ runner.temp }}/ace-s06-cleanup
+          OUT: ${{ runner.temp }}/ace-s08-cleanup
         run: |
           mkdir -p "$OUT"
           python3 - <<'PY'
           import urllib.request,urllib.error,json,os,pathlib,datetime
           repo='kalivaskostas88/runtime-vault-acquisition';branch='research/ace-s05e-20260922'
-          owned=[(35804625008,10727401914)]
+          owned=[(35885881566,10762895734),(35885957830,10761584712),(35886192428,10761849155)]
           def request(url,method='GET'):
             req=urllib.request.Request(url,method=method,headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'})
             try:
@@ -33,18 +33,18 @@ jobs:
             if code!=200:
               r['result']='ALREADY_ABSENT' if code==404 else 'PRECHECK_FAILED';results.append(r);continue
             j=json.loads(body)
-            if j.get('workflow_run',{}).get('id')!=run or j.get('workflow_run',{}).get('head_branch')!=branch or not j.get('name','').startswith('ace-s06-'):
+            if j.get('workflow_run',{}).get('id')!=run or j.get('workflow_run',{}).get('head_branch')!=branch or not j.get('name','').startswith('ace-s08-'):
               r['result']='IDENTITY_MISMATCH_NOT_DELETED';results.append(r);continue
             r['artifact_name']=j['name'];r['size_in_bytes']=j.get('size_in_bytes');r['delete_http'],_=request(url,'DELETE');r['readback_http'],_=request(url)
             r['result']='DELETED_AND_ABSENT' if r['delete_http']==204 and r['readback_http']==404 else 'DELETE_NOT_VERIFIED';results.append(r)
-          report={'repository':repo,'branch':branch,'cleanup_run_id':os.environ.get('GITHUB_RUN_ID'),'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'records':results,'scope':'exact S06 creator-tutorial transport only; no production files, no user originals, no prior evidence','all_verified':all(r['result'] in ['DELETED_AND_ABSENT','ALREADY_ABSENT'] for r in results)}
+          report={'repository':repo,'branch':branch,'cleanup_run_id':os.environ.get('GITHUB_RUN_ID'),'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'records':results,'scope':'exact S08 search/media transport only; no production files, no user originals, no canonical evidence','all_verified':all(r['result'] in ['DELETED_AND_ABSENT','ALREADY_ABSENT'] for r in results)}
           pathlib.Path(os.environ['OUT'],'cleanup_receipt.json').write_text(json.dumps(report,indent=2));print(json.dumps(report,indent=2))
           PY
       - name: Small cleanup receipt only
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: ace-s06-cleanup-receipt-${{ github.run_id }}
-          path: ${{ runner.temp }}/ace-s06-cleanup/
+          name: ace-s08-cleanup-receipt-${{ github.run_id }}
+          path: ${{ runner.temp }}/ace-s08-cleanup/
           retention-days: 1
           if-no-files-found: warn

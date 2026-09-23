@@ -1,4 +1,4 @@
-name: ACE S09 historical parameter effect learning ingest
+name: ACE S09 historical parameter effect learning multipage ingest
 on:
   push:
     branches: [research/ace-s05e-20260922]
@@ -9,14 +9,14 @@ permissions:
 jobs:
   ingest:
     runs-on: ubuntu-24.04
-    timeout-minutes: 8
+    timeout-minutes: 10
     steps:
       - name: Prepare bounded ffmpeg
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/ace-s09/out"
           if ! command -v ffmpeg >/dev/null; then sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg; fi
-      - name: Acquire one exact historical ACE technology preview
+      - name: Acquire only breathy falsetto relaxation pages from exact preview
         env:
           ROOT: ${{ runner.temp }}/ace-s09
         run: |
@@ -24,7 +24,7 @@ jobs:
           import urllib.request,urllib.parse,json,os,pathlib,hashlib,datetime,subprocess,signal,resource,socket,ipaddress,re
           root=pathlib.Path(os.environ['ROOT']);out=root/'out'; bvid='BV1za411C7vw'; src='https://www.bilibili.com/video/'+bvid+'/'
           expected_title='【ACE技术预览】AI吐字、气声、假声、松弛参数调节'
-          rec={'source_url':src,'source_id':bvid,'status':'SOURCE_INGEST_FAILED','scope':'historical ACE technology preview for parameter-effect learning only; not current UI/calibration','run_id':os.environ.get('GITHUB_RUN_ID'),'commit':os.environ.get('GITHUB_SHA')}
+          manifest={'source_url':src,'source_id':bvid,'status':'SOURCE_INGEST_FAILED','scope':'historical ACE technology preview pages for Air/Falsetto/Relaxation effect learning only; not current UI/calibration','run_id':os.environ.get('GITHUB_RUN_ID'),'commit':os.environ.get('GITHUB_SHA'),'parts':[]}
           def get(u):
             req=urllib.request.Request(u,headers={'User-Agent':'ACE-public-media-research/1.0'})
             with urllib.request.urlopen(req,timeout=20) as f:b=f.read(2*1024*1024+1)
@@ -38,41 +38,48 @@ jobs:
             try:s,e=p.communicate(timeout=t);return p.returncode,s,e
             except subprocess.TimeoutExpired:
               os.killpg(p.pid,signal.SIGKILL);s,e=p.communicate();return 124,s,e+'\nTIME_LIMIT'
-          def clean(s):return re.sub(r'https?://[^\s\"\']+','[MEDIA_URL_REDACTED]',s)[-6000:]
+          def clean(s):return re.sub(r'https?://[^\s\"\']+','[MEDIA_URL_REDACTED]',s)[-5000:]
           try:
             data,mh=get('https://api.bilibili.com/x/web-interface/view?bvid='+bvid)
             if data.get('bvid')!=bvid or data.get('title')!=expected_title or (data.get('rights') or {}).get('pay'):raise RuntimeError('identity_or_access_mismatch')
-            duration=float(data.get('duration') or 0)
-            if not 0<duration<=420:raise RuntimeError('duration_limit')
-            cid=data.get('cid');rec.update(title=data.get('title'),description=data.get('desc'),duration=duration,pubdate=data.get('pubdate'),owner=data.get('owner'),cid=cid,metadata_sha256=mh,rights=data.get('rights'))
-            player,ph=get('https://api.bilibili.com/x/player/playurl?'+urllib.parse.urlencode({'bvid':bvid,'cid':cid,'qn':32,'fnval':16,'fourk':0}))
-            dash=player.get('dash') or {};vs=[s for s in dash.get('video',[]) if s.get('height',9999)<=480 and str(s.get('codecs','')).startswith('avc')];ads=[s for s in dash.get('audio',[]) if s.get('codecs')=='mp4a.40.2']
-            if not vs or not ads:raise RuntimeError('public_AV_missing')
-            streams=[max(vs,key=lambda s:s.get('height',0)),max(ads,key=lambda s:s.get('bandwidth',0))];urls=[]
-            for s in streams:
-              u=urllib.parse.urljoin(src,s.get('baseUrl') or s.get('base_url'));parts=urllib.parse.urlsplit(u)
-              if parts.scheme not in ['http','https'] or not parts.hostname:raise RuntimeError('invalid_url')
-              addrs={x[4][0] for x in socket.getaddrinfo(parts.hostname,parts.port or (443 if parts.scheme=='https' else 80))}
-              if any(not ipaddress.ip_address(x).is_global for x in addrs):raise RuntimeError('nonpublic_destination')
-              urls.append(u)
+            manifest.update(title=data.get('title'),description=data.get('desc'),duration=data.get('duration'),pubdate=data.get('pubdate'),owner=data.get('owner'),metadata_sha256=mh,pages=[{k:p.get(k) for k in ['page','cid','part','duration']} for p in data.get('pages',[])])
+            pages=data.get('pages') or []
+            if len(pages)<4:raise RuntimeError('expected_four_parameter_pages')
+            # description defines page order: pronunciation, breathy, falsetto, relaxation
+            wanted=[('AIR',pages[1]),('FALSETTO',pages[2]),('RELAXATION',pages[3])]
             headers=['-user_agent','ACE-public-media-research/1.0','-headers','Referer: https://www.bilibili.com/\r\n','-rw_timeout','20000000']
-            args=['ffmpeg','-nostdin','-v','warning','-copyts']+headers+['-i',urls[0]]+headers+['-i',urls[1],'-map','0:v:0','-map','1:a:0','-c','copy','-copytb','1','-avoid_negative_ts','disabled','-to',str(duration+0.5),str(out/'preview.mkv')]
-            rc,s,e=run(args,220);(out/'remux.log').write_text(clean(e))
-            if rc:raise RuntimeError('remux_failed:'+str(rc))
-            rc,s,e=run(['ffmpeg','-nostdin','-v','error','-i',str(out/'preview.mkv'),'-map','0:a:0','-vn','-c:a','pcm_s16le',str(out/'audio.wav')],45)
-            if rc:raise RuntimeError('audio_decode_failed')
-            frames=out/'frames';frames.mkdir()
-            rc,s,e=run(['ffmpeg','-nostdin','-v','error','-i',str(out/'preview.mkv'),'-vf','fps=1/2','-q:v','2',str(frames/'f_%03d.jpg')],75)
-            if rc:raise RuntimeError('frames_failed')
-            rec.update(status='SAME_SOURCE_AV_INGESTED',player_response_sha256=ph,transform='stream-copy remux preserving source timing; PCM16 decode; orientation frames 0.5fps',hashes={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in [out/'preview.mkv',out/'audio.wav']})
-          except Exception as e:rec['error']=clean(str(e))
-          rec['utc']=datetime.datetime.now(datetime.timezone.utc).isoformat();(out/'receipt.json').write_text(json.dumps(rec,ensure_ascii=False,indent=2));print(json.dumps(rec,ensure_ascii=False,indent=2))
+            for label,page in wanted:
+              d=out/label;d.mkdir();rec={'label':label,'page':page.get('page'),'cid':page.get('cid'),'part':page.get('part'),'duration':page.get('duration'),'status':'FAILED'}
+              player,ph=get('https://api.bilibili.com/x/player/playurl?'+urllib.parse.urlencode({'bvid':bvid,'cid':page.get('cid'),'qn':32,'fnval':16,'fourk':0}))
+              dash=player.get('dash') or {};vs=[s for s in dash.get('video',[]) if s.get('height',9999)<=480 and str(s.get('codecs','')).startswith('avc')];ads=[s for s in dash.get('audio',[]) if s.get('codecs')=='mp4a.40.2']
+              if not vs or not ads:raise RuntimeError(label+':public_AV_missing')
+              urls=[]
+              for s in [max(vs,key=lambda x:x.get('height',0)),max(ads,key=lambda x:x.get('bandwidth',0))]:
+                u=urllib.parse.urljoin(src,s.get('baseUrl') or s.get('base_url'));parts=urllib.parse.urlsplit(u)
+                if parts.scheme not in ['http','https'] or not parts.hostname:raise RuntimeError(label+':invalid_url')
+                addrs={x[4][0] for x in socket.getaddrinfo(parts.hostname,parts.port or (443 if parts.scheme=='https' else 80))}
+                if any(not ipaddress.ip_address(x).is_global for x in addrs):raise RuntimeError(label+':nonpublic_destination')
+                urls.append(u)
+              dur=float(page.get('duration') or 0)
+              args=['ffmpeg','-nostdin','-v','warning','-copyts']+headers+['-i',urls[0]]+headers+['-i',urls[1],'-map','0:v:0','-map','1:a:0','-c','copy','-copytb','1','-avoid_negative_ts','disabled','-to',str(dur+0.5),str(d/'source.mkv')]
+              rc,s,e=run(args,150);(d/'remux.log').write_text(clean(e))
+              if rc:raise RuntimeError(label+':remux_failed')
+              rc,s,e=run(['ffmpeg','-nostdin','-v','error','-i',str(d/'source.mkv'),'-map','0:a:0','-vn','-c:a','pcm_s16le',str(d/'audio.wav')],30)
+              if rc:raise RuntimeError(label+':audio_decode_failed')
+              fr=d/'frames';fr.mkdir()
+              rc,s,e=run(['ffmpeg','-nostdin','-v','error','-i',str(d/'source.mkv'),'-vf','fps=1/1','-q:v','2',str(fr/'f_%03d.jpg')],45)
+              if rc:raise RuntimeError(label+':frames_failed')
+              rec.update(status='SAME_SOURCE_AV_INGESTED',player_response_sha256=ph,hashes={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in [d/'source.mkv',d/'audio.wav']})
+              manifest['parts'].append(rec);print(label,rec)
+            manifest['status']='ALL_THREE_PARAMETER_PARTS_INGESTED'
+          except Exception as e:manifest['error']=clean(str(e))
+          manifest['utc']=datetime.datetime.now(datetime.timezone.utc).isoformat();(out/'manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2));print(json.dumps(manifest,ensure_ascii=False,indent=2))
           PY
-      - name: One-day S09 transport
+      - name: One-day S09 relevant-parts transport
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: ace-s09-parameter-preview-${{ github.run_id }}
+          name: ace-s09-parameter-parts-${{ github.run_id }}
           path: ${{ runner.temp }}/ace-s09/out/
           retention-days: 1
           compression-level: 0

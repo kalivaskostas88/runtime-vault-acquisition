@@ -1,4 +1,4 @@
-name: temp-ace-official-route-chunks
+name: temp-ace-official-voice-json
 on:
   push:
     paths:
@@ -6,24 +6,31 @@ on:
 permissions:
   contents: read
 jobs:
-  discover:
+  fetch:
     runs-on: ubuntu-latest
     steps:
-      - name: Fetch official ACE route chunks
+      - name: Fetch official ACE female voice library JSON
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p out
-          curl -L --fail 'https://acestudio.ai/static/js/index.752b0b5e-1790155126435.js' -o out/slug.js
-          curl -L --fail 'https://acestudio.ai/static/js/cmsApi.598165eb-1790155126435.js' -o out/cmsApi.js
-          curl -L --fail 'https://acestudio.ai/static/js/index.97d592b7-1790155126435.js' -o out/vocal.js
-          wc -c out/*.js
-          grep -oiE '.{0,250}(preview|audio|voice|singer|cms|api|slug).{0,800}' out/slug.js | head -n 700 > out/slug_matches.txt || true
-          grep -oiE '.{0,250}(http|api|cms).{0,800}' out/cmsApi.js | head -n 300 > out/cms_matches.txt || true
-          grep -oiE '.{0,250}(Emma|Celestia|Elirah|Bianca|Valentina|Karolyn|preview|audio|voice).{0,800}' out/vocal.js | head -n 700 > out/vocal_matches.txt || true
-      - name: Upload chunks
+          curl -L --fail --get 'https://studio-cms.acestudio.cn/api/voice-library-pages' \
+            --data-urlencode 'locale=en' \
+            --data-urlencode 'filters[slug][$eq]=female' \
+            --data-urlencode 'pLevel=*' \
+            --data-urlencode 'populate[localizations][fields][0]=locale' \
+            --data-urlencode 'status=published' \
+            -o out/female.json
+          python - <<'PY'
+          import json
+          p='out/female.json'
+          d=json.load(open(p,encoding='utf-8'))
+          print('top',d.keys())
+          print(json.dumps(d,ensure_ascii=False)[:20000])
+          PY
+      - name: Upload official JSON
         uses: actions/upload-artifact@v4
         with:
-          name: ace-official-route-chunks
+          name: ace-official-female-json
           path: out/
           retention-days: 1

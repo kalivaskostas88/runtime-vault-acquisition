@@ -1,4 +1,4 @@
-name: temp-ai-detector-discovery
+name: temp-ai-detector-client-inspect
 on:
   push:
     paths:
@@ -6,50 +6,31 @@ on:
 permissions:
   contents: read
 jobs:
-  discover:
+  inspect:
     runs-on: ubuntu-latest
     steps:
-      - name: Discover detector routes
+      - name: Fetch detector function bundle
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p out
-          python -m pip install -q curl-cffi beautifulsoup4
+          curl -L --fail --retry 2 'https://aimusicdetector.co/assets/detect.functions-JIdp_0T3.js' -o out/detect.functions.js
           python - <<'PY'
-          from curl_cffi import requests
-          from bs4 import BeautifulSoup
-          from urllib.parse import urljoin
           from pathlib import Path
           import re,json
-          sites=['https://aimusicdetector.co/','https://www.aimusicdetect.com/','https://anyano.com/tools/ai-music-detector']
-          s=requests.Session(impersonate='chrome')
-          rep=[]
-          for i,u in enumerate(sites):
-              r=s.get(u,timeout=60,allow_redirects=True)
-              Path(f'out/page_{i}.html').write_text(r.text,encoding='utf-8',errors='ignore')
-              soup=BeautifulSoup(r.text,'html.parser')
-              scripts=[]
-              for sc in soup.find_all('script',src=True):
-                  su=urljoin(str(r.url),sc['src'])
-                  try:
-                      rr=s.get(su,timeout=60)
-                      txt=rr.text
-                      Path(f'out/script_{i}_{len(scripts)}.js').write_text(txt,encoding='utf-8',errors='ignore')
-                      scripts.append({'url':su,'status':rr.status_code,'bytes':len(rr.content)})
-                  except Exception as e:
-                      scripts.append({'url':su,'error':repr(e)})
-              blob=r.text+'\n'+''.join(Path(p).read_text(encoding='utf-8',errors='ignore') for p in [str(x) for x in Path('out').glob(f'script_{i}_*.js')])
-              hits=[]
-              for pat in [r'https?://[^"\'<>\\\s]+',r'/(?:api|v1|v2)/[^"\'<>\\\s]+']:
-                  for m in re.findall(pat,blob,re.I):
-                      if any(k in m.lower() for k in ['api','detect','upload','analy','scan','audio']): hits.append(m[:500])
-              rep.append({'site':u,'status':r.status_code,'final':str(r.url),'scripts':scripts,'hits':sorted(set(hits))[:300]})
-          Path('out/report.json').write_text(json.dumps(rep,indent=2),encoding='utf-8')
-          print('DISCOVERY_DONE')
+          t=Path('out/detect.functions.js').read_text(encoding='utf-8',errors='ignore')
+          pats=['_serverFn','supabase','functions/v1','detect','analy','provider','audioBase64','contentHash']
+          hits=[]
+          for p in pats:
+              for m in re.finditer(p,t,re.I):
+                  a=max(0,m.start()-1000);b=min(len(t),m.end()+1800)
+                  hits.append({'term':p,'offset':m.start(),'snippet':t[a:b]})
+          Path('out/hits.json').write_text(json.dumps(hits[:120],indent=2),encoding='utf-8')
+          print('CLIENT_INSPECTED',len(t),len(hits))
           PY
-      - name: Upload discovery
+      - name: Upload inspection
         uses: actions/upload-artifact@v4
         with:
-          name: ai-detector-discovery
+          name: ai-detector-client-inspect
           path: out/
           retention-days: 1

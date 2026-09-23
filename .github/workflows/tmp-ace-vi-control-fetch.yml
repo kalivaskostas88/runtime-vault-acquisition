@@ -1,4 +1,4 @@
-name: temp-ace-official-preview-discovery
+name: temp-ace-official-bundle-fetch
 on:
   push:
     paths:
@@ -9,52 +9,17 @@ jobs:
   discover:
     runs-on: ubuntu-latest
     steps:
-      - name: Discover official ACE preview assets
+      - name: Fetch official ACE site script
         shell: bash
         run: |
           set -euo pipefail
-          python -m pip install -q curl-cffi beautifulsoup4
           mkdir -p out
-          cat > /tmp/discover.py <<'PY'
-          from curl_cffi import requests
-          from pathlib import Path
-          import re, json, html
-
-          urls=[
-            'https://acestudio.ai/ai-singing-voice-generator/female/',
-            'https://acestudio.ai/ai-singing-voice-generator/r-and-b/',
-            'https://acestudio.ai/ai-singing-voice-generator/'
-          ]
-          s=requests.Session(impersonate='chrome')
-          report=[]
-          for idx,u in enumerate(urls):
-              r=s.get(u, timeout=60, allow_redirects=True)
-              text=r.text
-              Path(f'out/page_{idx}.html').write_text(text, encoding='utf-8', errors='ignore')
-              print('PAGE',idx,r.status_code,len(r.content),r.url)
-              # Keep media-like absolute URLs and context around candidate voice names.
-              raw=set(re.findall(r'https?://[^"\'<>\\\s]+', text))
-              media=[]
-              for x in raw:
-                  x=html.unescape(x).replace('\\u0026','&').replace('\\/','/')
-                  lx=x.lower()
-                  if any(k in lx for k in ['.mp3','.wav','.m4a','.ogg','.aac','.flac','audio','voice']) and x not in media:
-                      media.append(x)
-              Path(f'out/media_urls_{idx}.json').write_text(json.dumps(sorted(media),indent=2),encoding='utf-8')
-              for name in ['Emma','Celestia','Elirah','Bianca','Valentina','Ember Rose','Amber Rose','Karolyn','Oma','Jessica','Lien']:
-                  for m in re.finditer(re.escape(name), text, re.I):
-                      a=max(0,m.start()-1200); b=min(len(text),m.end()+2200)
-                      snippet=text[a:b]
-                      report.append({'page':idx,'voice':name,'offset':m.start(),'snippet':snippet})
-          Path('out/voice_contexts.json').write_text(json.dumps(report,indent=2),encoding='utf-8')
-          print('contexts',len(report))
-          PY
-          python /tmp/discover.py
-          grep -RniE 'Emma|Celestia|Elirah|Bianca|\.mp3|\.wav|audio' out/voice_contexts.json | head -n 200 > out/grep.txt || true
-          du -ah out
-      - name: Upload discovery artifact
+          curl -L --fail --retry 2 'https://acestudio.ai/static/js/index.f87a253d-1790155126435.js' -o out/index.js
+          wc -c out/index.js
+          grep -oiE '.{0,300}(Emma|Celestia|Elirah|Bianca|Valentina|Karolyn|preview|audio).{0,700}' out/index.js | head -n 500 > out/matches.txt || true
+      - name: Upload result
         uses: actions/upload-artifact@v4
         with:
-          name: ace-official-preview-discovery
+          name: ace-official-bundle
           path: out/
           retention-days: 1

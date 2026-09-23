@@ -1,4 +1,4 @@
-name: temp-celestia-reference-fetch
+name: temp-celestia-embedding-tool-fetch
 
 on:
   push:
@@ -8,108 +8,18 @@ on:
 jobs:
   fetch:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 10
     steps:
-      - name: Prepare tools
+      - name: Download Resemblyzer package with pretrained model
         shell: bash
         run: |
           set -euo pipefail
-          python -m pip install --upgrade pip
-          python -m pip install 'yt-dlp[default,curl-cffi]' curl-cffi requests
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq ffmpeg
-
-      - name: Fetch public ACE reference
-        shell: bash
-        run: |
-          set -u
           mkdir -p out
-          URL='https://audio.com/schnickltoven/audio/can-you-understand-me'
-
-          echo '=== yt-dlp browser impersonation ===' | tee out/fetch.log
-          yt-dlp \
-            --impersonate chrome \
-            --extractor-args 'generic:impersonate' \
-            --no-playlist \
-            -f 'bestaudio/best' \
-            -o 'out/ace_reference.%(ext)s' \
-            "$URL" 2>&1 | tee -a out/fetch.log || true
-
-          if ! find out -maxdepth 1 -type f \( -name 'ace_reference.*' -o -name '*.wav' -o -name '*.mp3' -o -name '*.m4a' -o -name '*.flac' -o -name '*.ogg' -o -name '*.opus' \) -size +500k | grep -q .; then
-            echo '=== curl-cffi page acquisition fallback ===' | tee -a out/fetch.log
-            cat > /tmp/fallback.py <<'PY'
-          import json, re, sys
-          from pathlib import Path
-          from urllib.parse import urljoin
-          from curl_cffi import requests
-
-          page_url='https://audio.com/schnickltoven/audio/can-you-understand-me'
-          out=Path('out')
-          s=requests.Session(impersonate='chrome')
-          r=s.get(page_url, timeout=60)
-          print('PAGE',r.status_code,len(r.content),r.url)
-          (out/'page_impersonated.html').write_bytes(r.content)
-          text=r.text
-
-          # Collect explicit media/download URLs from HTML and embedded JSON.
-          patterns=[
-              r'https?://[^"\'<>\\ ]+\.(?:wav|mp3|m4a|aac|flac|ogg|opus)(?:\?[^"\'<>\\ ]*)?',
-              r'https?://[^"\'<>\\ ]+(?:download|stream|audio)[^"\'<>\\ ]*',
-          ]
-          urls=[]
-          for pat in patterns:
-              for u in re.findall(pat,text,re.I):
-                  u=u.replace('\\u0026','&').replace('\\/','/')
-                  if u not in urls: urls.append(u)
-          # Relative href/src candidates.
-          for u in re.findall(r'(?:href|src)=["\']([^"\']+)["\']',text,re.I):
-              if any(k in u.lower() for k in ['download','stream','.wav','.mp3','.m4a','.flac','.ogg','.opus']):
-                  u=urljoin(page_url,u)
-                  if u not in urls: urls.append(u)
-          print('CANDIDATES',len(urls))
-          (out/'candidate_urls.json').write_text(json.dumps(urls,indent=2),encoding='utf-8')
-
-          headers={'Referer':page_url}
-          for i,u in enumerate(urls):
-              try:
-                  rr=s.get(u,headers=headers,timeout=90,allow_redirects=True)
-                  ct=(rr.headers.get('content-type') or '').lower()
-                  print('TRY',i,rr.status_code,ct,len(rr.content),rr.url)
-                  if rr.status_code==200 and len(rr.content)>500_000 and ('audio/' in ct or 'video/' in ct or any(e in rr.url.lower() for e in ['.wav','.mp3','.m4a','.aac','.flac','.ogg','.opus'])):
-                      if 'wav' in ct or '.wav' in rr.url.lower(): ext='.wav'
-                      elif 'mpeg' in ct or '.mp3' in rr.url.lower(): ext='.mp3'
-                      elif 'flac' in ct or '.flac' in rr.url.lower(): ext='.flac'
-                      elif 'ogg' in ct or '.ogg' in rr.url.lower(): ext='.ogg'
-                      elif 'opus' in ct or '.opus' in rr.url.lower(): ext='.opus'
-                      else: ext='.m4a'
-                      dest=out/f'ace_reference_fallback_{i}{ext}'
-                      dest.write_bytes(rr.content)
-                      print('SAVED',dest,len(rr.content))
-                      if len(rr.content)>5_000_000:
-                          sys.exit(0)
-              except Exception as e:
-                  print('ERR',i,repr(e))
-          sys.exit(2)
-          PY
-            python /tmp/fallback.py 2>&1 | tee -a out/fetch.log || true
-          fi
-
-          echo '=== files ===' | tee -a out/fetch.log
-          ls -lah out | tee -a out/fetch.log
-
-          MEDIA=$(find out -maxdepth 1 -type f \( -name 'ace_reference.*' -o -name 'ace_reference_fallback_*' -o -name '*.wav' -o -name '*.mp3' -o -name '*.m4a' -o -name '*.flac' -o -name '*.ogg' -o -name '*.opus' \) -size +500k | head -n 1)
-          if [ -z "$MEDIA" ]; then
-            echo 'NO_MEDIA_ACQUIRED'
-            exit 2
-          fi
-          echo "MEDIA=$MEDIA" | tee out/media_path.txt
-          ffprobe -v error -show_entries format=duration,size,format_name:stream=codec_name,codec_type,sample_rate,channels -of default=noprint_wrappers=1 "$MEDIA" | tee out/ffprobe.txt
-
-      - name: Upload temporary evidence artifact
-        if: always()
+          python -m pip download --no-deps 'Resemblyzer==0.1.4' -d out
+          ls -lh out
+      - name: Upload temporary tool artifact
         uses: actions/upload-artifact@v4
         with:
-          name: celestia-reference-fetch
+          name: resemblyzer-package
           path: out/
           retention-days: 1
-          if-no-files-found: warn

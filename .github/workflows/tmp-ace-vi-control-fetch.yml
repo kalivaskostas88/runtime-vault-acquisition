@@ -15,7 +15,7 @@ jobs:
           set -euo pipefail
           mkdir -p out
           python - <<'PY'
-          import json, subprocess, pathlib, re
+          import json, pathlib, re
           import urllib.request
           api='https://studio-cms.acestudio.cn/api/voice-library-pages?locale=en&filters%5Bslug%5D%5B%24eq%5D=female&pLevel=*&populate%5Blocalizations%5D%5Bfields%5D%5B0%5D=locale&status=published'
           req=urllib.request.Request(api,headers={'User-Agent':'Mozilla/5.0'})
@@ -32,19 +32,13 @@ jobs:
                   with urllib.request.urlopen(rr,timeout=90) as r, open(dest,'wb') as f:
                       f.write(r.read())
                   rows.append({'name':name,'style':v.get('style'),'url':url,'file':dest.name,'bytes':dest.stat().st_size})
-                  print(name,dest.stat().st_size)
           pathlib.Path('out/manifest.json').write_text(json.dumps(rows,indent=2,ensure_ascii=False),encoding='utf-8')
+          print('OFFICIAL_VOICES',len(rows))
           PY
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq ffmpeg
-          for f in out/*.mp3; do
-            ffprobe -v error -show_entries format=duration,size,format_name:stream=codec_name,codec_type,sample_rate,channels -of compact=p=0:nk=0 "$f" >> out/ffprobe_all.txt || true
-            echo "FILE=$f" >> out/ffprobe_all.txt
-          done
-          ls -lh out
       - name: Upload official ACE previews
         uses: actions/upload-artifact@v4
         with:
           name: ace-official-female-previews
           path: out/
           retention-days: 1
+# trigger 2026-09-24 official attribution pass

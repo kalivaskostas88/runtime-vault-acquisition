@@ -14,57 +14,41 @@ jobs:
         run: |
           set -euo pipefail
           python -m pip install -q torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
-          python -m pip install -q gdown requests
+          python -m pip install -q gdown requests soundfile
           sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg >/dev/null
           mkdir -p out
           gdown -q 1foUR3r_UGQvWho6V-V9oq_-gZ3cijvQY -O /tmp/resnet18_mixture.pth
           python - <<'PY' > out/run.txt 2>&1 || true
-          import json, requests, subprocess, torch, torchaudio
+          import json, requests, subprocess, torch, torchaudio, soundfile as sf
           import torch.nn as nn
           from pathlib import Path
           from torchvision.models import resnet18
-
           target={
             'target_t1':'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/2a/11/2a/2a112a00-6cb6-2770-d616-aed7dcf6d079/mzaf_10538498162576585059.plus.aac.p.m4a',
             'target_t2':'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/e2/29/2c/e2292cac-8fed-7501-02db-96cab64b9dfe/mzaf_1910871341432373704.plus.aac.p.m4a',
-            'target_t3':'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/9b/6d/e1/9b6de16f-a2b9-d7de-e969-dbd3bc5c5c2a/mzaf_136679358601734416.plus.aac.p.m4a'
-          }
+            'target_t3':'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/9b/6d/e1/9b6de16f-a2b9-d7de-e969-dbd3bc5c5c2a/mzaf_136679358601734416.plus.aac.p.m4a'}
           ace={
-            'ace_karolyn':'https://as-api-ws-cdn-1.tdacestudio.com/web/content/67f30a0698cca2700710c62067745d0a.mp3',
-            'ace_livia':'https://as-api-ws-cdn-1.tdacestudio.com/web/content/9bc33f4f9329e666f082354431e2b4ef.mp3',
-            'ace_jessica':'https://as-api-ws-cdn-1.tdacestudio.com/web/content/597b881ea511e3ce8ff06325e82492b8.mp3',
-            'ace_amber_rose':'https://as-api-ws-cdn-1.tdacestudio.com/web/content/413c190e1ab2778e948b8cfd388b9d64.mp3',
-            'ace_emma':'https://as-api-ws-cdn-1.tdacestudio.com/web/content/0ee417b30fe0427584652a57e1c518fe.mp3',
-            'ace_elirah':'https://as-api-ws-cdn-1.tdacestudio.com/web/content/c60f5482e1fa723c968605339f946608.mp3',
-            'ace_bianca':'https://as-api-ws-cdn-1.tdacestudio.com/web/content/45d2ed01b45610fa40d506ffa14cc962.mp3',
-            'ace_lien':'https://as-api-ws-cdn-1.tdacestudio.com/web/content/2ac7f4384d4b8d77d3ee087ac805e001.mp3',
-            'ace_celestia':'https://as-api-ws-cdn-1.tdacestudio.com/web/content/e7af455b58b236fb303411488b4df6ec.mp3',
-            'ace_valentina':'https://as-api-ws-cdn-1.tdacestudio.com/web/content/afa32b8e1094fcc7e86628c434b9b2fb.mp3'
-          }
+            'ace_karolyn':'https://as-api-ws-cdn-1.tdacestudio.com/web/content/67f30a0698cca2700710c62067745d0a.mp3','ace_livia':'https://as-api-ws-cdn-1.tdacestudio.com/web/content/9bc33f4f9329e666f082354431e2b4ef.mp3','ace_jessica':'https://as-api-ws-cdn-1.tdacestudio.com/web/content/597b881ea511e3ce8ff06325e82492b8.mp3','ace_amber_rose':'https://as-api-ws-cdn-1.tdacestudio.com/web/content/413c190e1ab2778e948b8cfd388b9d64.mp3','ace_emma':'https://as-api-ws-cdn-1.tdacestudio.com/web/content/0ee417b30fe0427584652a57e1c518fe.mp3','ace_elirah':'https://as-api-ws-cdn-1.tdacestudio.com/web/content/c60f5482e1fa723c968605339f946608.mp3','ace_bianca':'https://as-api-ws-cdn-1.tdacestudio.com/web/content/45d2ed01b45610fa40d506ffa14cc962.mp3','ace_lien':'https://as-api-ws-cdn-1.tdacestudio.com/web/content/2ac7f4384d4b8d77d3ee087ac805e001.mp3','ace_celestia':'https://as-api-ws-cdn-1.tdacestudio.com/web/content/e7af455b58b236fb303411488b4df6ec.mp3','ace_valentina':'https://as-api-ws-cdn-1.tdacestudio.com/web/content/afa32b8e1094fcc7e86628c434b9b2fb.mp3'}
           human_queries={'human_adele':'Adele Hello','human_norah':'Norah Jones Don t Know Why','human_fleetwood':'Fleetwood Mac Dreams','human_whitney':'Whitney Houston I Wanna Dance With Somebody','human_shallow':'Lady Gaga Bradley Cooper Shallow'}
-
           class Model(nn.Module):
             def __init__(self):
-              super().__init__(); self.stft=torchaudio.transforms.Spectrogram(n_fft=2048,win_length=int(.025*44100),hop_length=int(.01*44100),power=2); self.db=torchaudio.transforms.AmplitudeToDB()
-              m=resnet18(weights=None); old=m.conv1; m.conv1=nn.Conv2d(1,old.out_channels,kernel_size=old.kernel_size,stride=old.stride,padding=old.padding,bias=False); n=m.fc.in_features; m.fc=nn.Sequential(nn.Dropout(.5,inplace=True),nn.Linear(n,256),nn.ReLU(),nn.Linear(256,1)); self.model=m
+              super().__init__(); self.stft=torchaudio.transforms.Spectrogram(n_fft=2048,win_length=int(.025*44100),hop_length=int(.01*44100),power=2); self.db=torchaudio.transforms.AmplitudeToDB(); m=resnet18(weights=None); old=m.conv1; m.conv1=nn.Conv2d(1,old.out_channels,kernel_size=old.kernel_size,stride=old.stride,padding=old.padding,bias=False); n=m.fc.in_features; m.fc=nn.Sequential(nn.Dropout(.5,inplace=True),nn.Linear(n,256),nn.ReLU(),nn.Linear(256,1)); self.model=m
             def forward(self,x):
               x=self.stft(x.unsqueeze(1)); x=self.db(x); x=(x-0.449)/0.226; return self.model(x).squeeze(1)
-          model=Model(); sd=torch.load('/tmp/resnet18_mixture.pth',map_location='cpu',weights_only=False); model.load_state_dict(sd,strict=True); model.eval()
+          model=Model(); model.load_state_dict(torch.load('/tmp/resnet18_mixture.pth',map_location='cpu',weights_only=False),strict=True); model.eval()
           def score(name,url):
-            rr=requests.get(url,timeout=60); rr.raise_for_status(); src=Path('/tmp')/(name+Path(url.split('?')[0]).suffix); wav=Path('/tmp')/(name+'.wav'); src.write_bytes(rr.content)
-            subprocess.run(['ffmpeg','-loglevel','error','-y','-i',str(src),'-ac','1','-ar','44100',str(wav)],check=True)
-            x,_=torchaudio.load(str(wav)); x=x.mean(0); L=44100*4; logits=[]
+            rr=requests.get(url,timeout=60); rr.raise_for_status(); src=Path('/tmp')/(name+Path(url.split('?')[0]).suffix); wav=Path('/tmp')/(name+'.wav'); src.write_bytes(rr.content); subprocess.run(['ffmpeg','-loglevel','error','-y','-i',str(src),'-ac','1','-ar','44100','-c:a','pcm_s16le',str(wav)],check=True)
+            a,sr=sf.read(str(wav),dtype='float32'); x=torch.from_numpy(a).float(); L=44100*4; logits=[]
             for s in range(0,max(1,len(x)-L+1),L):
               z=x[s:s+L]
               if len(z)<L: break
               with torch.no_grad(): logits.append(float(model(z.unsqueeze(0))[0]))
-            p=[float(torch.sigmoid(torch.tensor(v))) for v in logits]
-            return {'bytes':len(rr.content),'chunks':len(logits),'mean_logit':sum(logits)/len(logits),'mean_bonafide_sigmoid':sum(p)/len(p),'chunk_logits':logits}
+            p=[float(torch.sigmoid(torch.tensor(v))) for v in logits]; return {'bytes':len(rr.content),'chunks':len(logits),'mean_logit':sum(logits)/len(logits),'mean_bonafide_sigmoid':sum(p)/len(p),'chunk_logits':logits}
           out={'target':{},'ace':{},'human':{}}
           for n,u in target.items(): out['target'][n]=score(n,u)
           for n,u in ace.items(): out['ace'][n]=score(n,u)
           for n,q in human_queries.items():
-            j=requests.get('https://itunes.apple.com/search',params={'term':q,'entity':'song','limit':10,'country':'US'},timeout=60).json(); cand=[x for x in j.get('results',[]) if x.get('previewUrl')]; x=cand[0]; r=score(n,x['previewUrl']); r.update({'artist':x.get('artistName'),'track':x.get('trackName'),'trackId':x.get('trackId')}); out['human'][n]=r
+            j=requests.get('https://itunes.apple.com/search',params={'term':q,'entity':'song','limit':10,'country':'US'},timeout=60).json(); x=[v for v in j.get('results',[]) if v.get('previewUrl')][0]; r=score(n,x['previewUrl']); r.update({'artist':x.get('artistName'),'track':x.get('trackName'),'trackId':x.get('trackId')}); out['human'][n]=r
           Path('out/svdd.json').write_text(json.dumps(out,indent=2),encoding='utf-8')
           print(json.dumps({k:{n:{'logit':round(v['mean_logit'],3),'bonafide':round(v['mean_bonafide_sigmoid'],3)} for n,v in d.items()} for k,d in out.items()}))
           PY

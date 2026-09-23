@@ -1,4 +1,4 @@
-name: temp-celestia-embedding-tool-fetch
+name: temp-ace-emma-reference-fetch
 
 on:
   push:
@@ -10,16 +10,24 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Download Resemblyzer package with pretrained model
+      - name: Prepare yt-dlp impersonation
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install 'yt-dlp[default,curl-cffi]' curl-cffi
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg
+      - name: Fetch declared ACE Emma reference
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p out
-          python -m pip download --no-deps 'Resemblyzer==0.1.4' -d out
-          ls -lh out
-      - name: Upload temporary tool artifact
+          URL='https://audio.com/schnickltoven/audio/precious-to-me-emma-ace-vocal-music'
+          yt-dlp --impersonate chrome --extractor-args 'generic:impersonate' --no-playlist -f 'bestaudio/best' -o 'out/emma_reference.%(ext)s' "$URL"
+          MEDIA=$(find out -type f -name 'emma_reference.*' | head -n1)
+          ffprobe -v error -show_entries format=duration,size,format_name:stream=codec_name,codec_type,sample_rate,channels -of default=noprint_wrappers=1 "$MEDIA" | tee out/ffprobe.txt
+      - name: Upload temporary Emma artifact
         uses: actions/upload-artifact@v4
         with:
-          name: resemblyzer-package
+          name: ace-emma-reference
           path: out/
           retention-days: 1

@@ -1,4 +1,4 @@
-name: temp-ace-independent-reference-fetch
+name: temp-ace-official-preview-discovery
 on:
   push:
     paths:
@@ -6,39 +6,55 @@ on:
 permissions:
   contents: read
 jobs:
-  fetch:
+  discover:
     runs-on: ubuntu-latest
     steps:
-      - name: Prepare tools
+      - name: Discover official ACE preview assets
         shell: bash
         run: |
           set -euo pipefail
-          python -m pip install -q --upgrade pip
-          python -m pip install -q 'yt-dlp[default,curl-cffi]' curl-cffi
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq ffmpeg
+          python -m pip install -q curl-cffi beautifulsoup4
           mkdir -p out
-      - name: Fetch independent declared ACE references
-        shell: bash
-        run: |
-          set -u
-          declare -A URLS
-          URLS[emma_spark]='https://www.youtube.com/watch?v=Siz-rZOvR84'
-          URLS[emma_happens]='https://www.youtube.com/watch?v=UZlpvXsM3-s'
-          URLS[bianca_arms]='https://www.youtube.com/watch?v=MMyYQyjJZPc'
-          for name in "${!URLS[@]}"; do
-            echo "=== $name ==="
-            yt-dlp --impersonate chrome --no-playlist -f 'bestaudio/best' -x --audio-format wav --audio-quality 0 -o "out/${name}.%(ext)s" "${URLS[$name]}" || true
-          done
-          for f in out/*.wav; do
-            [ -e "$f" ] || continue
-            ffprobe -v error -show_entries format=duration,size,format_name:stream=codec_name,codec_type,sample_rate,channels -of default=noprint_wrappers=1 "$f" > "$f.ffprobe.txt"
-          done
-          ls -lah out
-          test $(find out -maxdepth 1 -type f -name '*.wav' | wc -l) -ge 2
-      - name: Upload temporary artifact
+          cat > /tmp/discover.py <<'PY'
+          from curl_cffi import requests
+          from pathlib import Path
+          import re, json, html
+
+          urls=[
+            'https://acestudio.ai/ai-singing-voice-generator/female/',
+            'https://acestudio.ai/ai-singing-voice-generator/r-and-b/',
+            'https://acestudio.ai/ai-singing-voice-generator/'
+          ]
+          s=requests.Session(impersonate='chrome')
+          report=[]
+          for idx,u in enumerate(urls):
+              r=s.get(u, timeout=60, allow_redirects=True)
+              text=r.text
+              Path(f'out/page_{idx}.html').write_text(text, encoding='utf-8', errors='ignore')
+              print('PAGE',idx,r.status_code,len(r.content),r.url)
+              # Keep media-like absolute URLs and context around candidate voice names.
+              raw=set(re.findall(r'https?://[^"\'<>\\\s]+', text))
+              media=[]
+              for x in raw:
+                  x=html.unescape(x).replace('\\u0026','&').replace('\\/','/')
+                  lx=x.lower()
+                  if any(k in lx for k in ['.mp3','.wav','.m4a','.ogg','.aac','.flac','audio','voice']) and x not in media:
+                      media.append(x)
+              Path(f'out/media_urls_{idx}.json').write_text(json.dumps(sorted(media),indent=2),encoding='utf-8')
+              for name in ['Emma','Celestia','Elirah','Bianca','Valentina','Ember Rose','Amber Rose','Karolyn','Oma','Jessica','Lien']:
+                  for m in re.finditer(re.escape(name), text, re.I):
+                      a=max(0,m.start()-1200); b=min(len(text),m.end()+2200)
+                      snippet=text[a:b]
+                      report.append({'page':idx,'voice':name,'offset':m.start(),'snippet':snippet})
+          Path('out/voice_contexts.json').write_text(json.dumps(report,indent=2),encoding='utf-8')
+          print('contexts',len(report))
+          PY
+          python /tmp/discover.py
+          grep -RniE 'Emma|Celestia|Elirah|Bianca|\.mp3|\.wav|audio' out/voice_contexts.json | head -n 200 > out/grep.txt || true
+          du -ah out
+      - name: Upload discovery artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ace-independent-references
+          name: ace-official-preview-discovery
           path: out/
           retention-days: 1

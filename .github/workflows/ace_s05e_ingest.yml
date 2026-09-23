@@ -1,4 +1,4 @@
-name: ACE S09 full public progressive source recovery
+name: ACE S13 current-generation voice-mode AV ingest
 on:
   push:
     branches: [research/ace-s05e-20260922]
@@ -11,68 +11,63 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
-      - name: Prepare ffmpeg
+      - name: Prepare bounded media toolchain
         run: |
           set -euo pipefail
-          mkdir -p "$RUNNER_TEMP/ace-s09/out"
+          mkdir -p "$RUNNER_TEMP/ace-s13/out"
           if ! command -v ffmpeg >/dev/null; then sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg; fi
-      - name: Recover exact full public progressive stream and verify duration
+          python3 -m venv "$RUNNER_TEMP/ace-s13/venv"
+          "$RUNNER_TEMP/ace-s13/venv/bin/pip" install --disable-pip-version-check 'yt-dlp[default]==2026.8.19'
+      - name: Acquire one exact public ACE Studio 2.0 beta singer-mode demonstration
         env:
-          ROOT: ${{ runner.temp }}/ace-s09
+          ROOT: ${{ runner.temp }}/ace-s13
         run: |
-          python3 - <<'PY'
-          import urllib.request,urllib.parse,json,os,pathlib,hashlib,datetime,subprocess,signal,resource,re
-          root=pathlib.Path(os.environ['ROOT']);out=root/'out'; bvid='BV1za411C7vw';src='https://www.bilibili.com/video/'+bvid+'/';expected='【ACE技术预览】AI吐字、气声、假声、松弛参数调节'
-          rec={'source_url':src,'source_id':bvid,'status':'SOURCE_INGEST_FAILED','scope':'full historical ACE parameter-preview recovery for effect learning only','run_id':os.environ.get('GITHUB_RUN_ID'),'commit':os.environ.get('GITHUB_SHA')}
-          def get(u,cap=4*1024*1024):
-            req=urllib.request.Request(u,headers={'User-Agent':'ACE-public-media-research/1.0','Referer':'https://www.bilibili.com/'})
-            with urllib.request.urlopen(req,timeout=25) as f:b=f.read(cap+1)
-            if len(b)>cap:raise RuntimeError('metadata_size_limit')
-            j=json.loads(b)
-            if j.get('code')!=0:raise RuntimeError('api_denied:'+str(j.get('code'))+':'+str(j.get('message')))
-            return j['data'],hashlib.sha256(b).hexdigest()
-          def limits():resource.setrlimit(resource.RLIMIT_FSIZE,(256*1024*1024,256*1024*1024))
-          def run(a,t):
-            p=subprocess.Popen(a,stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True,start_new_session=True,preexec_fn=limits)
-            try:s,e=p.communicate(timeout=t);return p.returncode,s,e
+          "$ROOT/venv/bin/python" - <<'PY'
+          import subprocess, pathlib, os, json, hashlib, datetime, re, signal, resource
+          root=pathlib.Path(os.environ['ROOT']);out=root/'out';url='https://www.nicovideo.jp/watch/sm45426775'
+          expected_terms=['ACE Studio 2.0','VOCAL MODE']; rec={'source_url':url,'source_id':'sm45426775','status':'SOURCE_INGEST_FAILED','scope':'single public ACE Studio 2.0 beta singer-mode demonstration; production-useful mode learning only','run_id':os.environ.get('GITHUB_RUN_ID'),'commit':os.environ.get('GITHUB_SHA')}
+          ytdlp=root/'venv/bin/yt-dlp'
+          def limits(): resource.setrlimit(resource.RLIMIT_FSIZE,(192*1024*1024,192*1024*1024))
+          def run(args,timeout):
+            p=subprocess.Popen(args,stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True,start_new_session=True,preexec_fn=limits)
+            try:s,e=p.communicate(timeout=timeout);return p.returncode,s,e
             except subprocess.TimeoutExpired:
               os.killpg(p.pid,signal.SIGKILL);s,e=p.communicate();return 124,s,e+'\nTIME_LIMIT'
-          def clean(s):return re.sub(r'https?://[^\s\"\']+','[MEDIA_URL_REDACTED]',s)[-6000:]
+          def clean(s):return re.sub(r'https?://[^\s\"\']+','[URL_REDACTED]',s)[-7000:]
           try:
-            meta,mh=get('https://api.bilibili.com/x/web-interface/view?bvid='+bvid)
-            if meta.get('title')!=expected or (meta.get('rights') or {}).get('pay'):raise RuntimeError('identity_or_access_mismatch')
-            duration=float(meta.get('duration') or 0);cid=meta.get('cid');rec.update(title=meta.get('title'),description=meta.get('desc'),duration=duration,cid=cid,owner=meta.get('owner'),metadata_sha256=mh)
-            player,ph=get('https://api.bilibili.com/x/player/playurl?'+urllib.parse.urlencode({'bvid':bvid,'cid':cid,'qn':16,'fnval':0,'fourk':0}))
-            durl=player.get('durl') or []
-            if not durl:raise RuntimeError('progressive_durl_missing')
-            rec['player_flags']={k:player.get(k) for k in ['quality','format','timelength','accept_quality','is_preview']}
-            if player.get('is_preview'):raise RuntimeError('preview_response_not_admitted')
-            url=durl[0].get('url')
-            args=['ffmpeg','-nostdin','-v','warning','-user_agent','ACE-public-media-research/1.0','-headers','Referer: https://www.bilibili.com/\r\n','-i',url,'-map','0:v:0?','-map','0:a:0?','-c','copy',str(out/'full.mp4')]
-            rc,s,e=run(args,220);(out/'download.log').write_text(clean(e))
-            if rc:raise RuntimeError('progressive_download_failed:'+str(rc))
-            rc,s,e=run(['ffprobe','-v','error','-show_format','-show_streams','-of','json',str(out/'full.mp4')],25)
-            if rc:raise RuntimeError('probe_failed')
+            base=[str(ytdlp),'--ignore-config','--no-playlist','--no-progress','--no-cache-dir','--socket-timeout','20','--retries','1','--fragment-retries','1','--extractor-retries','1',url]
+            rc,s,e=run(base[:-1]+['--skip-download','--dump-single-json',url],90);(out/'probe.log').write_text(clean(e))
+            if rc: raise RuntimeError('metadata_probe_failed:'+str(rc))
+            info=json.loads(s); title=info.get('title') or ''; duration=float(info.get('duration') or 0)
+            if not all(term.lower() in title.lower() for term in expected_terms): raise RuntimeError('unexpected_title:'+title)
+            if not 0<duration<=600: raise RuntimeError('duration_limit:'+str(duration))
+            if info.get('availability') in ['private','needs_auth','subscriber_only','premium_only'] or (info.get('age_limit') or 0)>0: raise RuntimeError('restricted_source_not_admitted')
+            publicmeta={k:info.get(k) for k in ['id','title','uploader','channel','webpage_url','upload_date','duration','availability','description','tags']};(out/'metadata.json').write_text(json.dumps(publicmeta,ensure_ascii=False,indent=2))
+            args=[str(ytdlp),'--ignore-config','--no-playlist','--no-progress','--no-cache-dir','--socket-timeout','20','--retries','1','--fragment-retries','1','--extractor-retries','1','-f','bv*[height<=720]+ba/b[height<=720]','--merge-output-format','mkv','-o',str(out/'source.%(ext)s'),url]
+            rc,s,e=run(args,240);(out/'ingest.log').write_text(clean(s+'\n'+e))
+            if rc: raise RuntimeError('download_failed:'+str(rc))
+            media=[p for p in out.glob('source.*') if p.suffix in ['.mkv','.mp4','.webm']]
+            if len(media)!=1: raise RuntimeError('one_media_expected')
+            m=media[0]
+            rc,s,e=run(['ffprobe','-v','error','-show_format','-show_streams','-of','json',str(m)],25)
+            if rc: raise RuntimeError('ffprobe_failed')
             probe=json.loads(s);(out/'ffprobe.json').write_text(json.dumps(probe,indent=2));got=float(probe['format']['duration'])
-            if abs(got-duration)>2.0:raise RuntimeError('recovered_duration_mismatch:'+str(got)+' vs '+str(duration))
-            streams={x.get('codec_type') for x in probe.get('streams',[])}
-            if not {'video','audio'}.issubset(streams):raise RuntimeError('full_AV_missing')
-            rc,s,e=run(['ffmpeg','-nostdin','-v','error','-i',str(out/'full.mp4'),'-map','0:a:0','-vn','-c:a','pcm_s16le',str(out/'audio.wav')],45)
-            if rc:raise RuntimeError('audio_decode_failed')
-            fr=out/'frames';fr.mkdir()
-            rc,s,e=run(['ffmpeg','-nostdin','-v','error','-i',str(out/'full.mp4'),'-vf','fps=1/2','-q:v','2',str(fr/'f_%03d.jpg')],90)
-            if rc:raise RuntimeError('frames_failed')
-            rec.update(status='FULL_SAME_SOURCE_AV_INGESTED',player_response_sha256=ph,recovered_duration=got,durl_count=len(durl),transform='progressive source copy; PCM16 decode; orientation frames 0.5fps',hashes={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in [out/'full.mp4',out/'audio.wav']})
-          except Exception as e:
-            rec['error']=clean(str(e));(out/'full.mp4').unlink(missing_ok=True);(out/'audio.wav').unlink(missing_ok=True)
+            if abs(got-duration)>3: raise RuntimeError('duration_mismatch:'+str(got)+' vs '+str(duration))
+            if not {'video','audio'}.issubset({x.get('codec_type') for x in probe.get('streams',[])}): raise RuntimeError('AV_streams_required')
+            rc,s,e=run(['ffmpeg','-nostdin','-v','error','-i',str(m),'-map','0:a:0','-vn','-c:a','pcm_s16le',str(out/'audio.wav')],45)
+            if rc: raise RuntimeError('audio_decode_failed')
+            fr=out/'frames';fr.mkdir();rc,s,e=run(['ffmpeg','-nostdin','-v','error','-i',str(m),'-vf','fps=1/1','-q:v','2',str(fr/'f_%04d.jpg')],90)
+            if rc: raise RuntimeError('orientation_frames_failed')
+            rec.update(status='FULL_SAME_SOURCE_AV_INGESTED',duration=duration,recovered_duration=got,title=title,uploader=info.get('uploader'),transform='public yt-dlp media acquisition; no login/cookies; PCM16 decode; 1fps orientation frames',hashes={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in [m,out/'audio.wav']})
+          except Exception as ex: rec['error']=clean(str(ex))
           rec['utc']=datetime.datetime.now(datetime.timezone.utc).isoformat();(out/'receipt.json').write_text(json.dumps(rec,ensure_ascii=False,indent=2));print(json.dumps(rec,ensure_ascii=False,indent=2))
           PY
-      - name: One-day full source transport
+      - name: One-day S13 transport
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: ace-s09-full-preview-${{ github.run_id }}
-          path: ${{ runner.temp }}/ace-s09/out/
+          name: ace-s13-vocal-mode-${{ github.run_id }}
+          path: ${{ runner.temp }}/ace-s13/out/
           retention-days: 1
           compression-level: 0
           if-no-files-found: warn

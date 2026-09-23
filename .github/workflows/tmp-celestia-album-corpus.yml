@@ -1,0 +1,45 @@
+name: tmp-celestia-album-corpus
+on:
+  push:
+    paths:
+      - '.github/workflows/tmp-celestia-album-corpus.yml'
+permissions:
+  contents: read
+jobs:
+  acquire:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Acquire public Apple preview corpus
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install -q requests
+          mkdir -p out/audio
+          python - <<'PY'
+          import requests,json,re,time
+          from pathlib import Path
+          albums=['Fjord Lullaby','Harbor Bright','Whispers Beyond Time','Firelight and Fiddles','Tavern Whispers','The Lionhall Celebration','Black Tide Serenade']
+          manifest=[]
+          for album in albums:
+            q=f'celestia song {album}'
+            j=requests.get('https://itunes.apple.com/search',params={'term':q,'entity':'song','limit':100,'country':'US'},timeout=60).json()
+            rows=[x for x in j.get('results',[]) if x.get('kind')=='song' and x.get('previewUrl') and (x.get('artistName') or '').lower()=='celestia song']
+            exact=[x for x in rows if (x.get('collectionName') or '').lower()==album.lower()]
+            use=exact if exact else [x for x in rows if album.lower() in (x.get('collectionName') or '').lower()]
+            use=sorted(use,key=lambda x:x.get('trackNumber') or 999)[:2]
+            for x in use:
+              slug=re.sub(r'[^a-z0-9]+','_',album.lower()).strip('_'); tn=x.get('trackNumber') or 0; dest=Path('out/audio')/f'{slug}_{tn:02d}.m4a'
+              b=requests.get(x['previewUrl'],timeout=60).content; dest.write_bytes(b)
+              manifest.append({'album':album,'trackName':x.get('trackName'),'trackNumber':tn,'releaseDate':x.get('releaseDate'),'trackId':x.get('trackId'),'previewUrl':x.get('previewUrl'),'file':str(dest),'bytes':len(b)})
+            time.sleep(.5)
+          Path('out/manifest.json').write_text(json.dumps(manifest,indent=2,ensure_ascii=False),encoding='utf-8')
+          print('TRACKS',len(manifest))
+          for x in manifest: print(x['album'],'|',x['trackNumber'],'|',x['trackName'])
+          PY
+      - name: Upload corpus
+        uses: actions/upload-artifact@v4
+        with:
+          name: celestia-cross-album-corpus
+          path: out/
+          retention-days: 1
+          compression-level: 0

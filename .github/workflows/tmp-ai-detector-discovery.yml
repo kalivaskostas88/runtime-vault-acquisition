@@ -1,4 +1,4 @@
-name: temp-celestia-direct-detector-pass
+name: temp-celestia-apple-preview-detector
 on:
   push:
     paths:
@@ -9,72 +9,84 @@ jobs:
   analyse:
     runs-on: ubuntu-latest
     steps:
-      - name: Acquire direct public tracks and run detector UI
+      - name: Acquire Apple previews and run detector UI
         shell: bash
         run: |
           set -u
           mkdir -p out/audio out/results
-          python -m pip install -q yt-dlp selenium
+          python -m pip install -q selenium
           python - <<'PY' > out/run.log 2>&1
-          import subprocess, pathlib, json, time, traceback, os, re
+          import urllib.request, urllib.parse, json, pathlib, time, traceback
           from selenium import webdriver
           from selenium.webdriver.common.by import By
           from selenium.webdriver.chrome.options import Options
           from selenium.webdriver.support.ui import WebDriverWait
           from selenium.webdriver.support import expected_conditions as EC
-          tracks={
-            't1_tavern_whispers':'https://audiomack.com/celestia-song/song/tavern-whispers',
-            't2_echoes_silver_moon':'https://audiomack.com/celestia-song/song/echoes-through-the-silver-moon',
-            't3_lionhall':'https://audiomack.com/celestia-song/song/the-lionhall-celebration',
+          UA={'User-Agent':'Mozilla/5.0'}
+          def getjson(url):
+              return json.load(urllib.request.urlopen(urllib.request.Request(url,headers=UA),timeout=60))
+          targets={
+            't1_tavern_whispers':'Tavern Whispers',
+            't2_echoes_silver_moon':'Echoes Through the Silver Moon',
+            't3_lionhall':'The Lionhall Celebration',
           }
+          candidates=[]
+          # Known 2025 album id
+          try: candidates += getjson('https://itunes.apple.com/lookup?id=1822458876&entity=song&limit=200').get('results',[])
+          except Exception as e: print('LOOKUP_ERR',repr(e))
+          # Search broad enough to include 2026 release
+          for term in ['celestia song Tavern Whispers','celestia song The Lionhall Celebration','celestia song Echoes Through the Silver Moon']:
+              try:
+                  u='https://itunes.apple.com/search?'+urllib.parse.urlencode({'term':term,'entity':'song','limit':100})
+                  candidates += getjson(u).get('results',[])
+              except Exception as e: print('SEARCH_ERR',term,repr(e))
           acquired={}
-          for name,url in tracks.items():
-              templ=f'out/audio/{name}.%(ext)s'
-              cp=subprocess.run(['yt-dlp','--no-playlist','-f','bestaudio/best','-o',templ,url],capture_output=True,text=True,timeout=180)
-              files=list(pathlib.Path('out/audio').glob(name+'.*'))
-              acquired[name]={'url':url,'returncode':cp.returncode,'stdout':cp.stdout[-3000:],'stderr':cp.stderr[-3000:],'file':str(files[0]) if files else None,'bytes':files[0].stat().st_size if files else 0}
+          for key,title in targets.items():
+              rows=[r for r in candidates if (r.get('trackName') or '').casefold()==title.casefold() and 'celestia song' in (r.get('artistName') or '').casefold()]
+              r=rows[0] if rows else None
+              if not r or not r.get('previewUrl'):
+                  acquired[key]={'title':title,'error':'preview_not_found','matches':len(rows)}; continue
+              url=r['previewUrl']; ext='.m4a' if '.m4a' in url.lower() else '.mp4'
+              p=pathlib.Path('out/audio')/(key+ext)
+              req=urllib.request.Request(url,headers=UA); p.write_bytes(urllib.request.urlopen(req,timeout=90).read())
+              acquired[key]={'title':title,'trackId':r.get('trackId'),'collectionName':r.get('collectionName'),'previewUrl':url,'file':str(p),'bytes':p.stat().st_size}
           pathlib.Path('out/acquisition.json').write_text(json.dumps(acquired,indent=2),encoding='utf-8')
           opts=Options(); opts.add_argument('--headless=new'); opts.add_argument('--no-sandbox'); opts.add_argument('--disable-dev-shm-usage'); opts.add_argument('--window-size=1400,1200')
           allres={}
-          for name,meta in acquired.items():
-              if not meta['file']: allres[name]={'error':'acquisition_failed'}; continue
+          for key,meta in acquired.items():
+              if not meta.get('file'): allres[key]={'error':meta.get('error')}; continue
               drv=None
               try:
-                  audio=pathlib.Path(meta['file']).resolve()
-                  drv=webdriver.Chrome(options=opts); drv.get('https://aimusicdetector.co/')
-                  wait=WebDriverWait(drv,50)
-                  inp=wait.until(EC.presence_of_element_located((By.CSS_SELECTOR,'input[type=file]'))); inp.send_keys(str(audio))
-                  btn=wait.until(lambda d: next((b for b in d.find_elements(By.TAG_NAME,'button') if 'Analyse for AI music' in b.text),None))
-                  drv.execute_script('arguments[0].click()',btn)
+                  audio=pathlib.Path(meta['file']).resolve(); drv=webdriver.Chrome(options=opts); drv.get('https://aimusicdetector.co/')
+                  wait=WebDriverWait(drv,50); inp=wait.until(EC.presence_of_element_located((By.CSS_SELECTOR,'input[type=file]'))); inp.send_keys(str(audio))
+                  btn=wait.until(lambda d: next((b for b in d.find_elements(By.TAG_NAME,'button') if 'Analyse for AI music' in b.text),None)); drv.execute_script('arguments[0].click()',btn)
                   deadline=time.time()+180; body=''
                   while time.time()<deadline:
                       body=drv.find_element(By.TAG_NAME,'body').text
                       if 'AI MUSIC DETECTION RESULT' in body and 'Analysing…' not in body: break
                       if 'Analysis could not be completed' in body: break
                       time.sleep(3)
-                  pathlib.Path(f'out/results/{name}.txt').write_text(body,encoding='utf-8')
-                  drv.save_screenshot(f'out/results/{name}.png')
-                  # Extract compact report lines around the result card.
+                  pathlib.Path(f'out/results/{key}.txt').write_text(body,encoding='utf-8'); drv.save_screenshot(f'out/results/{key}.png')
                   lines=[x.strip() for x in body.splitlines() if x.strip()]
-                  keys=('AI MUSIC DETECTION RESULT','AI-generated','No AI-generated','Inconclusive','Vocal AI','Instrumental AI','Coverage','confidence','Full track analysed')
-                  compact=[x for x in lines if any(k.lower() in x.lower() for k in keys)][:80]
-                  allres[name]={'ok':True,'bytes':audio.stat().st_size,'compact':compact}
-              except Exception as e:
-                  allres[name]={'ok':False,'error':repr(e),'traceback':traceback.format_exc()}
+                  try:
+                      i=lines.index('AI MUSIC DETECTION RESULT'); report=lines[i:i+55]
+                  except ValueError: report=[]
+                  allres[key]={'ok':bool(report),'bytes':audio.stat().st_size,'report':report}
+              except Exception as e: allres[key]={'ok':False,'error':repr(e),'traceback':traceback.format_exc()}
               finally:
                   if drv:
                       try: drv.quit()
                       except: pass
           pathlib.Path('out/results.json').write_text(json.dumps(allres,indent=2),encoding='utf-8')
-          print(json.dumps({'acquired':{k:{'rc':v['returncode'],'bytes':v['bytes'],'file':v['file']} for k,v in acquired.items()},'results':allres},indent=2))
+          print(json.dumps({'acquired':acquired,'results':allres},indent=2))
           PY
           cat out/acquisition.json
           cat out/results.json
-      - name: Upload compact evidence
+      - name: Upload evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: celestia-direct-detector-pass
+          name: celestia-apple-preview-detector
           path: |
             out/acquisition.json
             out/results.json

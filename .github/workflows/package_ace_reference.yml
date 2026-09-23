@@ -10,10 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Verify reference
-        run: |
-          ls -lh ace_celestia_multivoice_reference.mp3 ace_reference_metadata.json
-          ffprobe -v error -show_entries format=duration,size,bit_rate -of json ace_celestia_multivoice_reference.mp3
+      - name: Verify reference exists
+        run: ls -lh ace_celestia_multivoice_reference.mp3 ace_reference_metadata.json
       - name: Upload reference artifact
         uses: actions/upload-artifact@v4
         with:

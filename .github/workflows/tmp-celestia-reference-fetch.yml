@@ -8,169 +8,102 @@ on:
 jobs:
   fetch:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 20
     steps:
       - name: Prepare tools
+        shell: bash
         run: |
+          set -euo pipefail
           python -m pip install --upgrade pip
-          python -m pip install yt-dlp playwright requests beautifulsoup4
-          python -m playwright install chromium
+          python -m pip install 'yt-dlp[default,curl-cffi]' curl-cffi requests
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg
 
       - name: Fetch public ACE reference
         shell: bash
         run: |
-          set -euo pipefail
+          set -u
           mkdir -p out
-          cat > /tmp/fetch_ref.py <<'PY'
-          import os, re, subprocess, sys, json, time
+          URL='https://audio.com/schnickltoven/audio/can-you-understand-me'
+
+          echo '=== yt-dlp browser impersonation ===' | tee out/fetch.log
+          yt-dlp \
+            --impersonate chrome \
+            --extractor-args 'generic:impersonate' \
+            --no-playlist \
+            -f 'bestaudio/best' \
+            -o 'out/ace_reference.%(ext)s' \
+            "$URL" 2>&1 | tee -a out/fetch.log || true
+
+          if ! find out -maxdepth 1 -type f \( -name 'ace_reference.*' -o -name '*.wav' -o -name '*.mp3' -o -name '*.m4a' -o -name '*.flac' -o -name '*.ogg' -o -name '*.opus' \) -size +500k | grep -q .; then
+            echo '=== curl-cffi page acquisition fallback ===' | tee -a out/fetch.log
+            cat > /tmp/fallback.py <<'PY'
+          import json, re, sys
           from pathlib import Path
-          import requests
-          from bs4 import BeautifulSoup
+          from urllib.parse import urljoin
+          from curl_cffi import requests
 
-          URL = 'https://audio.com/schnickltoven/audio/can-you-understand-me'
-          OUT = Path('out')
-          OUT.mkdir(exist_ok=True)
+          page_url='https://audio.com/schnickltoven/audio/can-you-understand-me'
+          out=Path('out')
+          s=requests.Session(impersonate='chrome')
+          r=s.get(page_url, timeout=60)
+          print('PAGE',r.status_code,len(r.content),r.url)
+          (out/'page_impersonated.html').write_bytes(r.content)
+          text=r.text
 
-          def media_files():
-              exts={'.wav','.mp3','.m4a','.aac','.flac','.ogg','.opus','.webm','.mp4'}
-              return [p for p in OUT.iterdir() if p.is_file() and p.suffix.lower() in exts and p.stat().st_size > 100_000]
+          # Collect explicit media/download URLs from HTML and embedded JSON.
+          patterns=[
+              r'https?://[^"\'<>\\ ]+\.(?:wav|mp3|m4a|aac|flac|ogg|opus)(?:\?[^"\'<>\\ ]*)?',
+              r'https?://[^"\'<>\\ ]+(?:download|stream|audio)[^"\'<>\\ ]*',
+          ]
+          urls=[]
+          for pat in patterns:
+              for u in re.findall(pat,text,re.I):
+                  u=u.replace('\\u0026','&').replace('\\/','/')
+                  if u not in urls: urls.append(u)
+          # Relative href/src candidates.
+          for u in re.findall(r'(?:href|src)=["\']([^"\']+)["\']',text,re.I):
+              if any(k in u.lower() for k in ['download','stream','.wav','.mp3','.m4a','.flac','.ogg','.opus']):
+                  u=urljoin(page_url,u)
+                  if u not in urls: urls.append(u)
+          print('CANDIDATES',len(urls))
+          (out/'candidate_urls.json').write_text(json.dumps(urls,indent=2),encoding='utf-8')
 
-          # Preserve page HTML for evidence/debugging.
-          try:
-              r=requests.get(URL,timeout=30,headers={'User-Agent':'Mozilla/5.0'})
-              (OUT/'page.html').write_bytes(r.content)
-              print('PAGE',r.status_code,len(r.content),r.url)
-          except Exception as e:
-              print('PAGE_ERR',repr(e))
-
-          # First attempt: yt-dlp generic extraction.
-          try:
-              cmd=['yt-dlp','--no-playlist','-f','bestaudio/best','-o',str(OUT/'ace_reference.%(ext)s'),URL]
-              print('YT_DLP',cmd)
-              subprocess.run(cmd,check=False)
-          except Exception as e:
-              print('YT_DLP_ERR',repr(e))
-
-          if not media_files():
-              from playwright.sync_api import sync_playwright
-              print('PLAYWRIGHT_FALLBACK')
-              with sync_playwright() as pw:
-                  browser=pw.chromium.launch(headless=True)
-                  page=browser.new_page(accept_downloads=True)
-                  candidates=[]
-                  def on_response(resp):
-                      try:
-                          ct=(resp.headers.get('content-type') or '').lower()
-                          u=resp.url
-                          if ('audio/' in ct or 'video/' in ct or any(x in u.lower() for x in ['.mp3','.wav','.m4a','.aac','.flac','.ogg','.opus','.m3u8','stream','download'])):
-                              candidates.append({'url':u,'content_type':ct,'status':resp.status})
-                              print('MEDIA_CANDIDATE',resp.status,ct,u)
-                      except Exception as e:
-                          print('RESP_ERR',repr(e))
-                  page.on('response',on_response)
-                  page.goto(URL,wait_until='domcontentloaded',timeout=120000)
-                  page.wait_for_timeout(5000)
-
-                  # Trigger playback so media network requests become visible.
-                  for selector in ["button:has-text('Play')", "text=Play"]:
-                      try:
-                          loc=page.locator(selector).first
-                          if loc.count():
-                              loc.click(timeout=5000)
-                              page.wait_for_timeout(8000)
-                              break
-                      except Exception as e:
-                          print('PLAY_CLICK_ERR',selector,repr(e))
-
-                  # Try the site's own Download button if exposed.
-                  try:
-                      dl=page.get_by_text('Download',exact=True).first
-                      if dl.count():
-                          print('DOWNLOAD_BUTTON_FOUND')
-                          try:
-                              with page.expect_download(timeout=15000) as di:
-                                  dl.click()
-                              download=di.value
-                              suggested=download.suggested_filename or 'ace_reference_download.bin'
-                              dest=OUT/suggested
-                              download.save_as(str(dest))
-                              print('DOWNLOAD_SAVED',dest,dest.stat().st_size)
-                          except Exception as e:
-                              print('DOWNLOAD_EVENT_ERR',repr(e))
-                              try:
-                                  dl.click(timeout=5000)
-                                  page.wait_for_timeout(5000)
-                              except Exception:
-                                  pass
-                  except Exception as e:
-                      print('DOWNLOAD_BUTTON_ERR',repr(e))
-
-                  # Record browser resource URLs and visible DOM audio sources.
-                  try:
-                      perf=page.evaluate("performance.getEntriesByType('resource').map(e=>e.name)")
-                  except Exception:
-                      perf=[]
-                  try:
-                      domsrc=page.evaluate("Array.from(document.querySelectorAll('audio,video,source')).map(e=>e.src||e.currentSrc).filter(Boolean)")
-                  except Exception:
-                      domsrc=[]
-                  all_urls=[]
-                  for x in candidates:
-                      all_urls.append(x['url'])
-                  all_urls += perf + domsrc
-                  uniq=[]
-                  for u in all_urls:
-                      if u and u not in uniq:
-                          uniq.append(u)
-                  (OUT/'media_candidates.json').write_text(json.dumps({'responses':candidates,'urls':uniq},indent=2),encoding='utf-8')
-                  print('URL_COUNT',len(uniq))
-
-                  # Try direct retrieval of candidate media URLs. Prefer substantial audio/video responses.
-                  sess=requests.Session()
-                  sess.headers.update({'User-Agent':'Mozilla/5.0','Referer':URL})
-                  for i,u in enumerate(uniq):
-                      ul=u.lower()
-                      if not (any(x in ul for x in ['.mp3','.wav','.m4a','.aac','.flac','.ogg','.opus','.m3u8','stream','download']) or 'audio' in ul):
-                          continue
-                      try:
-                          rr=sess.get(u,timeout=45,allow_redirects=True)
-                          ct=(rr.headers.get('content-type') or '').lower()
-                          print('CAND_FETCH',i,rr.status_code,ct,len(rr.content),rr.url)
-                          if rr.status_code==200 and len(rr.content)>300_000 and ('audio/' in ct or 'video/' in ct or any(x in rr.url.lower() for x in ['.mp3','.wav','.m4a','.aac','.flac','.ogg','.opus'])):
-                              ext='.bin'
-                              for e in ['.wav','.mp3','.m4a','.aac','.flac','.ogg','.opus','.webm','.mp4']:
-                                  if e in rr.url.lower(): ext=e; break
-                              if 'wav' in ct: ext='.wav'
-                              elif 'mpeg' in ct and 'audio' in ct: ext='.mp3'
-                              elif 'mp4' in ct: ext='.m4a'
-                              dest=OUT/f'ace_reference_candidate_{i}{ext}'
-                              dest.write_bytes(rr.content)
-                              print('CAND_SAVED',dest,len(rr.content))
-                              if len(rr.content)>5_000_000:
-                                  break
-                      except Exception as e:
-                          print('CAND_ERR',i,repr(e))
-                  browser.close()
-
-          files=media_files()
-          print('MEDIA_FILES_FINAL',[(str(p),p.stat().st_size) for p in files])
-          if not files:
-              sys.exit(2)
+          headers={'Referer':page_url}
+          for i,u in enumerate(urls):
+              try:
+                  rr=s.get(u,headers=headers,timeout=90,allow_redirects=True)
+                  ct=(rr.headers.get('content-type') or '').lower()
+                  print('TRY',i,rr.status_code,ct,len(rr.content),rr.url)
+                  if rr.status_code==200 and len(rr.content)>500_000 and ('audio/' in ct or 'video/' in ct or any(e in rr.url.lower() for e in ['.wav','.mp3','.m4a','.aac','.flac','.ogg','.opus'])):
+                      if 'wav' in ct or '.wav' in rr.url.lower(): ext='.wav'
+                      elif 'mpeg' in ct or '.mp3' in rr.url.lower(): ext='.mp3'
+                      elif 'flac' in ct or '.flac' in rr.url.lower(): ext='.flac'
+                      elif 'ogg' in ct or '.ogg' in rr.url.lower(): ext='.ogg'
+                      elif 'opus' in ct or '.opus' in rr.url.lower(): ext='.opus'
+                      else: ext='.m4a'
+                      dest=out/f'ace_reference_fallback_{i}{ext}'
+                      dest.write_bytes(rr.content)
+                      print('SAVED',dest,len(rr.content))
+                      if len(rr.content)>5_000_000:
+                          sys.exit(0)
+              except Exception as e:
+                  print('ERR',i,repr(e))
+          sys.exit(2)
           PY
-          python /tmp/fetch_ref.py | tee out/fetch.log
-          ls -lah out
+            python /tmp/fallback.py 2>&1 | tee -a out/fetch.log || true
+          fi
 
-      - name: Inspect fetched media
-        if: always()
-        shell: bash
-        run: |
-          for f in out/*; do
-            if [ -f "$f" ]; then
-              echo "==== $f ===="
-              file "$f" || true
-              ffprobe -v error -show_entries format=duration,size,format_name:stream=codec_name,codec_type,sample_rate,channels -of default=noprint_wrappers=1 "$f" || true
-            fi
-          done | tee out/inspect.log
+          echo '=== files ===' | tee -a out/fetch.log
+          ls -lah out | tee -a out/fetch.log
+
+          MEDIA=$(find out -maxdepth 1 -type f \( -name 'ace_reference.*' -o -name 'ace_reference_fallback_*' -o -name '*.wav' -o -name '*.mp3' -o -name '*.m4a' -o -name '*.flac' -o -name '*.ogg' -o -name '*.opus' \) -size +500k | head -n 1)
+          if [ -z "$MEDIA" ]; then
+            echo 'NO_MEDIA_ACQUIRED'
+            exit 2
+          fi
+          echo "MEDIA=$MEDIA" | tee out/media_path.txt
+          ffprobe -v error -show_entries format=duration,size,format_name:stream=codec_name,codec_type,sample_rate,channels -of default=noprint_wrappers=1 "$MEDIA" | tee out/ffprobe.txt
 
       - name: Upload temporary evidence artifact
         if: always()

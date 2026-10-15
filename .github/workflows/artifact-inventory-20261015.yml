@@ -1,0 +1,35 @@
+name: Runtime Vault Actions Artifact Inventory
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/maintenance/artifact_inventory_request_20261015.json
+permissions:
+  contents: write
+  actions: read
+jobs:
+  inventory:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - name: Read artifact inventory without deletion
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python3 - <<'PY'
+          import os,urllib.request,json,base64
+          repo='kalivaskostas88/runtime-vault-acquisition'
+          h={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28','User-Agent':'artifact-inventory'}
+          result=[]
+          for page in range(1,101):
+            req=urllib.request.Request(f'https://api.github.com/repos/{repo}/actions/artifacts?per_page=100&page={page}',headers=h)
+            with urllib.request.urlopen(req,timeout=25) as f: batch=json.load(f)['artifacts']
+            result.extend([dict(id=x['id'],name=x['name'],bytes=x['size_in_bytes'],created=x['created_at'],expires=x['expires_at'],run_id=(x.get('workflow_run') or {}).get('id')) for x in batch])
+            if len(batch)<100:break
+          out={'date':'2026-10-15','total_count':len(result),'total_bytes':sum(x['bytes'] for x in result),'artifacts':result,'no_deletions':True}
+          data={'message':'Record read-only artifact inventory for cleanup review','branch':'main','content':base64.b64encode(json.dumps(out,indent=2).encode()).decode()}
+          req=urllib.request.Request(f'https://api.github.com/repos/{repo}/contents/.github/maintenance/artifact_inventory_20261015.json',data=json.dumps(data).encode(),method='PUT',headers=h)
+          with urllib.request.urlopen(req,timeout=25) as f: print('INVENTORY_WRITTEN',f.status,'COUNT',len(result),'BYTES',out['total_bytes'])
+          PY

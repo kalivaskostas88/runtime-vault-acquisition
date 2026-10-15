@@ -1,0 +1,6 @@
+{
+  "action": "INVENTORY_ARTIFACT_STORAGE",
+  "date": "2026-10-15",
+  "read_only": true,
+  "user_approved_cleanup": true
+}

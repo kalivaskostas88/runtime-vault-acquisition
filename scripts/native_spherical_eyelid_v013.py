@@ -108,6 +108,8 @@ def build(variant,out):
     scene.render.engine='BLENDER_WORKBENCH'
     scene.display.shading.light='STUDIO';scene.display.shading.color_type='MATERIAL';scene.display.shading.show_shadows=True
     scene.display.shading.show_cavity=True
+    if scene.world is None:
+        scene.world=bpy.data.worlds.new('EYE_LAB_WORLD')
     scene.world.color=(.11,.12,.15)
     skin=mat('Skin_Warm',(.71,.44,.33))
     eye=mat('Eyeball_Ivory',(.93,.91,.82))

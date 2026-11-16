@@ -72,7 +72,7 @@ jobs:
             test -s "orbit_v015/$variant/${variant}_NATIVE.mp4"
           done
           find orbit_v015 -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > orbit_v015/SHA256SUMS.txt
-          test "$(wc -l < orbit_v015/SHA256SUMS.txt)" -eq 33
+          test "$(wc -l < orbit_v015/SHA256SUMS.txt)" -eq 36
           sha256sum -c orbit_v015/SHA256SUMS.txt
       - uses: actions/upload-artifact@v4
         if: always()

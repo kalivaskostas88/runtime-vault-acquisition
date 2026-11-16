@@ -56,7 +56,9 @@ jobs:
             test -s "native_proof/$variant/${variant}_REOPEN_PASS.json"
             test -s "native_proof/$variant/${variant}_frame_0048.png"
           done
-          find native_proof -type f -print0 | sort -z | xargs -0 sha256sum > native_proof/SHA256SUMS.txt
+          find native_proof -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > native_proof/SHA256SUMS.txt
+          test "$(wc -l < native_proof/SHA256SUMS.txt)" -eq 24
+          sha256sum --check native_proof/SHA256SUMS.txt
       - uses: actions/upload-artifact@v4
         if: always()
         with:

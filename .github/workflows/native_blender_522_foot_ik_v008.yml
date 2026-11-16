@@ -1,0 +1,66 @@
+name: Isolated Native Blender 5.2.2 Foot Lock Microproof V008
+
+# Isolated research branch, original assets only; push-triggered one-time native test.
+# Existing guarded GS001 production assets are not referenced.
+on:
+  push:
+    branches:
+      - research/native-foot-lock-v008-20261116
+    paths:
+      - .github/workflows/native_blender_522_foot_ik_v008.yml
+      - scripts/native_foot_lock_v001.py
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  native-foot-ik:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - name: Acquire verified official Blender 5.2.2
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/blender522"
+          cd "$RUNNER_TEMP/blender522"
+          curl --fail --location --silent --show-error --connect-timeout 30 --max-time 300 -o blender-5.2.2-linux-x64.tar.xz https://download.blender.org/release/Blender5.2/blender-5.2.2-linux-x64.tar.xz
+          curl --fail --location --silent --show-error --connect-timeout 30 --max-time 60 -o blender-5.2.2.sha256 https://download.blender.org/release/Blender5.2/blender-5.2.2.sha256
+          grep 'blender-5.2.2-linux-x64.tar.xz' blender-5.2.2.sha256 | sha256sum -c -
+          tar -xf blender-5.2.2-linux-x64.tar.xz
+          echo "$RUNNER_TEMP/blender522/blender-5.2.2-linux-x64" >> "$GITHUB_PATH"
+      - name: Install required display libraries
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq libegl1 libgl1 libglx-mesa0 libgbm1 libx11-6 libxkbcommon0 libxi6 libxfixes3 libxrender1 libxcursor1 libxinerama1
+          blender --version
+      - name: Build and independently fresh-reopen each native rig
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p native_proof
+          for variant in STEP SPLINE BAD_PARENT; do
+            blender -b --factory-startup --python scripts/native_foot_lock_v001.py -- build "$variant" "native_proof/$variant"
+            blender -b "native_proof/$variant/$variant.blend" --python scripts/native_foot_lock_v001.py -- verify "$variant" "native_proof/$variant"
+          done
+      - name: Verify generated artifacts are present
+        shell: bash
+        run: |
+          set -euo pipefail
+          for variant in STEP SPLINE BAD_PARENT; do
+            test -s "native_proof/$variant/$variant.blend"
+            test -s "native_proof/$variant/${variant}_REOPEN_PASS.json"
+            test -s "native_proof/$variant/${variant}_frame_0048.png"
+          done
+          find native_proof -type f -print0 | sort -z | xargs -0 sha256sum > native_proof/SHA256SUMS.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: native-foot-ik-v008-proof
+          path: native_proof/
+          retention-days: 7
+          if-no-files-found: warn

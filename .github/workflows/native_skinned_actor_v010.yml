@@ -1,0 +1,79 @@
+name: Isolated Native Blender Skinned Character V010
+on:
+  push:
+    branches:
+      - research/native-skinned-actor-v010-20261116
+    paths:
+      - scripts/native_skinned_actor_v010.py
+      - .github/workflows/native_skinned_actor_v010.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native-skin-acting-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - name: Acquire exactly Blender 5.2.2 and verify vendor manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/blender522"
+          cd "$RUNNER_TEMP/blender522"
+          curl --fail --location --silent --show-error --connect-timeout 30 --max-time 300 -o blender-5.2.2-linux-x64.tar.xz https://download.blender.org/release/Blender5.2/blender-5.2.2-linux-x64.tar.xz
+          curl --fail --location --silent --show-error --connect-timeout 30 --max-time 60 -o blender-5.2.2.sha256 https://download.blender.org/release/Blender5.2/blender-5.2.2.sha256
+          grep 'blender-5.2.2-linux-x64.tar.xz' blender-5.2.2.sha256 | sha256sum -c -
+          tar -xf blender-5.2.2-linux-x64.tar.xz
+          echo "$RUNNER_TEMP/blender522/blender-5.2.2-linux-x64" >> "$GITHUB_PATH"
+      - name: Install headless libraries
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq libegl1 libgl1 libglx-mesa0 libgbm1 libx11-6 libxkbcommon0 libxi6 libxfixes3 libxrender1 libxcursor1 libxinerama1 ffmpeg
+          blender --version | head -6
+      - name: Build real skinned armatures and fresh-reopen semantic audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          for variant in STAGGERED SIMULTANEOUS BAD_WEIGHTS; do
+            mkdir -p "actor_v010/$variant"
+            blender -b --factory-startup --python scripts/native_skinned_actor_v010.py -- build "$variant" "actor_v010/$variant"
+            blender -b "actor_v010/$variant/$variant.blend" --python scripts/native_skinned_actor_v010.py -- verify "$variant" "actor_v010/$variant"
+          done
+      - name: Render full native animations and probe videos
+        shell: bash
+        run: |
+          set -euo pipefail
+          for variant in STAGGERED SIMULTANEOUS BAD_WEIGHTS; do
+            mkdir -p "actor_v010/$variant/frames"
+            blender -b "actor_v010/$variant/$variant.blend" -o "$GITHUB_WORKSPACE/actor_v010/$variant/frames/frame_####" -F PNG -s 1 -e 72 -a
+            ffmpeg -hide_banner -loglevel error -y -framerate 24 -i "actor_v010/$variant/frames/frame_%04d.png" -c:v libx264 -preset fast -crf 19 -pix_fmt yuv420p "actor_v010/$variant/${variant}_NATIVE.mp4"
+            ffprobe -v error -select_streams v:0 -count_frames -show_entries stream=width,height,r_frame_rate,nb_read_frames -show_entries format=duration,size -of json "actor_v010/$variant/${variant}_NATIVE.mp4" > "actor_v010/$variant/${variant}_VIDEO_PROBE.json"
+            count=$(ffprobe -v error -select_streams v:0 -count_frames -show_entries stream=nb_read_frames -of csv=p=0 "actor_v010/$variant/${variant}_NATIVE.mp4")
+            fps=$(ffprobe -v error -select_streams v:0 -show_entries stream=r_frame_rate -of csv=p=0 "actor_v010/$variant/${variant}_NATIVE.mp4")
+            test "$count" = "72"
+            test "$fps" = "24/1"
+            rm -r "actor_v010/$variant/frames"
+          done
+      - name: Independent immutable artifact manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          for variant in STAGGERED SIMULTANEOUS BAD_WEIGHTS; do
+            test -s "actor_v010/$variant/$variant.blend"
+            test -s "actor_v010/$variant/${variant}_REOPEN.json"
+            test -s "actor_v010/$variant/${variant}_frame_0048.png"
+            test -s "actor_v010/$variant/${variant}_NATIVE.mp4"
+          done
+          find actor_v010 -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > actor_v010/SHA256SUMS.txt
+          test "$(wc -l < actor_v010/SHA256SUMS.txt)" -eq 27
+          sha256sum --check actor_v010/SHA256SUMS.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: isolated-native-skinned-character-v010
+          path: actor_v010/
+          retention-days: 7
+          if-no-files-found: warn

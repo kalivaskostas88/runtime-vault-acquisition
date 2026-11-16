@@ -174,7 +174,7 @@ def build_scene(variant):
     bpy.context.collection.objects.link(camera)
     camera.location=(0,-4.8,.05)
     camera.rotation_euler=(Vector((0,0,-.02))-camera.location).to_track_quat('-Z','Y').to_euler()
-    camdata.type='ORTHO';camdata.ortho_scale=2.42;sc.camera=camera
+    camdata.type='ORTHO';camdata.ortho_scale=2.78;sc.camera=camera
     sc.render.engine='BLENDER_WORKBENCH'
     sc.display.shading.light='STUDIO'
     sc.display.shading.color_type='MATERIAL'

@@ -47,6 +47,22 @@ jobs:
             blender -b --factory-startup --python scripts/native_foot_lock_v001.py -- build "$variant" "native_proof/$variant"
             blender -b "native_proof/$variant/$variant.blend" --python scripts/native_foot_lock_v001.py -- verify "$variant" "native_proof/$variant"
           done
+      - name: Render actual 96-frame 24fps native Blender videos
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! command -v ffmpeg >/dev/null 2>&1; then sudo apt-get install -y -qq ffmpeg; fi
+          for variant in STEP SPLINE BAD_PARENT; do
+            mkdir -p "native_proof/$variant/frames"
+            blender -b "native_proof/$variant/$variant.blend" -o "$GITHUB_WORKSPACE/native_proof/$variant/frames/frame_####" -F PNG -s 1 -e 96 -a
+            ffmpeg -hide_banner -loglevel error -y -framerate 24 -i "native_proof/$variant/frames/frame_%04d.png" -c:v libx264 -preset veryfast -crf 21 -pix_fmt yuv420p "native_proof/$variant/${variant}_NATIVE.mp4"
+            ffprobe -v error -select_streams v:0 -count_frames -show_entries stream=width,height,r_frame_rate,nb_read_frames -show_entries format=duration,size -of json "native_proof/$variant/${variant}_NATIVE.mp4" > "native_proof/$variant/${variant}_VIDEO_PROBE.json"
+            count=$(ffprobe -v error -select_streams v:0 -count_frames -show_entries stream=nb_read_frames -of csv=p=0 "native_proof/$variant/${variant}_NATIVE.mp4")
+            fps=$(ffprobe -v error -select_streams v:0 -show_entries stream=r_frame_rate -of csv=p=0 "native_proof/$variant/${variant}_NATIVE.mp4")
+            test "$count" = "96"
+            test "$fps" = "24/1"
+            rm -r "native_proof/$variant/frames"
+          done
       - name: Verify generated artifacts are present
         shell: bash
         run: |
@@ -55,9 +71,11 @@ jobs:
             test -s "native_proof/$variant/$variant.blend"
             test -s "native_proof/$variant/${variant}_REOPEN_PASS.json"
             test -s "native_proof/$variant/${variant}_frame_0048.png"
+            test -s "native_proof/$variant/${variant}_NATIVE.mp4"
+            test -s "native_proof/$variant/${variant}_VIDEO_PROBE.json"
           done
           find native_proof -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > native_proof/SHA256SUMS.txt
-          test "$(wc -l < native_proof/SHA256SUMS.txt)" -eq 24
+          test "$(wc -l < native_proof/SHA256SUMS.txt)" -eq 30
           sha256sum --check native_proof/SHA256SUMS.txt
       - uses: actions/upload-artifact@v4
         if: always()

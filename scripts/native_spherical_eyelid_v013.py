@@ -126,12 +126,12 @@ def build(variant,out):
         guide('UPPER_GUIDE_'+tag,x,z,center,variant)
     # Iris and pupil move over visible sphere; this is a synthetic animation,
     # not measured biological gaze or a true embedded ophthalmic mesh.
-    ir=ellipsoid('IRIS',(0,-.523,-.015),(.133,.017,.133),iris,segments=48,rings=24)
-    pu=ellipsoid('PUPIL',(0,-.543,-.015),(.065,.009,.065),pupil,segments=40,rings=20)
+    ir=ellipsoid('IRIS',(0,-.507,-.015),(.133,.017,.133),iris,segments=48,rings=24)
+    pu=ellipsoid('PUPIL',(0,-.522,-.015),(.065,.009,.065),pupil,segments=40,rings=20)
     for f,k in ((1,0),(12,0),(24,1),(45,1),(60,0),(72,0)):
         x=.10*k;z=.043*k-.015
         y=-math.sqrt(max(.01,RADIUS**2-x*x-z*z))
-        ir.location=(x,y-.008,z);pu.location=(x,y-.028,z)
+        ir.location=(x,y+.013,z);pu.location=(x,y-.002,z)
         ir.keyframe_insert(data_path='location',frame=f);pu.keyframe_insert(data_path='location',frame=f)
     # Camera: look straight into eye; no production character or borrowed art.
     cam_data=bpy.data.cameras.new('CAMERA_DATA');cam=bpy.data.objects.new('CAMERA',cam_data)
@@ -167,6 +167,7 @@ def evaluate(variant):
     assert up.data.shape_keys.key_blocks.get('BLINK')
     assert all(e.constraints[0].type=='LIMIT_DISTANCE' for e in guide_objs)
     all_radial=[];all_guide=[];samples=[]
+    layer_clearance=[]
     for f in POSES:
         scene.frame_set(f);deps=bpy.context.evaluated_depsgraph_get()
         upper=evaluated_vertices(up,deps);lower=evaluated_vertices(lo,deps)
@@ -175,18 +176,26 @@ def evaluate(variant):
         er=max(abs(v.length-GUIDE_RADIUS) for v in upper+lower)
         ge=max(abs(e.evaluated_get(deps).matrix_world.translation.length-GUIDE_RADIUS) for e in guide_objs)
         all_radial.append(er);all_guide.append(ge)
+        # Anatomically simplified 3D depth ordering: pupil front-most vertex
+        # must be behind the analytical front sphere plus lid offset.
+        pp=bpy.data.objects['PUPIL'].evaluated_get(deps)
+        px,pz=pp.matrix_world.translation.x,pp.matrix_world.translation.z
+        ideal_eye_front=-math.sqrt(max(.01,RADIUS*RADIUS-px*px-pz*pz))
+        pup_front=pp.matrix_world.translation.y-.009
+        layer_clearance.append(pup_front-(ideal_eye_front-OFFSET))
         mid=NX//2
         margin_gap=(upper[mid*NV]-lower[mid*NV]).length
         samples.append({'frame':f,'radial_error_max_m':round(er,7),
                         'guide_radial_error_max_m':round(ge,7),
                         'lid_middle_aperture_m':round(margin_gap,7),
                         'blink':round(float(up.data.shape_keys.key_blocks['BLINK'].value),5)})
-    mxr=max(all_radial);mxg=max(all_guide)
+    mxr=max(all_radial);mxg=max(all_guide);min_depth=min(layer_clearance)
     close=[s['lid_middle_aperture_m'] for s in samples if s['frame']==32][0]
     opening=[s['lid_middle_aperture_m'] for s in samples if s['frame']==1][0]
     if variant=='ATTACHED':passing=mxr<.025 and mxg<.0002 and close<.020 and opening>.30
     elif variant=='FLOATING':passing=mxr>.075 and mxg<.0002 and close<.020 and opening>.30
     else:passing=mxr<.025 and mxg>.060 and close<.020 and opening>.30
+    passing=passing and min_depth>.0005
     return {'proof':ROOT,'variant':variant,'runtime':bpy.app.version_string,
             'geometry_mechanism':'native Shrinkwrap surface modifier on shape-key ribbon',
             'guide_mechanism':'native Limit Distance constraint ON_SURFACE',
@@ -194,6 +203,7 @@ def evaluate(variant):
             'max_ribbon_radial_error_m':round(mxr,8),
             'max_guide_radial_error_m':round(mxg,8),
             'open_aperture_m':opening,'closed_aperture_m':close,
+            'minimum_pupil_behind_lid_clearance_m':round(min_depth,7),
             'expected_gate_pass':bool(passing),'samples':samples,
             'scope_ceiling':'mechanical spherical adhesion only, not anatomically continuous face or professional acting',
             'artistic_status':'NOT_REVIEWED','GS001':'UNTOUCHED'}

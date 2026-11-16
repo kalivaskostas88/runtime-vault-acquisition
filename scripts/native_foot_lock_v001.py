@@ -109,9 +109,11 @@ def rig_and_targets(variant):
     for side,x in POSITIONS.items():
         thigh=arm.edit_bones.new(side+'_THIGH')
         thigh.head=(x,0,0)
-        thigh.tail=(x,0,-0.50)
+        thigh.tail=(x,-0.10,-0.50)
         shin=arm.edit_bones.new(side+'_SHIN')
-        shin.head=(x,0,-0.50)
+        # Intentional small rest-knee bend (Y<0) to avoid collinear IK singularity.
+        # V008 first native run: perfectly straight rest chain missed target by 0.06m.
+        shin.head=(x,-0.10,-0.50)
         shin.tail=(x,0,-1.04)
         shin.parent=thigh
         shin.use_connect=True

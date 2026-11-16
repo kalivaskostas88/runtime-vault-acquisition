@@ -8,6 +8,7 @@ CLI: blender -b --factory-startup --python ... -- build VARIANT OUT
 import bpy, json, sys, math
 from pathlib import Path
 from mathutils import Vector
+from bpy_extras.object_utils import world_to_camera_view
 
 FPS, LAST = 24, 72
 VALID=('STAGGERED','SIMULTANEOUS','BAD_WEIGHTS')
@@ -210,12 +211,12 @@ def char_art(actor,variant,targets):
     camd=bpy.data.cameras.new('SHOT_CAMERA');cam=bpy.data.objects.new('SHOT_CAMERA',camd)
     bpy.context.collection.objects.link(cam)
     cam.location=(2.0,-5.8,2.40)
-    look=Vector((0.21,0,1.10));cam.rotation_euler=(look-cam.location).to_track_quat('-Z','Y').to_euler()
-    camd.type='ORTHO';camd.ortho_scale=2.95;bpy.context.scene.camera=cam
+    look=Vector((0.21,0,1.18));cam.rotation_euler=(look-cam.location).to_track_quat('-Z','Y').to_euler()
+    camd.type='ORTHO';camd.ortho_scale=4.20;bpy.context.scene.camera=cam
     sc=bpy.context.scene;sc.render.engine='BLENDER_WORKBENCH'
     sc.display.shading.light='STUDIO';sc.display.shading.color_type='MATERIAL'
     sc.display.shading.show_shadows=True;sc.display.shading.show_cavity=True
-    sc.render.resolution_x=560;sc.render.resolution_y=420;sc.render.resolution_percentage=100
+    sc.render.resolution_x=640;sc.render.resolution_y=480;sc.render.resolution_percentage=100
     sc.render.image_settings.file_format='PNG'
     sc.render.film_transparent=False
     # Reactions: same start and end, only timing differs.
@@ -302,9 +303,29 @@ def evaluate(variant):
     sum_shin=sum(sum(g.weight for g in v.groups if skins['L'].vertex_groups[g.group].name=='L_SHIN') for v in skins['L'].data.vertices)
     if variant=='BAD_WEIGHTS' and sum_shin!=0:raise RuntimeError('Bad weights negative control not isolated')
     if variant!='BAD_WEIGHTS' and sum_shin<50:raise RuntimeError('Shin skin weights unexpectedly missing')
+    # Independent shot-camera framing: ALL head/hair top + both planted soles
+    # must remain safely within render. The first real V010 run had mechanical
+    # PASS but CUT OFF THE FACE; that is a genuine shot-qualification failure.
+    cam=sc.camera
+    frame_margin=1.0
+    for f in (1,24,48,LAST):
+        sc.frame_set(f);dep=bpy.context.evaluated_depsgraph_get()
+        head=bpy.data.objects['HEAD'].evaluated_get(dep)
+        points=[head.matrix_world @ Vector((0,0,.345))]
+        for side in SIDES:
+            shoe=bpy.data.objects[side+'_SHOE'].evaluated_get(dep)
+            points.append(shoe.matrix_world @ Vector((0,0,-.078)))
+        for pos in points:
+            pr=world_to_camera_view(sc,cam,pos)
+            if pr.z<=0:raise RuntimeError('Camera target behind camera')
+            frame_margin=min(frame_margin,pr.x,1-pr.x,pr.y,1-pr.y)
+            if not (0.048<pr.x<.952 and 0.048<pr.y<.952):
+                raise RuntimeError('CAMERA_FRAMING_FAIL: character cropped at frame '
+                                   +str(f)+' projection='+str(tuple(round(v,5) for v in pr)))
     out={'status':'MECHANICAL_PASS','variant':variant,'blender':bpy.app.version_string,
          'frames':LAST,'fps':FPS,'vertices_per_leg':RING_N*SECTORS,
          'max_ik_tip_error_m':round(max_tip,8),
+         'minimum_camera_subject_margin_normalized':round(frame_margin,6),
          'max_skin_ankle_gap_m':round(mx_good,8),
          'max_native_deformation_m':round(mx_change,8),
          'shin_weight_total_left':round(sum_shin,5),

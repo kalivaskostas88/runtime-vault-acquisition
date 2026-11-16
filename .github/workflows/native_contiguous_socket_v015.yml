@@ -1,0 +1,83 @@
+name: Native Blender Continuous Orbital Socket V015
+on:
+  push:
+    branches: [research/continuous-orbital-skin-v015-20261117]
+    paths:
+      - scripts/native_contiguous_socket_v015.py
+      - .github/workflows/native_contiguous_socket_v015.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  continuous-skin-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - name: Recover verified Blender runtime if cached
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/animation-blender/blender-5.2.2-linux-x64.tar.xz
+          key: blender-522-linux-x64-84098912789dc450e95697c4184fb8a90acbe5111c2ba4aede3fecb57806a168
+      - name: Acquire official verified Blender 5.2.2
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$HOME/.cache/animation-blender" "$RUNNER_TEMP/blender522"
+          ARCHIVE="$HOME/.cache/animation-blender/blender-5.2.2-linux-x64.tar.xz"
+          EXPECTED='84098912789dc450e95697c4184fb8a90acbe5111c2ba4aede3fecb57806a168'
+          if [ ! -s "$ARCHIVE" ]; then
+            curl -fLsS --connect-timeout 30 --max-time 260 -o "$ARCHIVE.tmp" \
+              https://download.blender.org/release/Blender5.2/blender-5.2.2-linux-x64.tar.xz || \
+            curl -fLsS --connect-timeout 30 --max-time 260 -o "$ARCHIVE.tmp" \
+              https://mirror.blender.org/release/Blender5.2/blender-5.2.2-linux-x64.tar.xz
+            mv "$ARCHIVE.tmp" "$ARCHIVE"
+          fi
+          printf '%s  %s\n' "$EXPECTED" "$ARCHIVE" | sha256sum -c -
+          tar -xf "$ARCHIVE" -C "$RUNNER_TEMP/blender522"
+          echo "$RUNNER_TEMP/blender522/blender-5.2.2-linux-x64" >> "$GITHUB_PATH"
+      - name: Install graphics and video tools
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq libegl1 libgl1 libglx-mesa0 libgbm1 libx11-6 libxkbcommon0 libxi6 libxfixes3 libxrender1 libxcursor1 libxinerama1 ffmpeg
+          blender --version | head -6
+      - name: Build and fresh-reopen three contiguous orbital-skin variants
+        run: |
+          set -euo pipefail
+          for variant in CONNECTED TORN_RING RIGID_WEIGHTS; do
+            mkdir -p "orbit_v015/$variant"
+            blender -b --factory-startup --python scripts/native_contiguous_socket_v015.py -- build "$variant" "orbit_v015/$variant"
+            blender -b "orbit_v015/$variant/$variant.blend" --python scripts/native_contiguous_socket_v015.py -- verify "$variant" "orbit_v015/$variant"
+          done
+      - name: Render full original Blender motion videos
+        run: |
+          set -euo pipefail
+          for variant in CONNECTED TORN_RING RIGID_WEIGHTS; do
+            mkdir -p "orbit_v015/$variant/frames"
+            blender -b "orbit_v015/$variant/$variant.blend" -o "$GITHUB_WORKSPACE/orbit_v015/$variant/frames/frame_####" -F PNG -s 1 -e 72 -a
+            ffmpeg -hide_banner -loglevel error -y -framerate 24 -i "orbit_v015/$variant/frames/frame_%04d.png" -c:v libx264 -preset fast -crf 21 -pix_fmt yuv420p "orbit_v015/$variant/${variant}_NATIVE.mp4"
+            ffprobe -v error -select_streams v:0 -count_frames -show_entries stream=width,height,r_frame_rate,nb_read_frames -show_entries format=duration,size -of json "orbit_v015/$variant/${variant}_NATIVE.mp4" > "orbit_v015/$variant/${variant}_VIDEO_PROBE.json"
+            test "$(ffprobe -v error -select_streams v:0 -count_frames -show_entries stream=nb_read_frames -of csv=p=0 "orbit_v015/$variant/${variant}_NATIVE.mp4")" = 72
+            test "$(ffprobe -v error -select_streams v:0 -show_entries stream=r_frame_rate -of csv=p=0 "orbit_v015/$variant/${variant}_NATIVE.mp4")" = 24/1
+            rm -rf "orbit_v015/$variant/frames"
+          done
+      - name: Independent immutable artifact hashes
+        run: |
+          set -euo pipefail
+          for variant in CONNECTED TORN_RING RIGID_WEIGHTS; do
+            test -s "orbit_v015/$variant/$variant.blend"
+            test -s "orbit_v015/$variant/${variant}_REOPEN.json"
+            test -s "orbit_v015/$variant/${variant}_frame_0032.png"
+            test -s "orbit_v015/$variant/${variant}_NATIVE.mp4"
+          done
+          find orbit_v015 -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > orbit_v015/SHA256SUMS.txt
+          test "$(wc -l < orbit_v015/SHA256SUMS.txt)" -eq 33
+          sha256sum -c orbit_v015/SHA256SUMS.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: native-continuous-orbit-v015
+          path: orbit_v015/
+          retention-days: 7
+          if-no-files-found: warn

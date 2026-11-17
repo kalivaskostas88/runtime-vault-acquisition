@@ -1,0 +1,116 @@
+{
+  "schema": "V047_DENSE_TIME_CODED_ORIGINAL_SOURCE",
+  "source_url": "https://studio.blender.org/training/stylized-character-workflow/timelapse-sculpting-snows-head/",
+  "source_sha256": "c3757ca7d1b6c4939b37b30c0c1815038f70b0484148c91475e77d90ef8e6455",
+  "source_bytes": 551631531,
+  "windows": [
+    {
+      "id": "W01",
+      "start": 125.0,
+      "end": 155.0,
+      "fps": 4,
+      "topic": "planar eyes nose lips build against same front/profile concept",
+      "frames_actual": 120,
+      "contact_sheets": 2,
+      "contact_sha256": {
+        "DENSE_00.jpg": "519e63abcbc666c094aefda63142b36fe0db9018eb0a0e1376d94313a8df6fb7",
+        "DENSE_01.jpg": "048b6ea4455877159a9aea785bf805e5ab2a078fa7dc49654a34add227f9af06"
+      }
+    },
+    {
+      "id": "W02",
+      "start": 395.0,
+      "end": 441.0,
+      "fps": 4,
+      "topic": "real globe and eyelid curvature silhouette with concept and finished studio reference",
+      "frames_actual": 184,
+      "contact_sheets": 3,
+      "contact_sha256": {
+        "DENSE_00.jpg": "09d37f577e42ad3b5c67c56731cf9d888b620277d2edd06381287abf1a6fb4c1",
+        "DENSE_01.jpg": "0f50cfafa51bdb56c153fac25e857817df63db612166c3486fa1849206c94a36",
+        "DENSE_02.jpg": "8a7c298cd8b30be02e7e11544419704977288296f849b6b0e5d9a65650347b5e"
+      }
+    },
+    {
+      "id": "W03",
+      "start": 570.0,
+      "end": 607.0,
+      "fps": 4,
+      "topic": "professional nose lip cheek and neck multi-angle comparison",
+      "frames_actual": 148,
+      "contact_sheets": 3,
+      "contact_sha256": {
+        "DENSE_00.jpg": "c280a100a1e8cb421a1db20c1496581de89e68ae8011745098c25e250dd416f8",
+        "DENSE_01.jpg": "d5aa5226ac19886a613526f742c0c8a2d0866f10ff587be041334b1781306ecd",
+        "DENSE_02.jpg": "51268077e8e1568a8c2a80cfd670c3e249b9b1a5de395530de619fef10d8fb0e"
+      }
+    },
+    {
+      "id": "W04",
+      "start": 742.0,
+      "end": 801.0,
+      "fps": 8,
+      "topic": "critical eye region upper lower lid corner and local sculpt along reference",
+      "frames_actual": 472,
+      "contact_sheets": 8,
+      "contact_sha256": {
+        "DENSE_00.jpg": "9d67f07de6ac7b77a5d9a6b44f5932a3ab0906d49323366e2c5985d7a0b210a0",
+        "DENSE_01.jpg": "ad8b726de256492b00a6ea40e2b4c47b770154e03901e629d6be2b61f233f09c",
+        "DENSE_02.jpg": "ddb65f8d6c4d58fe49d8abab3396a556c364d95abdc73f060bf38bb9a6c5d639",
+        "DENSE_03.jpg": "6165ab5f4de5ed6301186395513ff629a00b61dd417ff34e84f4ae507215758b",
+        "DENSE_04.jpg": "340b654ac21c64c98afc01d3cfad1ead8b82a831aae6ba7dd8b27e82809ba7d2",
+        "DENSE_05.jpg": "5288053f21490a3f5f2fc7e9e367139805da34ee7e61922ce4509c30bbf82ae4",
+        "DENSE_06.jpg": "b26266d0eec7072e029e559693432ec7be12477a24eb2538659fd5cf740440c7",
+        "DENSE_07.jpg": "b4be5b2f7b30bd030d7169e6c322a50fb2ed56fd3955214ba29a264ee579ddec"
+      }
+    },
+    {
+      "id": "W05",
+      "start": 904.0,
+      "end": 930.0,
+      "fps": 4,
+      "topic": "iris materials globe appearance actual eyedirection visual decisions",
+      "frames_actual": 104,
+      "contact_sheets": 2,
+      "contact_sha256": {
+        "DENSE_00.jpg": "d9739fb45c9d2eb3b0acac833cdf56a8133d826dcf9d12c8ce419d65b2e6ee14",
+        "DENSE_01.jpg": "fa04224092ca78ec994bf210f3f737665e47091ab3e874fba30d36e3a7e427d2"
+      }
+    },
+    {
+      "id": "W06",
+      "start": 1000.0,
+      "end": 1045.0,
+      "fps": 4,
+      "topic": "eyebrow placement brow globe and profile actual design match",
+      "frames_actual": 180,
+      "contact_sheets": 3,
+      "contact_sha256": {
+        "DENSE_00.jpg": "25815b61ead12f6bac7e4291a5577c554cf1a972f906204db55fc4fb93ad7c40",
+        "DENSE_01.jpg": "748d272034b98bfcb5a4dd06a7aa2a0ac0a9e29709ace5af2721909e32c8057e",
+        "DENSE_02.jpg": "935b6596ef89b9f9719496302369f4f22cdbb5b5725739dee17aa7eceeee32da"
+      }
+    },
+    {
+      "id": "W07",
+      "start": 1650.0,
+      "end": 1720.0,
+      "fps": 4,
+      "topic": "final frontal side oblique and low professional reference-led design check",
+      "frames_actual": 280,
+      "contact_sheets": 5,
+      "contact_sha256": {
+        "DENSE_00.jpg": "bbfc79594571907c7e58af48eaef6766f56f511f1221fa9a6cb9aed078b00952",
+        "DENSE_01.jpg": "5851a92db3132380523ed3675b4af9f0da602d2217c3ba3faa62edd2f4e448a3",
+        "DENSE_02.jpg": "94e4dda29b73a130adf325ba8a90b03d32b7c124c8ca45b39e28f7a086f6d985",
+        "DENSE_03.jpg": "7466de13dfd375dccc2a91a34423c36c29432bd507a3433ba2d8ee6755582f99",
+        "DENSE_04.jpg": "6b095026e30ae921066381e0973f7933429af9de680a2bf6fcfc8fd8bdd0e323"
+      }
+    }
+  ],
+  "status": "DENSE_7_ORIGINAL_AV_WINDOWS_INDEXED_PASS",
+  "visual_review": "NOT_YET_REVIEWED",
+  "audio_listening": "NOT_PERCEPTUALLY_AUDITED",
+  "art": "HOLD",
+  "gs001": "UNTOUCHED"
+}

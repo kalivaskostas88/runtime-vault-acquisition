@@ -1,0 +1,15 @@
+{
+  "version": "V037C",
+  "native_blender_reopen": "PASS",
+  "blender": "5.2.2 LTS",
+  "source_blend_sha256": "d620f36c42551047c86f707d3f47db3c4e40d55d6908460382ed3be1fd1107d3",
+  "original_mesh_vertices": 15202,
+  "sculpt_mask_unmasked_vertices": 248,
+  "vertices_moved_after_reopen": 124,
+  "changed_remote_vertices": 0,
+  "max_after_reopen": 0.06419716282459188,
+  "preview_hashes_verified": 6,
+  "art": "HOLD",
+  "GS001": "UNTOUCHED",
+  "scope": "NATIVE_BRUSH_MASKED_LOCALITY_ONLY_NOT_ARTISTIC_FACE_OR_BLINK"
+}

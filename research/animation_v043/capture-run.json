@@ -2,5 +2,7 @@
   "intent": "capture_complete_original_authorized_cc_by_video",
   "date": "2026-11-17",
   "rights": "public Free License CC-BY official Blender Studio",
-  "source": "https://studio.blender.org/training/stylized-character-workflow/5d3a1c494980f083715e40ed/"
+  "source": "https://studio.blender.org/training/stylized-character-workflow/5d3a1c494980f083715e40ed/",
+  "attempt": "V043B",
+  "only_repair": "Install ffmpeg + ffprobe missing on Ubuntu 26.04 runner; no source change."
 }

@@ -15,6 +15,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Prepare original media inspection
         run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg
           python -m pip install --quiet pillow requests
           ffmpeg -version | head -1
           ffprobe -version | head -1

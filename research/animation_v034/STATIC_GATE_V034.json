@@ -1,0 +1,124 @@
+{
+  "version": "V034",
+  "static_tests": {
+    "closed_original_target": true,
+    "no_nonmanifold_edges": true,
+    "expected_sculpt_resolution": true,
+    "sculpt_is_not_retpo": true,
+    "symmetry_l_r": true,
+    "nasal_tip_in_front_of_bridge": true,
+    "nasal_tip_in_front_of_malar": true,
+    "nostril_inset_bounded": true,
+    "all_finite": true,
+    "smooth_c2_nasal_field": true,
+    "anatomical_landmarks_present": true,
+    "negative_outside_domain_rejected": true,
+    "wrong_profile_rejected": true
+  },
+  "passed": 13,
+  "total": 13,
+  "sculpt_metrics": {
+    "vertices": 9090,
+    "faces": 9216,
+    "quads": 8960,
+    "pole_triangles": 256,
+    "edge_2use_fraction": 1.0,
+    "open_boundary_edges": 0,
+    "overconnected_edges": 0,
+    "center_tip_y": -1.1681681292604542,
+    "center_dorsum_y": -0.9848805241908124,
+    "malar_cheek_y": -0.6270572037849349,
+    "inner_canthus_y": -0.718478660603687,
+    "centerline_depth_delta_tip_minus_dorsum": -0.1832876050696418,
+    "nasal_second_derivative_proxy_max": 22.483523563130188,
+    "scope": "ORIGINAL_TARGET_SCULPT_SHAPE_ONLY_NOT_RETOPO_NOT_ANATOMY_CERTIFIED"
+  },
+  "landmarks": {
+    "glabella": [
+      0,
+      -0.7621099950400962,
+      0.63
+    ],
+    "nasal_root": [
+      0,
+      -0.8254936491657031,
+      0.45
+    ],
+    "nasal_dorsum": [
+      0,
+      -0.9848805241908124,
+      0.15
+    ],
+    "nasal_tip": [
+      0,
+      -1.1681681292604542,
+      -0.145
+    ],
+    "left_ala": [
+      -0.23,
+      -1.0852773791514123,
+      -0.19
+    ],
+    "right_ala": [
+      0.23,
+      -1.0852773791514123,
+      -0.19
+    ],
+    "left_nostril_recess": [
+      -0.2,
+      -0.9591342082682632,
+      -0.31
+    ],
+    "right_nostril_recess": [
+      0.2,
+      -0.9591342082682632,
+      -0.31
+    ],
+    "left_inner_canthus": [
+      -0.305,
+      -0.718478660603687,
+      0.4
+    ],
+    "right_inner_canthus": [
+      0.305,
+      -0.718478660603687,
+      0.4
+    ],
+    "left_outer_canthus": [
+      -0.99,
+      -0.5203942870092405,
+      0.4
+    ],
+    "right_outer_canthus": [
+      0.99,
+      -0.5203942870092405,
+      0.4
+    ],
+    "left_cheek_malar": [
+      -0.98,
+      -0.6270572037849349,
+      -0.17
+    ],
+    "right_cheek_malar": [
+      0.98,
+      -0.6270572037849349,
+      -0.17
+    ],
+    "philtrum": [
+      0,
+      -0.9430216405320588,
+      -0.43
+    ],
+    "upper_lip": [
+      0,
+      -0.863390999823286,
+      -0.61
+    ],
+    "chin": [
+      0,
+      -0.6554845696614795,
+      -1.04
+    ]
+  },
+  "claim": "STATIC ORIGINAL TARGET SCULPT ONLY; no native Blender or artistic quality certified"
+}

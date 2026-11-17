@@ -1,0 +1,43 @@
+{
+  "version": "V037",
+  "scope": "MINIMAL_NATIVE_REAL_SCULPT_STROKE_FEASIBILITY_ONLY",
+  "blender": "5.2.2 LTS",
+  "source_method": [
+    "https://docs.blender.org/api/5.2/bpy.ops.sculpt.html",
+    "https://developer.blender.org/docs/release_notes/4.3/sculpt/",
+    "https://studio.blender.org/training/stylized-character-workflow/5d3a1fe14980f083715e410f/"
+  ],
+  "brush_asset_activated": true,
+  "operator_called": true,
+  "geometry_modified": true,
+  "art_pass": false,
+  "original_face_changed": false,
+  "GS001": "UNTOUCHED",
+  "vertices": 8066,
+  "brush_name": "Draw",
+  "asset_result": [
+    "CANCELLED"
+  ],
+  "asset_errors": [],
+  "brush_info": {
+    "name": "Draw",
+    "size": 70,
+    "strength": 0.5,
+    "sculpt_tool": null
+  },
+  "stroke_points": 17,
+  "operator_result": [
+    "FINISHED"
+  ],
+  "deformation": {
+    "changed_vertices_gt_1e_7": 2861,
+    "max_vertex_displacement": 1.3117102766572342,
+    "rms_displacement": 0.6266618920261131
+  },
+  "blend_file": {
+    "name": "v037_original_native_sculpt_probe.blend",
+    "size": 379712,
+    "sha256": "efd3735002726f1f26b5436d5e340f42be2ed936ed0307fc8edf2078cb911f53"
+  },
+  "status": "PASS_NATIVE_BRUSH_CHANGE"
+}

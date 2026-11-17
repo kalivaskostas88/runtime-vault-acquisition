@@ -26,7 +26,12 @@ jobs:
           grep 'blender-5.2.2-linux-x64.tar.xz' blender-5.2.2.sha256 | sha256sum -c -
           tar -xJf blender-5.2.2-linux-x64.tar.xz
           echo "BLENDER_BIN=$RUNNER_TEMP/blender522/blender-5.2.2-linux-x64/blender" >> "$GITHUB_ENV"
-      - name: Install Blender Linux graphics runtime dependencies\n        run: |\n          sudo apt-get update -qq\n          sudo apt-get install -y -qq --no-install-recommends libegl1 libgl1 libgl1-mesa-dri libegl-mesa0 libxi6 libxkbcommon0 libxxf86vm1 libxfixes3 libxrender1 libsm6 libx11-6 libxext6 xvfb\n          ldconfig -p | grep libEGL.so.1\n      - name: Build, native render, measured 3D raycast occlusion
+      - name: Install Blender Linux graphics runtime dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq --no-install-recommends libegl1 libgl1 libgl1-mesa-dri libegl-mesa0 libxi6 libxkbcommon0 libxxf86vm1 libxfixes3 libxrender1 libsm6 libx11-6 libxext6 xvfb
+          ldconfig -p | grep libEGL.so.1
+      - name: Build, native render, measured 3D raycast occlusion
         shell: bash
         env:
           ANIMATION_V029_OUT: ${{ github.workspace }}/research/animation_v029/native_output

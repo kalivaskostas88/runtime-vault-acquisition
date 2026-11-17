@@ -1,0 +1,111 @@
+{
+  "schema": "V043_DENSE_TIME_CODED_ORIGINAL_SOURCE",
+  "source_url": "https://studio.blender.org/training/stylized-character-workflow/5d3a1c494980f083715e40ed/",
+  "source_sha256": "efbbd98eb0b268f8ccd4e7743ad1acae2f9fd3121b51fd904e9c682cfcfadb93",
+  "source_bytes": 154083652,
+  "windows": [
+    {
+      "id": "W01",
+      "start": 48.0,
+      "end": 67.0,
+      "fps": 4,
+      "topic": "broad head before early secondary eye socket",
+      "frames_actual": 76,
+      "contact_sheets": 2,
+      "contact_sha256": {
+        "DENSE_00.jpg": "11074fdf24c412b0c25f5a65d95dd7d559300ee7f199a29d7ed6f98e7503bf23",
+        "DENSE_01.jpg": "05f7249c8204ba42423beac0906cc3802f994cba7d1832b066b484208310eb98"
+      }
+    },
+    {
+      "id": "W02",
+      "start": 167.0,
+      "end": 185.0,
+      "fps": 4,
+      "topic": "temporary eyes carved into head not detached spheres",
+      "frames_actual": 72,
+      "contact_sheets": 2,
+      "contact_sha256": {
+        "DENSE_00.jpg": "e43ccba0692d95a8577cddd90e5939c789c6205e70770b1e1397a40bf6fe3621",
+        "DENSE_01.jpg": "ebeafd025c1e0964b34eb4d676c82a0dd486724ef634aa55e57d5483d7010451"
+      }
+    },
+    {
+      "id": "W03",
+      "start": 464.0,
+      "end": 491.0,
+      "fps": 4,
+      "topic": "eyelid broad geometry and three-quarter viewing",
+      "frames_actual": 108,
+      "contact_sheets": 2,
+      "contact_sha256": {
+        "DENSE_00.jpg": "665e84b06d450dae13a3b20fcf9a3b03fa8a5e07f934777084f4ab10b06a5f2f",
+        "DENSE_01.jpg": "1a70908c0e3444ff4bdf48907f16f4302c4d46b80a0656d8cbd724d7097d7488"
+      }
+    },
+    {
+      "id": "W04",
+      "start": 615.0,
+      "end": 651.0,
+      "fps": 8,
+      "topic": "teacher replaces sculpted eyes with sphere and masks cavity",
+      "frames_actual": 288,
+      "contact_sheets": 5,
+      "contact_sha256": {
+        "DENSE_00.jpg": "27e22fb710fe1e15ba87f61e7ca882d4737126d53c7b348d3bd55ed32b0b8147",
+        "DENSE_01.jpg": "3a9f588a14f8c5886337e0cabad54ba2a2bcabc05a5681a506c743e992797711",
+        "DENSE_02.jpg": "f876f1cfde0468f73544d7f4d494783f6049a9ff0bb93a82295baa3edc2b7e9d",
+        "DENSE_03.jpg": "7c628f987117807f3611c3aa5f6912b35359dca983dea2a87e33b4c654466a80",
+        "DENSE_04.jpg": "3501fd23d33ad6fa98f82e5628b31f474ab07d7982d1efa86aeee3171283e550"
+      }
+    },
+    {
+      "id": "W05",
+      "start": 680.0,
+      "end": 732.0,
+      "fps": 4,
+      "topic": "iris mask shrink and eyelid conform to globe",
+      "frames_actual": 208,
+      "contact_sheets": 4,
+      "contact_sha256": {
+        "DENSE_00.jpg": "7245c80a6488641656d4147dbd0bcb52db1746027abfcb800df7ec190582c779",
+        "DENSE_01.jpg": "76baef862a96b5c02da37235da2c89d98b6ff486949b530ac1fd1a604a31044e",
+        "DENSE_02.jpg": "f4f5e2e772ac4edccb443cda4b550a9587e75f3accf75b96f9abde6b3c0b9249",
+        "DENSE_03.jpg": "e83cf3e63020d09d7b4bb478bdd4091d54eb07c7cd9ef538b5ea974414c9e570"
+      }
+    },
+    {
+      "id": "W06",
+      "start": 827.0,
+      "end": 893.0,
+      "fps": 4,
+      "topic": "sculpted brow removal and detached eyebrow mask experiment",
+      "frames_actual": 264,
+      "contact_sheets": 5,
+      "contact_sha256": {
+        "DENSE_00.jpg": "426b54648d4fdd4da9b5062bb27a08d9caab7e48116ab47edb0f2cba30a3d76f",
+        "DENSE_01.jpg": "78d441df8cebf6462733c0f41d9f22b527de691d0fd5df50fdb7f524406eed15",
+        "DENSE_02.jpg": "67a291132a6bb27b79d76aa3ce7b1e7a070890379456b27b0f5d22b6b4ca40d3",
+        "DENSE_03.jpg": "2d402619cbfbad0ff055860bb91ddbf78a561a3b8f68aafdf97e56957ce6150f",
+        "DENSE_04.jpg": "0938126d704a8c2e2a9962fddaaa4c88f45be47c3ca884c3583469dda5223e1e"
+      }
+    },
+    {
+      "id": "W07",
+      "start": 920.0,
+      "end": 936.0,
+      "fps": 4,
+      "topic": "brow-to-nose edge balance",
+      "frames_actual": 64,
+      "contact_sheets": 1,
+      "contact_sha256": {
+        "DENSE_00.jpg": "a5f081c12e55e58bc78c97211682978c182de14220e9a9f34e7aee0059fdb77c"
+      }
+    }
+  ],
+  "status": "DENSE_7_ORIGINAL_AV_WINDOWS_INDEXED_PASS",
+  "visual_review": "NOT_YET_REVIEWED",
+  "audio_listening": "NOT_PERCEPTUALLY_AUDITED",
+  "art": "HOLD",
+  "gs001": "UNTOUCHED"
+}

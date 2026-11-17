@@ -1,0 +1,26 @@
+{
+  "version": "V046_NEW_BLENDER_PROCESS_SAVED_MODEL_AUDIT",
+  "status": "V046_INDEPENDENT_FRESH_READBACK_PASS",
+  "GS001": "UNTOUCHED",
+  "art": "HOLD",
+  "blend_sha256": "7dc9cec54d35ea10402da5b3bda58b0347fec62787244f5c356fa446dfed5443",
+  "ray_labels": [
+    "upper_L",
+    "upper_R",
+    "lower_L",
+    "lower_R",
+    "socket_center_L",
+    "socket_center_R",
+    "remote_forehead",
+    "remote_jaw",
+    "remote_temple"
+  ],
+  "topology": {
+    "vertices": 12911,
+    "faces": 12859,
+    "boundary": 0,
+    "nonmanifold": 0,
+    "components": 1
+  },
+  "render_sha_verified": 8
+}

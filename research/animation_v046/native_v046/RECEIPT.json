@@ -1,0 +1,207 @@
+{
+  "version": "V046",
+  "source": "Kaspar original full CC-BY V043 10:15–12:17; Blender Studio professional tissue/brow advice; original independent V039 head",
+  "method": "SAME_ORIGINAL_CONNECTED_HEAD_MESH_ORBITAL_RELIEF_NOT_FINISHED_EYELIDS",
+  "GS001": "UNTOUCHED",
+  "art": "HOLD",
+  "design_four_view": "NOT_APPROVED",
+  "native": "NATIVE_CONNECTED_ORBITAL_RELIEF_SCOPED_PASS",
+  "rig": "NOT_RUN",
+  "blink": "NOT_RUN",
+  "retopo": "NOT_RUN",
+  "cross_backend": "NOT_RUN",
+  "input_original": "V039 original parametric head source, not V040B historical saved artifact",
+  "variable": "add paired upper and lower broad flesh volumes to original head",
+  "params": {
+    "upper_z": 0.71,
+    "lower_z": 0.145,
+    "upper_a": 0.103,
+    "lower_a": 0.08,
+    "x_centers": [
+      -0.44,
+      0.44
+    ],
+    "cut_y": -0.92,
+    "cut_z": 0.43,
+    "cut_radii": [
+      0.305,
+      0.4,
+      0.22
+    ],
+    "globe_center_y": -0.66,
+    "globe_r": 0.245,
+    "one_relief_variable": "add paired upper and lower broad flesh volumes to original head"
+  },
+  "relief_before_cut": {
+    "modified": 644,
+    "upper": 374,
+    "lower": 270,
+    "remote": 0,
+    "min_displacement": -0.10185872141444034,
+    "max_displacement": 0.0
+  },
+  "base_before_cut_topology": {
+    "vertices": 11650,
+    "faces": 11776,
+    "boundary": 0,
+    "nonmanifold": 0,
+    "components": 1,
+    "signed_volume": 5.208429857313705
+  },
+  "treated_before_cut_topology": {
+    "vertices": 11650,
+    "faces": 11776,
+    "boundary": 0,
+    "nonmanifold": 0,
+    "components": 1,
+    "signed_volume": 5.244509000773935
+  },
+  "preflight_negative_controls": {
+    "NEG_NO_POSITIVE_RELIEF": true,
+    "NEG_REMOTE_UNAUTHORIZED_DELTA": true,
+    "NEG_WRONG_BOOLEAN_OPERATION": true,
+    "NEG_WRONG_BOOLEAN_SOLVER": true
+  },
+  "baseline_topology": {
+    "vertices": 12650,
+    "faces": 12644,
+    "boundary": 0,
+    "nonmanifold": 0,
+    "components": 1,
+    "signed_volume": 5.164481571628668
+  },
+  "treatment_topology": {
+    "vertices": 12911,
+    "faces": 12859,
+    "boundary": 0,
+    "nonmanifold": 0,
+    "components": 1,
+    "signed_volume": 5.195722209252207
+  },
+  "actual_raycast_comparison": [
+    {
+      "label": "upper_L",
+      "x": -0.44,
+      "z": 0.79,
+      "baseline_y": -0.6402006149291992,
+      "treated_y": -0.7199904918670654,
+      "forward_relief_delta": -0.07978987693786621
+    },
+    {
+      "label": "upper_R",
+      "x": 0.44,
+      "z": 0.79,
+      "baseline_y": -0.6401610374450684,
+      "treated_y": -0.7201504707336426,
+      "forward_relief_delta": -0.07998943328857422
+    },
+    {
+      "label": "lower_L",
+      "x": -0.44,
+      "z": 0.085,
+      "baseline_y": -0.8349545001983643,
+      "treated_y": -0.9048643112182617,
+      "forward_relief_delta": -0.06990981101989746
+    },
+    {
+      "label": "lower_R",
+      "x": 0.44,
+      "z": 0.085,
+      "baseline_y": -0.8349583148956299,
+      "treated_y": -0.9048688411712646,
+      "forward_relief_delta": -0.06991052627563477
+    },
+    {
+      "label": "socket_center_L",
+      "x": -0.44,
+      "z": 0.43,
+      "baseline_y": -0.5200002193450928,
+      "treated_y": -0.5200002193450928,
+      "forward_relief_delta": 0.0
+    },
+    {
+      "label": "socket_center_R",
+      "x": 0.44,
+      "z": 0.43,
+      "baseline_y": -0.5200002193450928,
+      "treated_y": -0.5200002193450928,
+      "forward_relief_delta": 0.0
+    },
+    {
+      "label": "remote_forehead",
+      "x": 0,
+      "z": 1.12,
+      "baseline_y": -0.5472414493560791,
+      "treated_y": -0.5472414493560791,
+      "forward_relief_delta": 0.0
+    },
+    {
+      "label": "remote_jaw",
+      "x": 0,
+      "z": -0.83,
+      "baseline_y": -0.6724588871002197,
+      "treated_y": -0.6724588871002197,
+      "forward_relief_delta": 0.0
+    },
+    {
+      "label": "remote_temple",
+      "x": 0.88,
+      "z": 0.1,
+      "baseline_y": -0.4980909824371338,
+      "treated_y": -0.4980909824371338,
+      "forward_relief_delta": 0.0
+    }
+  ],
+  "native_geometry_negative_control": {
+    "asymmetrically_displaced_globe_rejected": true
+  },
+  "baseline_renders": [
+    {
+      "name": "BASE_FRONT.png",
+      "sha256": "0d869876879d1833d238fc629eb8175b3db769a15cdf2ed2f117e512e8936229",
+      "bytes": 350800
+    },
+    {
+      "name": "BASE_THREE_QUARTER.png",
+      "sha256": "11817569367408300762df96b6986e6ea398986029db577e295806ab110c99f4",
+      "bytes": 347572
+    },
+    {
+      "name": "BASE_TRUE_PROFILE.png",
+      "sha256": "330fdcfa4249fe084c200c909626573c7e206932424eec21405cb889a5e0028e",
+      "bytes": 334801
+    },
+    {
+      "name": "BASE_LOW.png",
+      "sha256": "7e6a826d88353cdd4ab5108856315d6c3da4804bb8fdef2baf9b565035bc6320",
+      "bytes": 347235
+    }
+  ],
+  "treatment_renders": [
+    {
+      "name": "TREAT_FRONT.png",
+      "sha256": "173a6a89fad2bef1e9a654cf6428a31d22cf2f406756a9d719377fea1b63b1ae",
+      "bytes": 353435
+    },
+    {
+      "name": "TREAT_THREE_QUARTER.png",
+      "sha256": "fe4bdf18e3d21897f3ae0a518a9b9cce64691797055f73c7b86a4b94eb5535cf",
+      "bytes": 351289
+    },
+    {
+      "name": "TREAT_TRUE_PROFILE.png",
+      "sha256": "301fab2f146641016f8a9d3cf250ea33e2450ad53436e2a6bc3dc6240d19869e",
+      "bytes": 336083
+    },
+    {
+      "name": "TREAT_LOW.png",
+      "sha256": "ac5269b75dff39c8051e9dba8b0197c758669d64f3c04207a38c219bd57e1369",
+      "bytes": 348778
+    }
+  ],
+  "blend": {
+    "name": "V046_CONTINUOUS_TISSUE_EXPERIMENT.blend",
+    "sha256": "7dc9cec54d35ea10402da5b3bda58b0347fec62787244f5c356fa446dfed5443",
+    "bytes": 964976
+  }
+}

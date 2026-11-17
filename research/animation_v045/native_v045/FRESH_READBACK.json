@@ -1,0 +1,17 @@
+{
+  "version": "V045_SEPARATE_BLENDER_PROCESS_RELOAD",
+  "native_receipt": "NATIVE_GLOBE_LID_MARGIN_PROXIMITY_PASS",
+  "GS001": "UNTOUCHED",
+  "art": "HOLD",
+  "status": "FRESH_SAVED_NATIVE_RELOAD_PASS",
+  "model_sha256": "6e3284b5c183bff66b8dcf93c54797d56efbdd46d6dd53b010fb3d659338d99b",
+  "verified_original_images": [
+    "V045_FRONT.png",
+    "V045_THREE_QUARTER.png",
+    "V045_TRUE_SIDE.png",
+    "V045_LOW.png"
+  ],
+  "sample_count": 404,
+  "min_gap": 0.022999956256372522,
+  "max_gap": 0.023000056086938114
+}

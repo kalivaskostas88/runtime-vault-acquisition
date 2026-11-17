@@ -8,7 +8,7 @@
   "protection": "GS001_UNTOUCHED",
   "art": "HOLD",
   "reference_sheet": "NOT_APPROVED",
-  "native": "HOLD_OR_FAILURE",
+  "native": "NATIVE_GLOBE_LID_MARGIN_PROXIMITY_PASS",
   "blink": "NOT_RUN",
   "retopo": "NOT_RUN",
   "integration": "NOT_RUN",
@@ -89,5 +89,48 @@
     "all_globe_radius": 0.7,
     "thickness": 0.027
   },
-  "error": "AssertionError: {'FLOATING_LID_FORWARD': {'rejected': False, 'min_gap': 0.022999956256372522, 'max_gap': 0.023000056086938114}, 'PENETRATING_LID_BACK': {'rejected': False, 'min_gap': 0.022999956256372522, 'max_gap': 0.023000056086938114}, 'ASYMMETRIC_ONE_EYE': {'rejected': False, 'min_gap': 0.022999956256372522, 'max_gap': 0.023000056086938114}}"
+  "negative_controls": {
+    "FLOATING_LID_FORWARD": {
+      "rejected": true,
+      "min_gap": 0.12980958072774917,
+      "max_gap": 0.17945013384121022
+    },
+    "PENETRATING_LID_BACK": {
+      "rejected": true,
+      "min_gap": -0.15055710277967005,
+      "max_gap": -0.06964915904246971
+    },
+    "ASYMMETRIC_ONE_EYE": {
+      "rejected": true,
+      "min_gap": 0.022999956256372522,
+      "max_gap": 0.14021228422514043
+    }
+  },
+  "images": [
+    {
+      "name": "V045_FRONT.png",
+      "sha256": "c7b404307301d9c83bb7580d9318212a9f875dbdfc7da6fe2b1a63f8271fe679",
+      "bytes": 277999
+    },
+    {
+      "name": "V045_THREE_QUARTER.png",
+      "sha256": "1d5f4e3811c0488735d97ed4dfc007a0799c2d1a8db7f3f9cacc044b7797de84",
+      "bytes": 282226
+    },
+    {
+      "name": "V045_TRUE_SIDE.png",
+      "sha256": "e84f139374d9859178232440b2143daf25beebc9e16541a0e922ac64823f51ec",
+      "bytes": 237743
+    },
+    {
+      "name": "V045_LOW.png",
+      "sha256": "50eb37f4b15c851899f67a4d8174fa379ddc6f5cf99e373d512d9f2ec1731058",
+      "bytes": 274156
+    }
+  ],
+  "blend": {
+    "name": "V045_GLOBE_LID_ORIGINAL_TEST_FIXTURE.blend",
+    "sha256": "6e3284b5c183bff66b8dcf93c54797d56efbdd46d6dd53b010fb3d659338d99b",
+    "bytes": 241347
+  }
 }

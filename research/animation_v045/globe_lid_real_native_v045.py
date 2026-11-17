@@ -77,6 +77,9 @@ def topo(o):
  out={"vertices":len(bm.verts),"faces":len(bm.faces),"boundary":sum(e.is_boundary for e in bm.edges),"nonmanifold":sum(not e.is_manifold for e in bm.edges)}
  bm.free();return out
 def audit(globes,lids):
+ # Force Blender depsgraph to evaluate actual object transforms before reading world coordinates.
+ # V045A failed negative controls because matrix_world was stale after obj.location edits.
+ bpy.context.view_layer.update()
  # This tests *actual native mesh margin vertices*, not the constructor's abstract formula.
  rows=[];all_gaps=[]
  for side,up,lid in lids:

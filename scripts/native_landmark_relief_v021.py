@@ -93,11 +93,11 @@ def make_head(variant,r,skin):
     ob=bpy.data.objects.new('V021_FULL_HEAD_SKIN',mesh);bpy.context.collection.objects.link(ob)
     mesh.materials.append(skin)
     for p in mesh.polygons:p.use_smooth=True
-    ob.shape_key_add(name='Basis')
+    ob.shape_key_add(name='Basis',from_mix=False)
     # RESEARCH-FIRST MORPHOLOGY: coarse qualitative periorbital relief inspired by
     # documented orbital brow ridge, cheek/malar area and infraorbital crease.
     # These are authored SOURCE-LIMITED ART EXERCISE distances, NOT biometric or clinical measurements.
-    relief=ob.shape_key_add(name='PERIORBITAL_RELIEF_REFERENCE_PROXY')
+    relief=ob.shape_key_add(name='PERIORBITAL_RELIEF_REFERENCE_PROXY',from_mix=False)
     for idx,(domain,t,theta) in enumerate(feat):
         if domain=='FACE':
             upper=max(0.,math.sin(theta))**8
@@ -110,14 +110,14 @@ def make_head(variant,r,skin):
             relief.data[idx].co.y-=.065  # PREDECLARED bad nonlocal head deformation
     relief.value=0.0 if variant.startswith('FLAT') else 1.0
     for f in (1,72):relief.keyframe_insert(data_path='value',frame=f)
-    fold=ob.shape_key_add(name='SOCKET_FOLD_CORRECTIVE')
+    fold=ob.shape_key_add(name='SOCKET_FOLD_CORRECTIVE',from_mix=False)
     # Authored small material-space fold correction, shared vertex identity, no topology changes.
     for idx,(domain,t,theta) in enumerate(feat):
         if domain=='FACE':fold.data[idx].co.y-=.015*(1-t)**2
     for f,q in pose_curve():
         fold.value=q;fold.keyframe_insert(data_path='value',frame=f)
     # Tiny, deliberately stylized local crease; does not establish anatomy.
-    crease=ob.shape_key_add(name='UPPER_LID_LOCAL_CREASE')
+    crease=ob.shape_key_add(name='UPPER_LID_LOCAL_CREASE',from_mix=False)
     for idx,(domain,t,theta) in enumerate(feat):
         if domain=='FACE':
             angular=max(0.,math.sin(theta))**3
@@ -128,8 +128,8 @@ def make_head(variant,r,skin):
     # SOURCE-GROUNDED PREDECLARED DESIGN: Blender relative shape keys for localized
     # face correctives; AU6 / brow AUs name anatomical observations, not a claim
     # that the synthetic positions solve human anatomy or every blink needs AU6.
-    cheek=ob.shape_key_add(name='AU6_LOCAL_CHEEK_TEST')
-    brow=ob.shape_key_add(name='BROW_LOCAL_COMPANION_TEST')
+    cheek=ob.shape_key_add(name='AU6_LOCAL_CHEEK_TEST',from_mix=False)
+    brow=ob.shape_key_add(name='BROW_LOCAL_COMPANION_TEST',from_mix=False)
     for idx,(domain,t,theta) in enumerate(feat):
         if domain=='FACE':
             lower=max(0.,-math.sin(theta))**4
@@ -332,6 +332,22 @@ def geometric_coupling_witness(face, scene):
     }
     return vals
 
+def shape_key_independence_witness(ob):
+    # SOURCE-VERIFIED Blender API: explicitly from_mix=False for independent keys.
+    # Tests both accidental active-relief inheritance and actual prescribed local masks.
+    keys=ob.data.shape_keys.key_blocks
+    bas=keys['Basis']; cheek=keys['AU6_LOCAL_CHEEK_TEST']; brow=keys['BROW_LOCAL_COMPANION_TEST']
+    relief=keys['PERIORBITAL_RELIEF_REFERENCE_PROXY']
+    eyebrow=5*N+N//4; lower_cheek=4*N+3*N//4; remote=FRONT*N+N//4
+    # Cheek must NOT inherit active relief at upper eyebrow; brow must NOT inherit it below eye.
+    return {
+       'cheek_wrong_eyebrow_inheritance_m':round((cheek.data[eyebrow].co-bas.data[eyebrow].co).length,7),
+       'brow_wrong_lower_cheek_inheritance_m':round((brow.data[lower_cheek].co-bas.data[lower_cheek].co).length,7),
+       'remote_relief_authored_m':round((relief.data[remote].co-bas.data[remote].co).length,7),
+       'all_keys_match_basis_count':all(len(k.data)==len(bas.data) for k in keys),
+       'source_key_names':[k.name for k in keys]
+    }
+
 def morphology_relief_witness(face,scene):
     scene.frame_set(1)  # blink + secondary channels off, morphology contrast alone
     relief=face.data.shape_keys.key_blocks['PERIORBITAL_RELIEF_REFERENCE_PROXY']
@@ -366,6 +382,7 @@ def evaluate(variant):
     wall=wall_thickness_samples(face,deps)
     response=geometric_coupling_witness(face,scene)
     morphology=morphology_relief_witness(face,scene)
+    independence=shape_key_independence_witness(face)
     states=[]
     for frame in FRAMES:
         scene.frame_set(frame)
@@ -389,11 +406,12 @@ def evaluate(variant):
         relief_ok=(g['active_value']==1. and .045<g['brow_relief_m']<.065 and .055<g['cheek_relief_m']<.085 and .012<g['trough_relief_m']<.030 and g['max_remote_scalp_relief_m']>.060)
     else:
         relief_ok=(g['active_value']==1. and .045<g['brow_relief_m']<.065 and .055<g['cheek_relief_m']<.085 and .012<g['trough_relief_m']<.030 and g['max_remote_scalp_relief_m']<1e-6)
-    gate=(const and motion_ok and relief_ok and s<1e-6)
+    independence_ok=(independence['all_keys_match_basis_count'] and independence['cheek_wrong_eyebrow_inheritance_m']<1e-6 and independence['brow_wrong_lower_cheek_inheritance_m']<1e-6 and (independence['remote_relief_authored_m']>.060 if variant=='RELIEF_LEAK' else independence['remote_relief_authored_m']<1e-6))
+    gate=(const and motion_ok and relief_ok and independence_ok and s<1e-6)
     return {'fixture':ID,'variant':variant,'blender':bpy.app.version_string,
            'native_gate':bool(gate),'source_topology':source,'evaluated_topology':tp,
            'world_rim_thickness':wall,'crease_authored':crest,
-           'evaluated_coupling_response':response,'morphology_relief_witness':morphology,
+           'evaluated_coupling_response':response,'morphology_relief_witness':morphology,'shape_key_independence':independence,
            'modifier_order':[m.type for m in face.modifiers],
            'object_scale':[round(float(v),5) for v in face.scale],
            'animation_states':states,'frames':FRAME_COUNT,'fps':FPS,

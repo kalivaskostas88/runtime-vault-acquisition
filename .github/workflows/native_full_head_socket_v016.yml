@@ -1,0 +1,86 @@
+name: Native Blender Full Head Eyelid Socket V016
+on:
+  push:
+    branches: [research/full-head-orbit-v016-20261117]
+    paths:
+      - scripts/native_full_head_socket_v016.py
+      - .github/workflows/native_full_head_socket_v016.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  full-head-eye-socket-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 38
+    steps:
+      - uses: actions/checkout@v4
+      - name: Recover SHA pinned Blender 5.2.2 from Actions cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/animation-blender/blender-5.2.2-linux-x64.tar.xz
+          key: blender-522-linux-x64-84098912789dc450e95697c4184fb8a90acbe5111c2ba4aede3fecb57806a168
+      - name: Acquire exact official runtime and validate digest
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$HOME/.cache/animation-blender" "$RUNNER_TEMP/blender522"
+          ARCHIVE="$HOME/.cache/animation-blender/blender-5.2.2-linux-x64.tar.xz"
+          EXPECTED='84098912789dc450e95697c4184fb8a90acbe5111c2ba4aede3fecb57806a168'
+          if [ ! -s "$ARCHIVE" ]; then
+            curl -fLsS --connect-timeout 30 --max-time 260 -o "$ARCHIVE.tmp" \
+              https://download.blender.org/release/Blender5.2/blender-5.2.2-linux-x64.tar.xz || \
+            curl -fLsS --connect-timeout 30 --max-time 260 -o "$ARCHIVE.tmp" \
+              https://mirror.blender.org/release/Blender5.2/blender-5.2.2-linux-x64.tar.xz
+            mv "$ARCHIVE.tmp" "$ARCHIVE"
+          fi
+          printf '%s  %s\n' "$EXPECTED" "$ARCHIVE" | sha256sum -c -
+          tar -xf "$ARCHIVE" -C "$RUNNER_TEMP/blender522"
+          echo "$RUNNER_TEMP/blender522/blender-5.2.2-linux-x64" >> "$GITHUB_PATH"
+      - name: Install headless tools
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq libegl1 libgl1 libglx-mesa0 libgbm1 libx11-6 libxkbcommon0 libxi6 libxfixes3 libxrender1 libxcursor1 libxinerama1 ffmpeg
+          blender --version | head -6
+      - name: Build and fresh-reopen full head and two negative controls
+        run: |
+          set -euo pipefail
+          for v in WELDED_HEAD SPLIT_SEAM LEAKY_WEIGHTS; do
+            mkdir -p "head_v016/$v"
+            blender -b --factory-startup --python scripts/native_full_head_socket_v016.py -- build "$v" "head_v016/$v"
+            blender -b "head_v016/$v/$v.blend" --python scripts/native_full_head_socket_v016.py -- verify "$v" "head_v016/$v"
+          done
+      - name: Render full original native animation and verify metadata
+        run: |
+          set -euo pipefail
+          for v in WELDED_HEAD SPLIT_SEAM LEAKY_WEIGHTS; do
+            mkdir -p "head_v016/$v/frames"
+            blender -b "head_v016/$v/$v.blend" -o "$GITHUB_WORKSPACE/head_v016/$v/frames/frame_####" -F PNG -s 1 -e 72 -a
+            ffmpeg -hide_banner -loglevel error -y -framerate 24 -i "head_v016/$v/frames/frame_%04d.png" -c:v libx264 -preset fast -crf 21 -pix_fmt yuv420p "head_v016/$v/${v}_NATIVE.mp4"
+            ffprobe -v error -select_streams v:0 -count_frames -show_entries stream=width,height,r_frame_rate,nb_read_frames -show_entries format=duration,size -of json "head_v016/$v/${v}_NATIVE.mp4" > "head_v016/$v/${v}_VIDEO_PROBE.json"
+            test "$(ffprobe -v error -select_streams v:0 -count_frames -show_entries stream=nb_read_frames -of csv=p=0 "head_v016/$v/${v}_NATIVE.mp4")" = 72
+            test "$(ffprobe -v error -select_streams v:0 -show_entries stream=r_frame_rate -of csv=p=0 "head_v016/$v/${v}_NATIVE.mp4")" = 24/1
+            rm -rf "head_v016/$v/frames"
+          done
+      - name: Validate complete immutable output bundle
+        run: |
+          set -euo pipefail
+          for v in WELDED_HEAD SPLIT_SEAM LEAKY_WEIGHTS; do
+            test -s "head_v016/$v/$v.blend"
+            test -s "head_v016/$v/${v}_BUILD.json"
+            test -s "head_v016/$v/${v}_REOPEN.json"
+            test -s "head_v016/$v/${v}_FRONT_frame_0032.png"
+            test -s "head_v016/$v/${v}_LEFT_frame_0032.png"
+            test -s "head_v016/$v/${v}_RIGHT_frame_0032.png"
+            test -s "head_v016/$v/${v}_NATIVE.mp4"
+          done
+          find head_v016 -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > head_v016/SHA256SUMS.txt
+          test "$(wc -l < head_v016/SHA256SUMS.txt)" -eq 48
+          sha256sum --check head_v016/SHA256SUMS.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: native-full-head-socket-v016
+          path: head_v016/
+          retention-days: 7
+          if-no-files-found: warn

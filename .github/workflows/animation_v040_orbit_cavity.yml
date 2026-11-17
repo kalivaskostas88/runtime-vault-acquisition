@@ -1,4 +1,4 @@
-name: V040 verified original negative-volume orbital cavity in Blender 5.2.2
+name: V040B verified original negative-volume orbital cavity in Blender 5.2.2
 on:
   push:
     branches:
@@ -31,7 +31,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          timeout 160 xvfb-run -a "$BLENDER_BIN" --background --factory-startup --python-exit-code 36 --python research/animation_v040/orbital_cavity_v040.py
+          timeout 160 xvfb-run -a "$BLENDER_BIN" --background --factory-startup --python-exit-code 36 --python research/animation_v040/orbital_cavity_v040b.py
           python - <<'PY'
           import json
           d=json.load(open('research/animation_v040/native_v040/RECEIPT.json'))

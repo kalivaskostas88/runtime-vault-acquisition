@@ -1,0 +1,42 @@
+name: V043 Real CC-BY Julien Kaspar full instructional video capture
+on:
+  push:
+    branches:
+      - research/animation-v043-kaspar-full-video-20261117
+    paths:
+      - research/animation_v043/capture-run.json
+permissions:
+  contents: write
+jobs:
+  acquire-and-index-entire-source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare original media inspection
+        run: |
+          python -m pip install --quiet pillow requests
+          ffmpeg -version | head -1
+          ffprobe -version | head -1
+      - name: Capture publicly downloaded entire CC-BY 1080p professional source
+        run: python research/animation_v043/capture_full_licensed_kaspar.py
+      - name: Preserve attribution, real temporal contacts, and machine receipt
+        if: always()
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add research/animation_v043/CAPTURE.json
+          if [ -d research/animation_v043/contacts ]; then git add research/animation_v043/contacts; fi
+          if [ -f research/animation_v043/ORIGINAL_LICENSED_EN_SUBTITLES.txt ]; then git add research/animation_v043/ORIGINAL_LICENSED_EN_SUBTITLES.txt; fi
+          if ! git diff --cached --quiet; then
+            git commit -m 'V043 preserve real original licensed video full-span source evidence'
+            git push origin HEAD:research/animation-v043-kaspar-full-video-20261117
+          fi
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: v043-full-licensed-kaspar-source
+          path: |
+            ${{ runner.temp }}/v043_licensed_video/rain_sculpt_full_original.mp4
+            ${{ runner.temp }}/v043_licensed_video/source_audio_16khz_mono.wav
+          retention-days: 7

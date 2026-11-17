@@ -2,7 +2,7 @@ name: V047 Real CC-BY Julien Kaspar full instructional video capture
 on:
   push:
     branches:
-      - research/animation-v047-kaspar-full-video-20261117
+      - research/animation-v047-snow-concept-full-video-20261117
     paths:
       - research/animation_v047/capture-run.json
 permissions:
@@ -32,7 +32,7 @@ jobs:
           if [ -f research/animation_v047/ORIGINAL_LICENSED_EN_SUBTITLES.txt ]; then git add research/animation_v047/ORIGINAL_LICENSED_EN_SUBTITLES.txt; fi
           if ! git diff --cached --quiet; then
             git commit -m 'V047 preserve real original licensed video full-span source evidence'
-            git push origin HEAD:research/animation-v047-kaspar-full-video-20261117
+            git push origin HEAD:research/animation-v047-snow-concept-full-video-20261117
           fi
       - uses: actions/upload-artifact@v4
         if: success()

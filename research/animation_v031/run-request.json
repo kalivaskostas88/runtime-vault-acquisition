@@ -1,0 +1,9 @@
+{
+  "version": "V031",
+  "comparison": "V029 native source and V030 depth conforming source",
+  "source_method": "Professional contour-first eyelid + lid overlap needed to seal the visual seam",
+  "native_blender": "5.2.2",
+  "acceptance": "same fixed camera raycasts CLOSED < 4%, OPEN > 8%, separate art review HOLD",
+  "source_model": "New ORIGINAL connected upper eyelid margin strip of 24 quads per eye; no eyeball hiding",
+  "GS001": "UNTOUCHED"
+}

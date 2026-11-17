@@ -1,0 +1,7 @@
+{
+  "target": "V039B",
+  "source": "REAL_GUI_SCULPT_NATIVE_PASS",
+  "goal": "Independent Blender 5.2.2 reload SHA+mesh delta+8 image hashes",
+  "forbidden": "brush_asset_activate in background, production asset modifications",
+  "art": "HOLD"
+}

@@ -31,7 +31,9 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y -qq --no-install-recommends libegl1 libgl1 libgl1-mesa-dri libegl-mesa0 libxi6 libxkbcommon0 libxxf86vm1 libxfixes3 libxrender1 libsm6 libx11-6 libxext6 xvfb
           ldconfig -p | grep libEGL.so.1
-      - name: Validate original unified facial mesh static topology\n        run: python research/animation_v032/test_geometry_v032.py\n      - name: Build, native render, measured 3D raycast occlusion
+      - name: Validate original unified facial mesh static topology
+        run: python research/animation_v032/test_geometry_v032.py
+      - name: Build, native render, measured 3D raycast occlusion
         shell: bash
         env:
           ANIMATION_V032_OUT: ${{ github.workspace }}/research/animation_v032/native_output

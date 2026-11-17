@@ -1,0 +1,11 @@
+{
+  "version": "V030",
+  "purpose": "EXACTLY ONE CAUSAL REPAIR OF V029_CLOSED_EYEBALL_PROTRUSION",
+  "source": "V029 native Blender raycast and professional eyelid depth guidance",
+  "compare_v029_run": 44015395060,
+  "model": "V030 depth-conforming front-facing eyelid envelope around original synthetic eyeball",
+  "mechanical_only": true,
+  "art": "HOLD",
+  "GS001": "UNTOUCHED",
+  "no_paid_credits": true
+}

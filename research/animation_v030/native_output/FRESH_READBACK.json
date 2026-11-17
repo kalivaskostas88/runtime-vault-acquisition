@@ -1,0 +1,18 @@
+{
+  "status": "PASS",
+  "blender_version": "5.2.2 LTS",
+  "objects": {
+    "L": {
+      "verts": 240,
+      "quads": 192,
+      "max_delta": 0.23119096320553675
+    },
+    "R": {
+      "verts": 240,
+      "quads": 192,
+      "max_delta": 0.23119096320553675
+    }
+  },
+  "art": "HOLD",
+  "GS001": "UNTOUCHED"
+}

@@ -1,0 +1,16 @@
+{
+  "version": "V037C_READBACK",
+  "source_original": "V036 unchanged original analytic model",
+  "target": "V037C saved real native masked brush model",
+  "commit_source_branch": "research/animation-v037-native-sculpt-brush-20261117",
+  "checks": [
+    "fresh open genuine Blender 5.2.2",
+    "mask protected vertices 14954",
+    "124 changed within targeted zone",
+    "0 remotely changed",
+    "all 6 image hashes match",
+    "original .blend SHA256 matches"
+  ],
+  "art": "HOLD",
+  "GS001": "UNTOUCHED"
+}

@@ -43,7 +43,7 @@ jobs:
           test -s research/animation_v037/face_sculpt_output_v2/RECEIPT.json
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add research/animation_v037/face_sculpt_output
+          git add research/animation_v037/face_sculpt_output_v2
           git diff --cached --quiet && exit 0
           git commit -m 'Preserve V037B native masked Smooth brush before-after and locality proof'
           git push origin HEAD:research/animation-v037-native-sculpt-brush-20261117

@@ -1,0 +1,19 @@
+{
+  "version": "V027",
+  "source": "https://www.youtube.com/watch?v=xzZFQgLdKWk",
+  "research_only": true,
+  "source_capture": "public_youtube_source_only",
+  "prohibited": [
+    "GS001 changes",
+    "production writes",
+    "paid vision credits",
+    "original video redistribution"
+  ],
+  "windows": [
+    "07:12-08:12",
+    "09:20-10:20",
+    "13:05-14:15",
+    "32:12-32:52",
+    "42:35-43:20"
+  ]
+}

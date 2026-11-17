@@ -1,0 +1,69 @@
+{
+  "version": "V040_FRESH",
+  "blender": "5.2.2 LTS",
+  "status": "FRESH_READBACK_PASS",
+  "art": "HOLD",
+  "GS001": "UNTOUCHED",
+  "blend_sha256": "32e316eba672a9f32f3adf6c6e9bb2fe31304bde851b8b5cefab641770b003d4",
+  "verified_png_sha256": [
+    "BEFORE_FRONT.png",
+    "BEFORE_THREE_QUARTER.png",
+    "BEFORE_TRUE_PROFILE.png",
+    "BEFORE_LOW.png",
+    "AFTER_FRONT.png",
+    "AFTER_THREE_QUARTER.png",
+    "AFTER_TRUE_PROFILE.png",
+    "AFTER_LOW.png"
+  ],
+  "saved_topology": {
+    "verts": 12706,
+    "faces": 12690,
+    "boundary": 0,
+    "nonmanifold": 0,
+    "components": 1
+  },
+  "verified_rays": [
+    {
+      "x": -0.44,
+      "z": 0.44,
+      "depth": 0.16107892990112305,
+      "baseline": -0.7410790920257568,
+      "cavity": -0.5800001621246338
+    },
+    {
+      "x": 0.44,
+      "z": 0.44,
+      "depth": 0.16109013557434082,
+      "baseline": -0.7410902976989746,
+      "cavity": -0.5800001621246338
+    },
+    {
+      "x": 0,
+      "z": 0,
+      "depth": 0.0,
+      "baseline": -0.9342927932739258,
+      "cavity": -0.9342927932739258
+    },
+    {
+      "x": 0.9,
+      "z": 0.0,
+      "depth": 0.0,
+      "baseline": -0.4564940929412842,
+      "cavity": -0.4564940929412842
+    },
+    {
+      "x": 0,
+      "z": 1.04,
+      "depth": 0.0,
+      "baseline": -0.6178178787231445,
+      "cavity": -0.6178178787231445
+    },
+    {
+      "x": 0.55,
+      "z": -0.64,
+      "depth": 0.0,
+      "baseline": -0.5910167694091797,
+      "cavity": -0.5910167694091797
+    }
+  ]
+}

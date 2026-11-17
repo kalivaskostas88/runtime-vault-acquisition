@@ -20,6 +20,6 @@
     "reuse proprietary tutorial mesh"
   ],
   "integrity": "original_geometry_v029",
-  "revision": 2,
-  "repair": "install libEGL Mesa graphics dependencies + xvfb, original geometry unchanged"
+  "revision": 3,
+  "repair": "FIX_YAML_LITERAL_ESCAPED_NEWLINES_PLUS_EGL_MESA"
 }

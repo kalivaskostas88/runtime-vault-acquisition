@@ -1,0 +1,120 @@
+{
+  "version": "V037C",
+  "run_type": "ACTUAL_NATIVE_BLENDER_SCULPT_SMOOTH_GUIDED_ON_V036_COPY",
+  "blender": "5.2.2 LTS",
+  "mode": "GUI_VIRTUAL_DISPLAY",
+  "GS001": "UNTOUCHED",
+  "source_teacher_windows": "V035 Aram Art W02/W05 real visual & ASR; Kaspar brow-overlap note public text",
+  "reference_baseline": "V036 original analytic head recreated unchanged before actual strokes",
+  "art_pass": false,
+  "face_retopo": false,
+  "blink_pass": false,
+  "native_sculpt_mask": {
+    "attribute": ".sculpt_mask",
+    "vertex_domain": "POINT",
+    "editable_vertices": 248,
+    "protected_vertices": 14954,
+    "rule": "unmask one thin orbital ring on both sides"
+  },
+  "before_previews": {
+    "Camera.Front": {
+      "file": "BEFORE_FRONT.png",
+      "bytes": 345621,
+      "sha256": "3721ab1bda50977a219d6b6b93e3047939ed5227ef2d1762b5c76dd362a35be7"
+    },
+    "Camera.Oblique": {
+      "file": "BEFORE_OBLIQUE.png",
+      "bytes": 339849,
+      "sha256": "5cde36c81d81732dd226cbc718fd52d2348a404d6eecca23d193f30233ce6bf2"
+    },
+    "Camera.Profile": {
+      "file": "BEFORE_PROFILE.png",
+      "bytes": 307920,
+      "sha256": "e01b7b43dc51f9ff5a9d363404a1972abd4755cb811265364860793089bb94fd"
+    }
+  },
+  "brush_asset_call_result": [
+    "CANCELLED"
+  ],
+  "brush_active_verified_despite_cancelled": true,
+  "brush": {
+    "name": "Draw",
+    "activation": [
+      "CANCELLED"
+    ],
+    "size": 19,
+    "strength": 0.20000000298023224
+  },
+  "strokes": [
+    {
+      "side": -1,
+      "upper": true,
+      "points": 25,
+      "native_toggle": "SMOOTH",
+      "op_status": [
+        "FINISHED"
+      ]
+    },
+    {
+      "side": -1,
+      "upper": false,
+      "points": 25,
+      "native_toggle": "SMOOTH",
+      "op_status": [
+        "FINISHED"
+      ]
+    },
+    {
+      "side": 1,
+      "upper": true,
+      "points": 25,
+      "native_toggle": "SMOOTH",
+      "op_status": [
+        "FINISHED"
+      ]
+    },
+    {
+      "side": 1,
+      "upper": false,
+      "points": 25,
+      "native_toggle": "SMOOTH",
+      "op_status": [
+        "FINISHED"
+      ]
+    }
+  ],
+  "measured_change": {
+    "total_moved_gt_1e7": 124,
+    "eye_zone_moved_gt_1e7": 124,
+    "eye_zone_max": 0.06419713992159883,
+    "remote_moved_gt_1e7": 0,
+    "remote_max": 0.0,
+    "global_max": 0.06419713992159883,
+    "global_rms": 0.003295433905231578
+  },
+  "after_previews": {
+    "Camera.Front": {
+      "file": "AFTER_FRONT.png",
+      "bytes": 343064,
+      "sha256": "c4670e9513bc8e7f331958034c750be41b18bc5a535d70727f74af35072f51c2"
+    },
+    "Camera.Oblique": {
+      "file": "AFTER_OBLIQUE.png",
+      "bytes": 338210,
+      "sha256": "0404f689475b57d51ebf2cc47ad6281935cf3a862ae766ea3a48d054f6ffe6aa"
+    },
+    "Camera.Profile": {
+      "file": "AFTER_PROFILE.png",
+      "bytes": 306975,
+      "sha256": "63c13480f017d55d78c84f8bd29a637ae31a6298ddca3cb026f7e5ac7d5f1c34"
+    }
+  },
+  "blend": {
+    "path": "original_v036_sculpted_orbit_v037.blend",
+    "sha256": "d620f36c42551047c86f707d3f47db3c4e40d55d6908460382ed3be1fd1107d3",
+    "bytes": 564489
+  },
+  "technical_gate": "PASS_SCOPED_LOCAL_REAL_SCULPT",
+  "art_gate": "HOLD_INDEPENDENT_VISUAL_CRITIQUE",
+  "blender_native_sculpt": true
+}

@@ -1,0 +1,49 @@
+name: V037B genuine masked Smooth sculpt orbital-locality experiment
+on:
+  push:
+    branches:
+      - research/animation-v037-native-sculpt-brush-20261117
+    paths:
+      - research/animation_v037/run-mask-request.json
+permissions:
+  contents: write
+jobs:
+  source-guided-face-sculpt:
+    runs-on: ubuntu-latest
+    timeout-minutes: 21
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download official Blender 5.2.2 and verify vendor checksum
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/blender522"
+          cd "$RUNNER_TEMP/blender522"
+          curl --fail --location --retry 2 --connect-timeout 30 --max-time 460 --silent --show-error -o blender-5.2.2-linux-x64.tar.xz https://download.blender.org/release/Blender5.2/blender-5.2.2-linux-x64.tar.xz
+          curl --fail --location --retry 2 --connect-timeout 30 --max-time 120 --silent --show-error -o blender-5.2.2.sha256 https://download.blender.org/release/Blender5.2/blender-5.2.2.sha256
+          grep 'blender-5.2.2-linux-x64.tar.xz' blender-5.2.2.sha256 | sha256sum -c -
+          tar -xJf blender-5.2.2-linux-x64.tar.xz
+          echo "BLENDER_BIN=$RUNNER_TEMP/blender522/blender-5.2.2-linux-x64/blender" >> "$GITHUB_ENV"
+      - name: Install headless software graphics
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq --no-install-recommends libegl1 libgl1 libgl1-mesa-dri libegl-mesa0 libxi6 libxkbcommon0 libxxf86vm1 libxfixes3 libxrender1 libsm6 libx11-6 libxext6 xvfb
+          ldconfig -p | grep libEGL.so.1
+      - name: Actual GUI Blender sculpt brush on original negative-witness face
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 180 xvfb-run -a "$BLENDER_BIN" --factory-startup --python-exit-code 33 --python research/animation_v037/sculpt_masked_orbital_v037b.py
+          python -c "import json;d=json.load(open('research/animation_v037/face_sculpt_output_v2/RECEIPT.json'));print(d['technical_gate']);assert d['technical_gate']=='PASS_SCOPED_LOCAL_REAL_SCULPT'"
+      - name: Keep before and after native Blender technical evidence
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s research/animation_v037/face_sculpt_output_v2/RECEIPT.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add research/animation_v037/face_sculpt_output
+          git diff --cached --quiet && exit 0
+          git commit -m 'Preserve V037B native masked Smooth brush before-after and locality proof'
+          git push origin HEAD:research/animation-v037-native-sculpt-brush-20261117

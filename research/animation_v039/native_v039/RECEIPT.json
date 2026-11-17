@@ -1,0 +1,120 @@
+{
+  "version": "V039",
+  "date": "2026-11-17",
+  "blender": "5.2.2 LTS",
+  "kind": "ORIGINAL_BLOCKOUT_WITH_REAL_NATIVE_SCOPED_BROAD_BROW_STROKE",
+  "source": "Original local pure Python cranial station design; not a traced studio model",
+  "preexisting_native_reference": "V037C GUI/Xvfb masked Draw/Smooth verified",
+  "GS001": "UNTOUCHED",
+  "art_status": "HOLD",
+  "face_anatomy": "NOT_COMPLETE",
+  "new_face_retopo": "NOT_RUN",
+  "blink": "NOT_RUN",
+  "integration": "NOT_RUN",
+  "design_sheet": "3D_BLOCKOUT_WITH_FOUR_VIEWS_ONLY_NOT_ART_REFERENCE_APPROVED",
+  "native_status": "HOLD_NATIVE_SCOPE",
+  "topology_preflight": {
+    "vertices": 11650,
+    "faces": 11776,
+    "all_edges_two": true,
+    "boundary": 0,
+    "overconnected": 0,
+    "lateral_width_at_cheek": 0.96,
+    "jaw_width": 0.76,
+    "cranium_width": 1.04,
+    "is_original": true,
+    "scope": "PLANAR_HEAD_BLOCKOUT_ONLY_NOT_FACE_ANATOMY_OR_ART_APPROVAL"
+  },
+  "mask": {
+    "name": ".sculpt_mask",
+    "domain": "POINT",
+    "editable": 1642,
+    "protected": 10008,
+    "source": "ellipse around both brow ridge regions; no mouth/nose/scalp modifications permitted"
+  },
+  "negative_preflight": [
+    "wrong_brush_blocked",
+    "missing_mask_blocked"
+  ],
+  "before": [
+    {
+      "filename": "BEFORE_FRONT.png",
+      "bytes": 293274,
+      "sha256": "b17ddd96380aae130641b35ea07b2b5749197d6a243ab2b7b3095cb52e1ec276"
+    },
+    {
+      "filename": "BEFORE_THREE_QUARTER.png",
+      "bytes": 293041,
+      "sha256": "3f44034686914f7a1f60e5d17dfe6f05fff3591e6a035c84801c96e306068f59"
+    },
+    {
+      "filename": "BEFORE_TRUE_PROFILE.png",
+      "bytes": 285650,
+      "sha256": "821103117967d79675036048c1859c7b4d1ee3d41269ec856ffdc6653b7fd0dd"
+    },
+    {
+      "filename": "BEFORE_LOW.png",
+      "bytes": 291352,
+      "sha256": "1ff045ea2c34191ae6ab8f093f04cc835f475677e20cbb51c8a5955eb3512a36"
+    }
+  ],
+  "brush": {
+    "name": "Draw",
+    "asset_op_status": [
+      "CANCELLED"
+    ],
+    "size": 65,
+    "strength": 0.17000000178813934
+  },
+  "strokes": [
+    {
+      "side": -1,
+      "samples": 27,
+      "status": [
+        "FINISHED"
+      ]
+    },
+    {
+      "side": 1,
+      "samples": 27,
+      "status": [
+        "FINISHED"
+      ]
+    }
+  ],
+  "measured": {
+    "all_moved": 1348,
+    "local_moved": 1330,
+    "protected_moved": 18,
+    "max_local": 0.21163985597062074,
+    "max_remote": 7.702763499379311e-05,
+    "max_global": 0.21163985597062074
+  },
+  "after": [
+    {
+      "filename": "AFTER_FRONT.png",
+      "bytes": 301988,
+      "sha256": "d039cf777b6ca5cf78ed4b2f4761a092bc8c7a26045ce88c1629a41b2b4d420f"
+    },
+    {
+      "filename": "AFTER_THREE_QUARTER.png",
+      "bytes": 302298,
+      "sha256": "cf2145db637aa0b68d0ba11fca352fcd1fabe20258f1792a7d4f6cea7e6f2bbd"
+    },
+    {
+      "filename": "AFTER_TRUE_PROFILE.png",
+      "bytes": 288962,
+      "sha256": "6a87ab682249afdf5a8a41e0ee4e9fe6c3612010417f3d705718f5787f19ec07"
+    },
+    {
+      "filename": "AFTER_LOW.png",
+      "bytes": 298859,
+      "sha256": "1d30e5ac415654eabe85eb4b727ad12bac439e6a771cfecea8536ff25f9ffc1e"
+    }
+  ],
+  "blend": {
+    "file": "V039_ORIGINAL_BROW_BLOCKOUT.blend",
+    "sha256": "6bedc74295499017d95c7b7fca17fd5e957fad1cba94022ef3e319113fd6339d",
+    "bytes": 443808
+  }
+}

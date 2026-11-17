@@ -33,7 +33,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          xvfb-run -a "$BLENDER_BIN" --background --factory-startup --python-exit-code 33 --python research/animation_v037/probe_native_sculpt_v037.py
+          timeout 150 xvfb-run -a "$BLENDER_BIN" --factory-startup --python-exit-code 33 --python research/animation_v037/probe_native_sculpt_v037.py
+          python -c "import json; d=json.load(open('research/animation_v037/native_probe_output/BRUSH_PROBE_RECEIPT.json')); print(d['status']); assert d['status']=='PASS_NATIVE_BRUSH_CHANGE'"
       - name: Save bounded research-only probe evidence even on failure
         if: always()
         shell: bash

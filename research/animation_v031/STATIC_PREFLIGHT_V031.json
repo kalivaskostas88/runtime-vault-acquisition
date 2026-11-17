@@ -1,0 +1,27 @@
+{
+  "version": "V031",
+  "domain": "STATIC_GEOMETRY_PREFLIGHT_ONLY",
+  "source_files_sha256": {
+    "geometry_v031.py": "898a771fa239087457b98ca3b9e7cb1233379fa03db539ccf25a371e58083a8c",
+    "build_blender_v031.py": "281643600f322c1f60dfc9e4730cdec49095ae1496564b1ff56fec38bd3f2f65"
+  },
+  "checks": {
+    "source_quads_count": true,
+    "source_verts_count": true,
+    "only_two_expected_annulus_boundaries": true,
+    "no_triple_connected_edges": true,
+    "positive_area_and_strict_monotonic_blink": true,
+    "closed_area_under_four_percent_of_open": true,
+    "continuous_open_to_closed_gap": true,
+    "bilateral_reflection_exact": true,
+    "outer_ring_unmodified_on_blink": true,
+    "canthi_midline_locked": true,
+    "negative_rectangle_topology_not_used": true,
+    "invalid_parameters_rejected": true
+  },
+  "pass": 12,
+  "total": 12,
+  "native_blender": "NOT_PROVEN_BY_THIS_TEST",
+  "art": "NOT_PROVEN",
+  "GS001": "UNTOUCHED"
+}

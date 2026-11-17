@@ -1,0 +1,16 @@
+{
+  "status": "PASS",
+  "version": "V032",
+  "blender": "5.2.2 LTS",
+  "object": "FaceSkin.CONTINUOUS",
+  "vertices": 1045,
+  "quads": 960,
+  "shape_keys": [
+    "Basis",
+    "Blink.L",
+    "Blink.R"
+  ],
+  "boundary_edges": 172,
+  "art": "HOLD",
+  "GS001": "UNTOUCHED"
+}

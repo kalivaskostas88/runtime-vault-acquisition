@@ -1,0 +1,171 @@
+{
+  "version": "V032",
+  "runtime": "5.2.2 LTS",
+  "scope": "ONE_CONNECTED_FACIAL_SKIN_WITH_TWO_EYE_HOLES; NOT_FULL_SKULL",
+  "source_teaching": "MK Graphics V028 13:49-15:29 connected loops + Julien Kaspar facial retopo diagrams + official Blender bridge edges guidance",
+  "geometry": {
+    "vertices": 1045,
+    "quads": 960,
+    "components": 1,
+    "component_sizes": [
+      1045
+    ],
+    "perimeter_loop_lengths": [
+      50,
+      50,
+      72
+    ],
+    "boundary_edges": 172,
+    "nonmanifold_edges": 0,
+    "same_direction_double_edges": 0,
+    "all_quads": true,
+    "low_projected_quad_area": 0,
+    "seam_welded": true,
+    "eye_ranges": {
+      "L": [
+        0,
+        265
+      ],
+      "R": [
+        313,
+        578
+      ]
+    }
+  },
+  "integration_gate": "PASS",
+  "bilateral_isolation": [
+    {
+      "target": "L",
+      "moving_eye_max_delta": 0.1890950542887086,
+      "other_eye_max_delta": 0.0,
+      "outer_face_fixed_max_delta": 0.0,
+      "PASS": true
+    },
+    {
+      "target": "R",
+      "moving_eye_max_delta": 0.1890950542887086,
+      "other_eye_max_delta": 0.0,
+      "outer_face_fixed_max_delta": 0.0,
+      "PASS": true
+    }
+  ],
+  "isolation_gate": "PASS",
+  "front_raycast_occlusion": {
+    "OPEN": {
+      "L": {
+        "rays": 391,
+        "globe_first_hits": 228,
+        "globe_first_hit_fraction": 0.5831202046035806,
+        "skin_first_hit_fraction": 0.309462915601023
+      },
+      "R": {
+        "rays": 391,
+        "globe_first_hits": 228,
+        "globe_first_hit_fraction": 0.5831202046035806,
+        "skin_first_hit_fraction": 0.309462915601023
+      }
+    },
+    "HALF": {
+      "L": {
+        "rays": 391,
+        "globe_first_hits": 115,
+        "globe_first_hit_fraction": 0.29411764705882354,
+        "skin_first_hit_fraction": 0.6751918158567775
+      },
+      "R": {
+        "rays": 391,
+        "globe_first_hits": 115,
+        "globe_first_hit_fraction": 0.29411764705882354,
+        "skin_first_hit_fraction": 0.6751918158567775
+      }
+    },
+    "CLOSED": {
+      "L": {
+        "rays": 391,
+        "globe_first_hits": 0,
+        "globe_first_hit_fraction": 0.0,
+        "skin_first_hit_fraction": 1.0
+      },
+      "R": {
+        "rays": 391,
+        "globe_first_hits": 0,
+        "globe_first_hit_fraction": 0.0,
+        "skin_first_hit_fraction": 1.0
+      }
+    }
+  },
+  "front_occlusion_gate": "PASS",
+  "art": "HOLD",
+  "whole_head_watertight": "NOT_ATTEMPTED",
+  "side_view_occlusion": "VISUAL_REVIEW_ONLY_NOT_PROVED",
+  "GS001": "UNTOUCHED",
+  "limitations": [
+    "reference rear skull remains separate",
+    "two eye openings and outer skin perimeter intentional",
+    "not skin weighting, facial rig, real deformation",
+    "not artist-certified"
+  ],
+  "blend": {
+    "path": "native_integrated_facial_mask_v032.blend",
+    "sha256": "9066c7ac18887f985db74fc5135204fa59b77678b919dc74949ab2e0ed735bc4",
+    "size": 281695
+  },
+  "previews": {
+    "FRONT_OPEN": {
+      "sha256": "695719ea0d2dd3196ed04a8b3c07eaf9e07ccc01b77746fbabdce77612cfa519",
+      "bytes": 537247,
+      "L": 0,
+      "R": 0,
+      "camera": "Camera.Front"
+    },
+    "FRONT_RIGHT_HALF": {
+      "sha256": "f3ded4ebf2f3492658a01a8443b388d378617b63e723345e66a141d214af5e44",
+      "bytes": 535643,
+      "L": 0,
+      "R": 0.5,
+      "camera": "Camera.Front"
+    },
+    "FRONT_RIGHT_CLOSED": {
+      "sha256": "26ee62b37c30b04af803a8080cc4116e4316a135cbb2262620dd7a46cad48e7c",
+      "bytes": 533116,
+      "L": 0,
+      "R": 1,
+      "camera": "Camera.Front"
+    },
+    "FRONT_LEFT_CLOSED": {
+      "sha256": "44664f99aefc2a3be0905a449dbd3831740da52ccd998b7ee23a61f02cbbac9e",
+      "bytes": 533296,
+      "L": 1,
+      "R": 0,
+      "camera": "Camera.Front"
+    },
+    "FRONT_BOTH_HALF": {
+      "sha256": "291cb978a09343b83d3dd7c626371f5329303b4ae47552cd9b86b6feacd5735d",
+      "bytes": 531851,
+      "L": 0.5,
+      "R": 0.5,
+      "camera": "Camera.Front"
+    },
+    "FRONT_BOTH_CLOSED": {
+      "sha256": "129c6ff78fcfbde52fbde77725fb8ca42f76a79f0cb4aec5ad33a53c3d2caf3d",
+      "bytes": 526186,
+      "L": 1,
+      "R": 1,
+      "camera": "Camera.Front"
+    },
+    "OBLIQUE_OPEN": {
+      "sha256": "4030c83e2c98469f1486a48d806238acc4400080777350d70ff36ec460a66f19",
+      "bytes": 511823,
+      "L": 0,
+      "R": 0,
+      "camera": "Camera.ThreeQuarter"
+    },
+    "OBLIQUE_BOTH_CLOSED": {
+      "sha256": "c44b76fc78256ea7dbf7d6baca82c71687c779ba909c01449d191b8ffbbb0d34",
+      "bytes": 501852,
+      "L": 1,
+      "R": 1,
+      "camera": "Camera.ThreeQuarter"
+    }
+  }
+}

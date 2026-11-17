@@ -1,10 +1,9 @@
 {
-  "version": "V040",
-  "date": "2026-11-17",
-  "experiment": "bilateral actual boolean difference orbital concavity",
-  "preflight": "complete",
-  "design_sheet": "NOT_DRAWN",
-  "art": "HOLD",
-  "source": "original V039 head",
+  "version": "V040B",
+  "purpose": "Original V039 raw head, Boolean Exact symmetric orbital subtraction",
+  "changed_from_v040a": "Python import search path only",
+  "previous_run": "44042281532",
+  "failure_class": "MODULE_PATH_BEFORE_GEOMETRY",
+  "no_art_claim": true,
   "GS001": "UNTOUCHED"
 }

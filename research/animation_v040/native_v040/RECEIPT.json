@@ -1,0 +1,153 @@
+{
+  "version": "V040B",
+  "scope": "RESEARCH_ONLY_BOOLEAN_NEGATIVE_ORBITAL_VOLUME_NOT_HUMAN_ANATOMY",
+  "input": "V039 original unsculpted closed station-profile head, generated from exact source code",
+  "pro_sources": [
+    "Blender 5.2 Boolean Exact manual",
+    "Blender Studio Julien Kaspar Primitive-to-Planar head and brow-lid overlap public descriptions"
+  ],
+  "GS001": "UNTOUCHED",
+  "art": "HOLD",
+  "character_design_sheet": "NOT_DRAWN",
+  "eyelids": "NOT_RUN",
+  "retopology": "NOT_RUN",
+  "blink": "NOT_RUN",
+  "integration": "NOT_RUN",
+  "native": "NATIVE_BOOLEAN_CAVITY_SCOPE_PASS",
+  "config": {
+    "blender_major_minor": [
+      5,
+      2
+    ],
+    "operation": "DIFFERENCE",
+    "solver": "EXACT",
+    "centers_x": [
+      -0.44,
+      0.44
+    ],
+    "center_y": -0.92,
+    "center_z": 0.44,
+    "radius_x": 0.33,
+    "radius_y": 0.34,
+    "radius_z": 0.29,
+    "ray_tolerance_remote": 2e-05,
+    "min_center_depth": 0.035,
+    "max_center_depth": 0.35
+  },
+  "negative_preflight": [
+    "REJECTED_UNION_EXACT_True",
+    "REJECTED_DIFFERENCE_FLOAT_True",
+    "REJECTED_DIFFERENCE_EXACT_False"
+  ],
+  "base_topology": {
+    "vertices": 11650,
+    "faces": 11776,
+    "triangle_faces": 256,
+    "boundary_edges": 0,
+    "nonmanifold_edges": 0,
+    "connected_components": 1,
+    "volume": 5.208429857313705
+  },
+  "before": [
+    {
+      "file": "BEFORE_FRONT.png",
+      "sha256": "becf0b10ae74d17e3494883ea72a1c0743a954623a9aca76bd7c03317a8ffb90",
+      "bytes": 292012
+    },
+    {
+      "file": "BEFORE_THREE_QUARTER.png",
+      "sha256": "2df1623967c7a0c5b10754002a18470a9aed5fe06d67c671a28bb10f0b4b61b6",
+      "bytes": 291883
+    },
+    {
+      "file": "BEFORE_TRUE_PROFILE.png",
+      "sha256": "35d8e87d3746c784dca686a690159c98c0fbab07c9cfbd1d8019a2c3565a735f",
+      "bytes": 286707
+    },
+    {
+      "file": "BEFORE_LOW.png",
+      "sha256": "8bef73a1f9056fa1aaca93423c53304fb4ac9c467df5219d895252b24ff6470e",
+      "bytes": 289653
+    }
+  ],
+  "after_topology": {
+    "vertices": 12706,
+    "faces": 12690,
+    "triangle_faces": 290,
+    "boundary_edges": 0,
+    "nonmanifold_edges": 0,
+    "connected_components": 1,
+    "volume": 5.165520728932085
+  },
+  "ray_proof": [
+    {
+      "x": -0.44,
+      "z": 0.44,
+      "before_y": -0.7410790920257568,
+      "after_y": -0.5800001621246338,
+      "inward_depth": 0.16107892990112305
+    },
+    {
+      "x": 0.44,
+      "z": 0.44,
+      "before_y": -0.7410902976989746,
+      "after_y": -0.5800001621246338,
+      "inward_depth": 0.16109013557434082
+    },
+    {
+      "x": 0,
+      "z": 0,
+      "before_y": -0.9342927932739258,
+      "after_y": -0.9342927932739258,
+      "inward_depth": 0.0
+    },
+    {
+      "x": 0.9,
+      "z": 0.0,
+      "before_y": -0.4564940929412842,
+      "after_y": -0.4564940929412842,
+      "inward_depth": 0.0
+    },
+    {
+      "x": 0,
+      "z": 1.04,
+      "before_y": -0.6178178787231445,
+      "after_y": -0.6178178787231445,
+      "inward_depth": 0.0
+    },
+    {
+      "x": 0.55,
+      "z": -0.64,
+      "before_y": -0.5910167694091797,
+      "after_y": -0.5910167694091797,
+      "inward_depth": 0.0
+    }
+  ],
+  "after": [
+    {
+      "file": "AFTER_FRONT.png",
+      "sha256": "fc02a6c8091ba6f656c6d45682f52f9d295ab25070c077da6e603782cf72fef4",
+      "bytes": 299030
+    },
+    {
+      "file": "AFTER_THREE_QUARTER.png",
+      "sha256": "4981c2b80b0b2b6343a00be24f14e601b745827b3303a3b118f87d78b69b0e90",
+      "bytes": 298337
+    },
+    {
+      "file": "AFTER_TRUE_PROFILE.png",
+      "sha256": "b3902d4271a5131a2e593a0cf8cdb18ba9150948ccd8edb37e9f7f86a48b53bc",
+      "bytes": 288820
+    },
+    {
+      "file": "AFTER_LOW.png",
+      "sha256": "32017c132c116974604ce5b33fa4782d5f5437b614c1fa9fa5202e42f5392dbf",
+      "bytes": 296519
+    }
+  ],
+  "blend": {
+    "file": "V040_ORBIT_CAVITY_BLOCKOUT.blend",
+    "sha256": "32e316eba672a9f32f3adf6c6e9bb2fe31304bde851b8b5cefab641770b003d4",
+    "bytes": 476031
+  }
+}

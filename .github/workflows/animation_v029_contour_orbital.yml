@@ -1,0 +1,61 @@
+name: V029 native Blender 5.2.2 contour first orbital proof
+on:
+  push:
+    branches:
+      - research/animation-v029-contour-eyelid-20261117
+    paths:
+      - research/animation_v029/run-request.json
+permissions:
+  contents: write
+jobs:
+  original-orbital-prototype:
+    runs-on: ubuntu-latest
+    timeout-minutes: 26
+    steps:
+      - uses: actions/checkout@v4
+      - name: Acquire official Blender 5.2.2 and verify vendor manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/blender522"
+          cd "$RUNNER_TEMP/blender522"
+          curl --fail --location --retry 2 --connect-timeout 30 --max-time 460 --silent --show-error \
+            -o blender-5.2.2-linux-x64.tar.xz https://download.blender.org/release/Blender5.2/blender-5.2.2-linux-x64.tar.xz
+          curl --fail --location --retry 2 --connect-timeout 30 --max-time 120 --silent --show-error \
+            -o blender-5.2.2.sha256 https://download.blender.org/release/Blender5.2/blender-5.2.2.sha256
+          grep 'blender-5.2.2-linux-x64.tar.xz' blender-5.2.2.sha256 | sha256sum -c -
+          tar -xJf blender-5.2.2-linux-x64.tar.xz
+          echo "BLENDER_BIN=$RUNNER_TEMP/blender522/blender-5.2.2-linux-x64/blender" >> "$GITHUB_ENV"
+      - name: Build, native render, measured 3D raycast occlusion
+        shell: bash
+        env:
+          ANIMATION_V029_OUT: ${{ github.workspace }}/research/animation_v029/native_output
+        run: |
+          set -euo pipefail
+          "$BLENDER_BIN" --background --factory-startup --python-exit-code 33 --python research/animation_v029/build_blender_v029.py
+          test -s "$ANIMATION_V029_OUT/RECEIPT.json"
+          test -s "$ANIMATION_V029_OUT/native_orbital_module_v029.blend"
+      - name: Verify by fresh native Blender reopen
+        shell: bash
+        env:
+          ANIMATION_V029_OUT: ${{ github.workspace }}/research/animation_v029/native_output
+        run: |
+          set -euo pipefail
+          "$BLENDER_BIN" --background "$ANIMATION_V029_OUT/native_orbital_module_v029.blend" \
+            --python-exit-code 34 --python research/animation_v029/verify_saved_v029.py
+          test -s "$ANIMATION_V029_OUT/FRESH_READBACK.json"
+          cd "$ANIMATION_V029_OUT"
+          sha256sum native_orbital_module_v029.blend preview_*.png RECEIPT.json FRESH_READBACK.json > SHA256SUMS.txt
+      - name: Persist only original bounded outputs in isolated research branch (artifact quota independent)
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s research/animation_v029/native_output/RECEIPT.json
+          test -s research/animation_v029/native_output/FRESH_READBACK.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add research/animation_v029/native_output/
+          git diff --cached --quiet && exit 0
+          git commit -m 'Record V029 native Blender orbital proof with bounded caveats'
+          git push origin HEAD:research/animation-v029-contour-eyelid-20261117

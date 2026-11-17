@@ -1,0 +1,15 @@
+{
+  "source": "Julien Kaspar Blender Studio original CC-BY full source V043",
+  "source_timecodes": [
+    "10:15-10:50",
+    "12:05-12:17"
+  ],
+  "test": "original_globe_lid_margin_native_fixture_only",
+  "constraints": [
+    "GS001_UNTOUCHED",
+    "ART_HOLD",
+    "NO_FOUR_VIEW_APPROVED",
+    "NO_CROSS_BACKEND_CLAIM"
+  ],
+  "date": "2026-11-17"
+}

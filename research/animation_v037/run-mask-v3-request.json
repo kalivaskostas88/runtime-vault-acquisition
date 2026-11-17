@@ -1,0 +1,12 @@
+{
+  "version": "V037C",
+  "parent": "V037B HEADLESS_MASK_SETUP_PASSED_BUT_ACTIVE_DRAW_BRUSH_ALREADY_PRESENT",
+  "change": "Only allow already active verified Draw brush if brush.asset_activate says CANCELLED; keep exact mask and Smooth toggle",
+  "expected": {
+    "mask_editable_vertices": 248,
+    "mask_protected_vertices": 14954,
+    "remote_vertices_changed": 0
+  },
+  "art": "HOLD",
+  "GS001": "UNTOUCHED"
+}

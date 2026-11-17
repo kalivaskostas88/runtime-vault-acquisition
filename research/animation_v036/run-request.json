@@ -1,0 +1,21 @@
+{
+  "version": "V036",
+  "phase": "ORIGINAL_FACIAL_SCULPT_NOT_FINAL_ART_OR_RETOPO",
+  "source": {
+    "primary": "Aram Art V035 ten selected timecoded windows",
+    "secondary": "Blender Studio Julien Kaspar public remarks on eyelids and brow"
+  },
+  "purpose": "Repair visible floating eyeballs and simplistic face volumes of original V034 with sculpted orbit, nose, lips, cheeks and chin",
+  "character": "Anonymous stylized study persona, neutral friendly, no copied teacher geometry",
+  "shots": [
+    "front",
+    "three-quarter",
+    "near-true-profile",
+    "low angle"
+  ],
+  "positive_ref": "V031/V032 blink mechanism LIMITED_NOT_INHERITED",
+  "negative_ref": "V034 protruding independent eyes and V032 nasal bridge pinching",
+  "GS001": "UNTOUCHED",
+  "art": "HOLD_PENDING_INDEPENDENT_VISUAL_REVIEW",
+  "no_paid_credits": true
+}

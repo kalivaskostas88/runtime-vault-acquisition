@@ -1,0 +1,14 @@
+{
+  "version": "V037",
+  "phase": "NATIVE_BRUSH_OPERATOR_PROBE_BEFORE_FULL_ART_FACE",
+  "source_techniques": [
+    "Aram Art genuine selected V035 video",
+    "Julien Kaspar Blender Studio realistic skin volumes and brow masking",
+    "Blender 5.2 official sculpt brush API and asset_activate"
+  ],
+  "goal": "Real sculpt brush stroke modifies isolated sphere, not mathematical gaussian on face",
+  "research_only": true,
+  "no_art_claim": true,
+  "GS001": "UNTOUCHED",
+  "repeatable": true
+}

@@ -1,0 +1,93 @@
+{
+  "study": "V045_NATIVE_ORIGINAL_GLOBE_LID_CONFORMANCE_SCOPE",
+  "source": "Kaspar V043 full original educational lesson, sampled AV and official transcript",
+  "source_timecodes": [
+    "10:15-10:50",
+    "12:05-12:17"
+  ],
+  "protection": "GS001_UNTOUCHED",
+  "art": "HOLD",
+  "reference_sheet": "NOT_APPROVED",
+  "native": "HOLD_OR_FAILURE",
+  "blink": "NOT_RUN",
+  "retopo": "NOT_RUN",
+  "integration": "NOT_RUN",
+  "cross_backend": "NOT_RUN",
+  "fixed_mechanical_limits": {
+    "gap_target": 0.023,
+    "gap_tolerance": 0.002,
+    "floating_max": 0.06,
+    "penetration_min": -0.002
+  },
+  "expected_images": 4,
+  "blender": "5.2.2",
+  "geometry": {
+    "all_globe_count": 2,
+    "lid_count": 4,
+    "margin_samples": 404,
+    "gap_min": 0.022999956256372522,
+    "gap_max": 0.023000056086938114,
+    "gap_mean": 0.0229999946063287,
+    "lid_data": [
+      {
+        "side": -1,
+        "upper": true,
+        "min": 0.022999956256372522,
+        "max": 0.023000052866597454,
+        "mean": 0.02299999401088447,
+        "topology": {
+          "vertices": 1212,
+          "faces": 1210,
+          "boundary": 0,
+          "nonmanifold": 0
+        },
+        "samples": 101
+      },
+      {
+        "side": -1,
+        "upper": false,
+        "min": 0.022999961408918135,
+        "max": 0.023000056086938114,
+        "mean": 0.02299999520177293,
+        "topology": {
+          "vertices": 1212,
+          "faces": 1210,
+          "boundary": 0,
+          "nonmanifold": 0
+        },
+        "samples": 101
+      },
+      {
+        "side": 1,
+        "upper": true,
+        "min": 0.022999956256372522,
+        "max": 0.023000052866597454,
+        "mean": 0.02299999401088447,
+        "topology": {
+          "vertices": 1212,
+          "faces": 1210,
+          "boundary": 0,
+          "nonmanifold": 0
+        },
+        "samples": 101
+      },
+      {
+        "side": 1,
+        "upper": false,
+        "min": 0.022999961408918135,
+        "max": 0.023000056086938114,
+        "mean": 0.02299999520177293,
+        "topology": {
+          "vertices": 1212,
+          "faces": 1210,
+          "boundary": 0,
+          "nonmanifold": 0
+        },
+        "samples": 101
+      }
+    ],
+    "all_globe_radius": 0.7,
+    "thickness": 0.027
+  },
+  "error": "AssertionError: {'FLOATING_LID_FORWARD': {'rejected': False, 'min_gap': 0.022999956256372522, 'max_gap': 0.023000056086938114}, 'PENETRATING_LID_BACK': {'rejected': False, 'min_gap': 0.022999956256372522, 'max_gap': 0.023000056086938114}, 'ASYMMETRIC_ONE_EYE': {'rejected': False, 'min_gap': 0.022999956256372522, 'max_gap': 0.023000056086938114}}"
+}

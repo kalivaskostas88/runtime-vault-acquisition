@@ -1,0 +1,11 @@
+{
+  "status": "PASS",
+  "version": "V034",
+  "blender": "5.2.2 LTS",
+  "original_head_vertices": 9090,
+  "faces": 9216,
+  "sculpt_target_reopened": true,
+  "shape_keys": false,
+  "GS001": "UNTOUCHED",
+  "ART": "HOLD"
+}

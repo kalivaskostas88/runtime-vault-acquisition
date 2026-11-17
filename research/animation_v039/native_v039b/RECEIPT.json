@@ -1,0 +1,124 @@
+{
+  "version": "V039B",
+  "date": "2026-11-17",
+  "blender": "5.2.2 LTS",
+  "kind": "ORIGINAL_BLOCKOUT_WITH_REAL_NATIVE_SCOPED_BROAD_BROW_STROKE",
+  "source": "Original local pure Python cranial station design; not a traced studio model",
+  "preexisting_native_reference": "V037C GUI/Xvfb verified; V039A 18 near-full gradient vertices flagged by overbroad protected threshold",
+  "GS001": "UNTOUCHED",
+  "art_status": "HOLD",
+  "face_anatomy": "NOT_COMPLETE",
+  "new_face_retopo": "NOT_RUN",
+  "blink": "NOT_RUN",
+  "integration": "NOT_RUN",
+  "design_sheet": "3D_BLOCKOUT_WITH_FOUR_VIEWS_ONLY_NOT_ART_REFERENCE_APPROVED",
+  "native_status": "PASS_NARROW_BROW_SCULPT",
+  "topology_preflight": {
+    "vertices": 11650,
+    "faces": 11776,
+    "all_edges_two": true,
+    "boundary": 0,
+    "overconnected": 0,
+    "lateral_width_at_cheek": 0.96,
+    "jaw_width": 0.76,
+    "cranium_width": 1.04,
+    "is_original": true,
+    "scope": "PLANAR_HEAD_BLOCKOUT_ONLY_NOT_FACE_ANATOMY_OR_ART_APPROVAL"
+  },
+  "mask": {
+    "name": ".sculpt_mask",
+    "domain": "POINT",
+    "editable": 1662,
+    "protected": 9988,
+    "source": "ellipse around both brow ridge regions; fully protected means EXACT mask 1.0, fractional transition mask remains editable; no mouth/nose/scalp modifications permitted"
+  },
+  "negative_preflight": [
+    "wrong_brush_blocked",
+    "missing_mask_blocked"
+  ],
+  "before": [
+    {
+      "filename": "BEFORE_FRONT.png",
+      "bytes": 293274,
+      "sha256": "852405c1493043bfdc69239acb385f66aa63efedcb697117cbbb059697b79d11"
+    },
+    {
+      "filename": "BEFORE_THREE_QUARTER.png",
+      "bytes": 293041,
+      "sha256": "dd38ad6e0e88efe7749c680dbec8bf5efc66de907523df39ddd18cb30fd16788"
+    },
+    {
+      "filename": "BEFORE_TRUE_PROFILE.png",
+      "bytes": 285650,
+      "sha256": "ab808508a6d280d1754e5f4a543f83e3369551f0643666a1e29583e69edb2492"
+    },
+    {
+      "filename": "BEFORE_LOW.png",
+      "bytes": 291352,
+      "sha256": "4b73beff4fe05421013a9da446abab8f49bd2356545a8ae7943756773cd564c7"
+    }
+  ],
+  "brush": {
+    "name": "Draw",
+    "asset_op_status": [
+      "CANCELLED"
+    ],
+    "size": 65,
+    "strength": 0.17000000178813934
+  },
+  "strokes": [
+    {
+      "side": -1,
+      "samples": 27,
+      "status": [
+        "FINISHED"
+      ]
+    },
+    {
+      "side": 1,
+      "samples": 27,
+      "status": [
+        "FINISHED"
+      ]
+    }
+  ],
+  "measured": {
+    "all_moved": 1348,
+    "editable_moved": 1348,
+    "fully_masked_moved": 0,
+    "near_full_transitional_moved": 18,
+    "near_full_transitional_vertices": 20,
+    "anatomically_far_moved": 0,
+    "max_editable": 0.21163985597062074,
+    "max_fully_masked": 0.0,
+    "max_far": 0.0,
+    "max_global": 0.21163985597062074
+  },
+  "after": [
+    {
+      "filename": "AFTER_FRONT.png",
+      "bytes": 301988,
+      "sha256": "8b17f75f56cbec47571560183b049ba46e4ecf15bb7712ffb2b70a0b09807178"
+    },
+    {
+      "filename": "AFTER_THREE_QUARTER.png",
+      "bytes": 302298,
+      "sha256": "402c5e6606bc2b52e70d4e8a2e33f3bc89861e687d8b6e9f0716cc54572cee92"
+    },
+    {
+      "filename": "AFTER_TRUE_PROFILE.png",
+      "bytes": 288977,
+      "sha256": "a7d345cdefe763464c2c2a28d2bfd9636118f47b154db673ed2ffaa67e1b8c40"
+    },
+    {
+      "filename": "AFTER_LOW.png",
+      "bytes": 298859,
+      "sha256": "af1951baad1aa427a4c6a7788d909b7cafab2c959ce4461fe98529386b221fac"
+    }
+  ],
+  "blend": {
+    "file": "V039_ORIGINAL_BROW_BLOCKOUT.blend",
+    "sha256": "3bbb2c9d0993726c39762f87adc5ad828f74239b5017d15b6d90390c52c8e262",
+    "bytes": 443814
+  }
+}

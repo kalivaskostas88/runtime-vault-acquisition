@@ -1,0 +1,12 @@
+{
+  "version": "V037",
+  "revision": "A",
+  "known_positive": "Native Draw brush GUI/Xvfb real mesh displacement PASS, run 44029802761",
+  "target": "Only harsh orbital raised rings in V036; smooth sculpt with separate local arcs and small strength; do not edit mouth or nose",
+  "method": "Use native Smooth brush asset, 4 arcs x 25 samples at pressure=.17, size=18 px, strength=.13; compare unchanged V036 render and post",
+  "technical_gate": "eye zone moves 10-3500 verts, remote outside orbit <20, max displacement <0.16",
+  "visual_gate": "3 same camera BEFORE/AFTER images, independent ART_HOLD unless objective quality demonstrated",
+  "source": "Aram Art V035 W02 and W05; Kaspar studio head sculpt mask brow overlap note",
+  "GS001": "UNTOUCHED",
+  "no_paid_credits": true
+}

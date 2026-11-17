@@ -1,0 +1,18 @@
+{
+  "version": "V037B",
+  "reason": "V037A local smooth attempt failed native mask absence, Smooth asset cancelled, 3201 remote verts changed",
+  "mechanism": "Activate proven Draw asset and use official brush_toggle SMOOTH; mask non-orbital vertices via .sculpt_mask",
+  "source": [
+    "Blender 5.2 Python API Mesh.vertex_paint_mask",
+    "Blender 5.2 Sculpt mask manual",
+    "Blender 5.2 brush_stroke toggle"
+  ],
+  "freeze": [
+    "V031 original proof",
+    "V032 integration proof",
+    "V036 original baseline",
+    "GS001"
+  ],
+  "acceptance": "outside-orbit remote vertex changes ==0, true localized eye region deformation, max deformation <.16, no art claim",
+  "target": "ORBITAL_SCULPT_MASKED_SINGLE_CAUSAL_REPAIR"
+}

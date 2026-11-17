@@ -1,0 +1,34 @@
+{
+  "version": "V039B_INDEPENDENT_RELOAD",
+  "status": "FRESH_RELOAD_PASS",
+  "blender": "5.2.2 LTS",
+  "art_status": "HOLD",
+  "GS001": "UNTOUCHED",
+  "brush_asset_activation": "NOT_CALLED_IN_BACKGROUND",
+  "measured_after_reopen": {
+    "all_moved": 1348,
+    "editable_moved": 1348,
+    "fully_masked_moved": 0,
+    "near_full_transitional_moved": 18,
+    "near_full_transitional_vertices": 20,
+    "anatomically_far_moved": 0,
+    "max_editable": 0.21163983505888292,
+    "max_fully_masked": 5.9928415945387e-08,
+    "max_far": 5.9928415945387e-08,
+    "max_global": 0.21163983505888292
+  },
+  "preview_hashes_verified": [
+    "BEFORE_FRONT.png",
+    "BEFORE_THREE_QUARTER.png",
+    "BEFORE_TRUE_PROFILE.png",
+    "BEFORE_LOW.png",
+    "AFTER_FRONT.png",
+    "AFTER_THREE_QUARTER.png",
+    "AFTER_TRUE_PROFILE.png",
+    "AFTER_LOW.png"
+  ],
+  "blend_sha256": "3bbb2c9d0993726c39762f87adc5ad828f74239b5017d15b6d90390c52c8e262",
+  "camera_count": 4,
+  "source_blender_receipt_sha256": "7cbe04e48408b4d97cfcd41241a05283dd9c641d9cbbb9c2fdde2be4e2b377f1",
+  "native_technical_scope": "ONE_REAL_BROW_STROKE_NOT_FULL_FACE_OR_ART_APPROVAL"
+}

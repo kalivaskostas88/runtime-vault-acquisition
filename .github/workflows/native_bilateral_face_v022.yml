@@ -1,0 +1,89 @@
+name: Native Blender Bilateral Eye Face V022
+on:
+  push:
+    branches: [research/bilateral-full-face-v022-20261117]
+    paths:
+      - scripts/native_bilateral_face_v022.py
+      - .github/workflows/native_bilateral_face_v022.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  bilateral-face-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - name: Recover SHA-pinned Blender 5.2.2 from Actions cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/animation-blender/blender-5.2.2-linux-x64.tar.xz
+          key: blender-522-linux-x64-84098912789dc450e95697c4184fb8a90acbe5111c2ba4aede3fecb57806a168
+      - name: Acquire exact official runtime and validate digest
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$HOME/.cache/animation-blender" "$RUNNER_TEMP/blender522"
+          ARCHIVE="$HOME/.cache/animation-blender/blender-5.2.2-linux-x64.tar.xz"
+          EXPECTED='84098912789dc450e95697c4184fb8a90acbe5111c2ba4aede3fecb57806a168'
+          if [ ! -s "$ARCHIVE" ]; then
+            curl -fLsS --connect-timeout 30 --max-time 260 -o "$ARCHIVE.tmp" \
+              https://download.blender.org/release/Blender5.2/blender-5.2.2-linux-x64.tar.xz || \
+            curl -fLsS --connect-timeout 30 --max-time 260 -o "$ARCHIVE.tmp" \
+              https://mirror.blender.org/release/Blender5.2/blender-5.2.2-linux-x64.tar.xz
+            mv "$ARCHIVE.tmp" "$ARCHIVE"
+          fi
+          printf '%s  %s\n' "$EXPECTED" "$ARCHIVE" | sha256sum -c -
+          tar -xf "$ARCHIVE" -C "$RUNNER_TEMP/blender522"
+          echo "$RUNNER_TEMP/blender522/blender-5.2.2-linux-x64" >> "$GITHUB_PATH"
+      - name: Install headless runtime and ffmpeg
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq libegl1 libgl1 libglx-mesa0 libgbm1 libx11-6 libxkbcommon0 libxi6 libxfixes3 libxrender1 libxcursor1 libxinerama1 ffmpeg
+          blender --version | head -6
+      - name: Native build and fresh reopen four controlled variants
+        shell: bash
+        run: |
+          set -euo pipefail
+          for v in LEFT_ONLY RIGHT_ONLY CROSSTALK SCALP_LEAK; do
+            mkdir -p "face_v022/$v"
+            blender -b --factory-startup --python scripts/native_bilateral_face_v022.py -- build "$v" "face_v022/$v"
+            blender -b "face_v022/$v/$v.blend" --python scripts/native_bilateral_face_v022.py -- verify "$v" "face_v022/$v"
+          done
+      - name: Render exact native 72 frames and encode independent videos
+        shell: bash
+        run: |
+          set -euo pipefail
+          for v in LEFT_ONLY RIGHT_ONLY CROSSTALK SCALP_LEAK; do
+            mkdir -p "face_v022/$v/frames"
+            blender -b "face_v022/$v/$v.blend" -o "$GITHUB_WORKSPACE/face_v022/$v/frames/frame_####" -F PNG -s 1 -e 72 -a
+            ffmpeg -hide_banner -loglevel error -y -framerate 24 -i "face_v022/$v/frames/frame_%04d.png" -c:v libx264 -preset fast -crf 21 -pix_fmt yuv420p "face_v022/$v/${v}_NATIVE.mp4"
+            ffprobe -v error -select_streams v:0 -count_frames -show_entries stream=width,height,r_frame_rate,nb_read_frames -show_entries format=duration,size -of json "face_v022/$v/${v}_NATIVE.mp4" > "face_v022/$v/${v}_PROBE.json"
+            test "$(ffprobe -v error -select_streams v:0 -count_frames -show_entries stream=nb_read_frames -of csv=p=0 "face_v022/$v/${v}_NATIVE.mp4")" = 72
+            test "$(ffprobe -v error -select_streams v:0 -show_entries stream=r_frame_rate -of csv=p=0 "face_v022/$v/${v}_NATIVE.mp4")" = 24/1
+            rm -rf "face_v022/$v/frames"
+          done
+      - name: Verify exact SHA256 manifest and presence
+        shell: bash
+        run: |
+          set -euo pipefail
+          for v in LEFT_ONLY RIGHT_ONLY CROSSTALK SCALP_LEAK; do
+            test -s "face_v022/$v/$v.blend"
+            test -s "face_v022/$v/${v}_BUILD.json"
+            test -s "face_v022/$v/${v}_REOPEN.json"
+            test -s "face_v022/$v/${v}_FRONT_0032.png"
+            test -s "face_v022/$v/${v}_LEFT_0032.png"
+            test -s "face_v022/$v/${v}_RIGHT_0032.png"
+            test -s "face_v022/$v/${v}_NATIVE.mp4"
+          done
+          find face_v022 -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > face_v022/SHA256SUMS.txt
+          test "$(wc -l < face_v022/SHA256SUMS.txt)" -eq 48
+          sha256sum --check face_v022/SHA256SUMS.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: native-bilateral-face-v022
+          path: face_v022/
+          retention-days: 7
+          if-no-files-found: warn

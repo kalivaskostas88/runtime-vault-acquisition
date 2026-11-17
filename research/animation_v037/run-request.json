@@ -10,5 +10,9 @@
   "research_only": true,
   "no_art_claim": true,
   "GS001": "UNTOUCHED",
-  "repeatable": true
+  "repeatable": true,
+  "revision": 2,
+  "causal_repair": "Known issue #152862 headless brush asset activate crash: GUI + Xvfb; geometry unchanged",
+  "previous_run": 44029546087,
+  "preview": "no_art_claim"
 }

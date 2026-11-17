@@ -1,0 +1,26 @@
+{
+  "version": "V034",
+  "contract": "V033 professional Snow-Kaspar teaching before actual retopo",
+  "task": "ORIGINAL TARGET SCULPT ONLY",
+  "source_window_refs": [
+    "W04 44:23-45:43",
+    "W05 58:02-59:22",
+    "W08 01:44:27-01:45:47",
+    "W09 02:00:50-02:02:10"
+  ],
+  "reason": "V032 cartesian rectangle-to-bridge pinching, 148-degree nose/cheek fold",
+  "deliverables": [
+    "saved blender stylized sculpt reference",
+    "three camera preview sets",
+    "anatomical proposed patch guides",
+    "static manifold volume receipts"
+  ],
+  "hold": [
+    "no unearned professional art rating",
+    "no blink proof inherited",
+    "no full-head retopo claim"
+  ],
+  "protect": "GS001_UNTOUCHED",
+  "baseline": "V032_RETAINED_FOR_FUTURE_FACE_PROJECTION",
+  "new_native": "requested"
+}

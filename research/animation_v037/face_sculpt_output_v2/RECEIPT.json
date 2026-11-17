@@ -1,0 +1,39 @@
+{
+  "version": "V037B",
+  "run_type": "ACTUAL_NATIVE_BLENDER_SCULPT_SMOOTH_GUIDED_ON_V036_COPY",
+  "blender": "5.2.2 LTS",
+  "mode": "GUI_VIRTUAL_DISPLAY",
+  "GS001": "UNTOUCHED",
+  "source_teacher_windows": "V035 Aram Art W02/W05 real visual & ASR; Kaspar brow-overlap note public text",
+  "reference_baseline": "V036 original analytic head recreated unchanged before actual strokes",
+  "art_pass": false,
+  "face_retopo": false,
+  "blink_pass": false,
+  "native_sculpt_mask": {
+    "attribute": ".sculpt_mask",
+    "vertex_domain": "POINT",
+    "editable_vertices": 248,
+    "protected_vertices": 14954,
+    "rule": "unmask one thin orbital ring on both sides"
+  },
+  "before_previews": {
+    "Camera.Front": {
+      "file": "BEFORE_FRONT.png",
+      "bytes": 345692,
+      "sha256": "c8ed35a5a4fa2a9d5f152ab4e07db4fef4b5f01335d9d316d96b783472f77489"
+    },
+    "Camera.Oblique": {
+      "file": "BEFORE_OBLIQUE.png",
+      "bytes": 340104,
+      "sha256": "cbff8b7bc975bf04128dccaf48a1b54ae7c84e6512e02e1ca248d20236d2fad4"
+    },
+    "Camera.Profile": {
+      "file": "BEFORE_PROFILE.png",
+      "bytes": 308008,
+      "sha256": "f2f4b0662f137848937f731c821cc7820fff87b8174787b40dd15df52a359f8e"
+    }
+  },
+  "technical_gate": "FAILED_NATIVE_RUN",
+  "error_type": "RuntimeError",
+  "error_detail": "Known Draw brush asset activation failed: {'CANCELLED'}"
+}

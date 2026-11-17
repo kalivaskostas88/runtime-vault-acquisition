@@ -22,5 +22,7 @@
   ],
   "protect": "GS001_UNTOUCHED",
   "baseline": "V032_RETAINED_FOR_FUTURE_FACE_PROJECTION",
-  "new_native": "requested"
+  "new_native": "requested",
+  "revision": 2,
+  "change": "ONLY_VIEW_LAYER_FIX: proposed pole markers hidden for sculpt-only previews, visible with patch guides; target mesh and analytic anatomy unchanged"
 }

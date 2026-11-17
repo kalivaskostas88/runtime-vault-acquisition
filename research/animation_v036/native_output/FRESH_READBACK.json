@@ -1,0 +1,14 @@
+{
+  "version": "V036",
+  "status": "PASS",
+  "blender": "5.2.2 LTS",
+  "source_sculpt_reopened": true,
+  "vertices": 15202,
+  "faces": 15360,
+  "feature_objects": 11,
+  "no_shape_keys": true,
+  "GS001": "UNTOUCHED",
+  "ART": "HOLD",
+  "FACE_RETOPO": "NOT_RUN",
+  "BLINK": "NOT_RUN"
+}

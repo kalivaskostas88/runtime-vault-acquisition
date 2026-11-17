@@ -1,0 +1,226 @@
+{
+  "version": "V036",
+  "runtime": "5.2.2 LTS",
+  "source_training": "V035 selected Aram Art windows W01-W06 W08 + Kaspar public written notes",
+  "scope": "ORIGINAL TARGET SCULPT WITH ORBITAL LID AND NASAL/LABIAL VOLUME; NOT FINAL ART, NOT FACE RETOPO OR BLINK",
+  "native_sculpt_gate": "PASS",
+  "native_geometry": {
+    "vertices": 15202,
+    "faces": 15360,
+    "boundary": 0,
+    "nonmanifold_gt2": 0,
+    "all_edges_2use": true
+  },
+  "static_design": {
+    "vertices": 15202,
+    "faces": 15360,
+    "quads": 15040,
+    "pole_triangles": 320,
+    "boundary_edges": 0,
+    "nonmanifold_edges": 0,
+    "edge_two_use_all": true,
+    "jaw_tapers": true,
+    "eye_orbit_center_recess_to_outer_rim": -0.011760366341880935,
+    "nose_tip_anterior_to_bridge": -0.21005872280450077,
+    "upper_lip_anterior_to_mouth_seam": -0.10509749463779905,
+    "lower_lip_anterior_to_mouth_seam": -0.013701992767427229,
+    "scope": "ORIGINAL_STYLIZED_3D_SCULPT_VOLUME_FIXTURE_NOT_ANATOMY_CERTIFIED_NOT_RETOPO_NOT_BLINK"
+  },
+  "landmarks": {
+    "glabella": [
+      0,
+      -0.8490777603675679,
+      0.55
+    ],
+    "brow.L": [
+      -0.55,
+      -0.5707178643193758,
+      0.71
+    ],
+    "brow.R": [
+      0.55,
+      -0.5707178643193758,
+      0.71
+    ],
+    "canthus.inner.L": [
+      -0.245,
+      -0.7861801054032221,
+      0.405
+    ],
+    "canthus.inner.R": [
+      0.245,
+      -0.7861801054032221,
+      0.405
+    ],
+    "canthus.outer.L": [
+      -0.855,
+      -0.5364062927132268,
+      0.405
+    ],
+    "canthus.outer.R": [
+      0.855,
+      -0.5364062927132268,
+      0.405
+    ],
+    "nose.root": [
+      0,
+      -0.9056017759079101,
+      0.44
+    ],
+    "nose.dorsum": [
+      0,
+      -0.995407747781371,
+      0.1
+    ],
+    "nose.tip": [
+      0,
+      -1.1945514695326809,
+      -0.206
+    ],
+    "ala.L": [
+      -0.19,
+      -1.0272236612310985,
+      -0.29
+    ],
+    "ala.R": [
+      0.19,
+      -1.0272236612310985,
+      -0.29
+    ],
+    "nostril.L": [
+      -0.182,
+      -0.8009475316665385,
+      -0.372
+    ],
+    "nostril.R": [
+      0.182,
+      -0.8009475316665385,
+      -0.372
+    ],
+    "cheek.L": [
+      -0.79,
+      -0.6176008936961949,
+      -0.06
+    ],
+    "cheek.R": [
+      0.79,
+      -0.6176008936961949,
+      -0.06
+    ],
+    "mouth.left": [
+      -0.34,
+      -0.6301642249492155,
+      -0.675
+    ],
+    "mouth.right": [
+      0.34,
+      -0.6301642249492155,
+      -0.675
+    ],
+    "upper.lip": [
+      0,
+      -0.8371882938287702,
+      -0.595
+    ],
+    "lower.lip": [
+      0,
+      -0.7429695269513512,
+      -0.742
+    ],
+    "chin": [
+      0,
+      -0.5847196510682892,
+      -1.02
+    ]
+  },
+  "reference_eyes": {
+    "L": {
+      "x": -0.55,
+      "y": -0.44299190145126033,
+      "z": 0.405,
+      "radius": 0.203,
+      "rim_y": -0.5442315351093794,
+      "front_eye_y": -0.6459919014512603,
+      "eye_front_to_outer_rim": 0.1017603663418809
+    },
+    "R": {
+      "x": 0.55,
+      "y": -0.44299190145126033,
+      "z": 0.405,
+      "radius": 0.203,
+      "rim_y": -0.5442315351093794,
+      "front_eye_y": -0.6459919014512603,
+      "eye_front_to_outer_rim": 0.1017603663418809
+    }
+  },
+  "feature_objects": 11,
+  "previews": {
+    "PREVIEW_FRONT_SCULPT.png": {
+      "sha256": "5fe9efa8a8b69335c2e3073fb9c28aa766b354391a866b708f58c8b7f09a4409",
+      "bytes": 526114,
+      "camera": "Camera.Front",
+      "features": false
+    },
+    "PREVIEW_FRONT_FACE.png": {
+      "sha256": "32e2674c26b69f959d4dbcd240a5d71ab3c85181415284cab7be708a72569e5c",
+      "bytes": 533243,
+      "camera": "Camera.Front",
+      "features": true
+    },
+    "PREVIEW_OBLIQUE_SCULPT.png": {
+      "sha256": "daf0ddcf103728d4168d6434cfcea5e996b7d78359d4be66697db3a06427bb77",
+      "bytes": 519320,
+      "camera": "Camera.Oblique",
+      "features": false
+    },
+    "PREVIEW_OBLIQUE_FACE.png": {
+      "sha256": "01435b0110515f115a3288f5d466e05820553eed895d9f0d0041b5929d3b6695",
+      "bytes": 526010,
+      "camera": "Camera.Oblique",
+      "features": true
+    },
+    "PREVIEW_TRUEPROFILE_SCULPT.png": {
+      "sha256": "6918c65612d984b77529aa528b8748201a2c7d6039f6b42f46e337b3689ee7e5",
+      "bytes": 475932,
+      "camera": "Camera.TrueProfile",
+      "features": false
+    },
+    "PREVIEW_TRUEPROFILE_FACE.png": {
+      "sha256": "ae5ac6482cce7db2a2bbd76716202fe5d7decc995fc5538af7b48711efb625b6",
+      "bytes": 477670,
+      "camera": "Camera.TrueProfile",
+      "features": true
+    },
+    "PREVIEW_LOWANGLE_SCULPT.png": {
+      "sha256": "68424f51d54a240d0dcc723548f671c1982f13d8e074859f5298113700fc57ea",
+      "bytes": 517610,
+      "camera": "Camera.LowAngle",
+      "features": false
+    },
+    "PREVIEW_LOWANGLE_FACE.png": {
+      "sha256": "35de0ea114c174232b1c191a417508e78c2d46ad9ba72ec5f42f2b18823095b8",
+      "bytes": 525131,
+      "camera": "Camera.LowAngle",
+      "features": true
+    }
+  },
+  "original_blend": {
+    "name": "original_stylized_sculpt_v036.blend",
+    "bytes": 651390,
+    "sha256": "5f4cbff5eaa16e31aee83fd5feb7500ad6c7e1e504a7dc1e107b62b2f8fdc468"
+  },
+  "v034_negative_control": "Original V034 sculpt unchanged; baseline anterior projection 0.301165, different sculpt shapes and no blink, metrics not interchangeable",
+  "V032_unmodified": true,
+  "GS001": "UNTOUCHED",
+  "art_gate": "HOLD",
+  "retopo_gate": "NOT_RUN",
+  "blink_gate": "NOT_RUN",
+  "limitations": [
+    "parametric sculpt derived from taught anatomical priorities, not direct hand-sculpted artist solution",
+    "nostril pigmented recess is NOT a true open nostril",
+    "mouth seam pigment is NOT an interior mouth",
+    "eyes are independent reference spheres, NOT integrated deformable eyelids",
+    "still views do not prove natural expressions or blink",
+    "no professional art review"
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "schema": "V047_KASPAR_ORIGINAL_CC_BY_CAPTURE",
+  "source_url": "https://studio.blender.org/training/stylized-character-workflow/timelapse-sculpting-snows-head/",
+  "author": "Julien Kaspar / Blender Studio (Snow's Head)",
+  "license_claim": "Blender Studio page expressly marks lesson Free / License CC-BY",
+  "status": "ORIGINAL_FULL_MP4_CAPTURED_ALL_SPAN_INDEXED",
+  "source_acquired": true,
+  "visual_study": "NOT_YET_VISUALLY_REVIEWED",
+  "audio_listening": "NOT_PERCEPTUALLY_AUDITED",
+  "art": "HOLD",
+  "new_native_blender": "NOT_RUN",
+  "gs001": "UNTOUCHED",
+  "date": "2026-11-17",
+  "official_download_href": "https://studio.blender.org/download-source/files/a6/a6cdd6d6aae66e73e1b7b8aea82967b1/a6cdd6d6aae66e73e1b7b8aea82967b1.1080p.mp4",
+  "download_status": 200,
+  "final_download_host": "studio.blender.org",
+  "video_sha256": "c3757ca7d1b6c4939b37b30c0c1815038f70b0484148c91475e77d90ef8e6455",
+  "video_bytes": 551631531,
+  "duration_sec": 1772.0,
+  "video_width": 1920,
+  "video_height": 1080,
+  "streams": [
+    {
+      "codec": "h264",
+      "type": "video"
+    },
+    {
+      "codec": "aac",
+      "type": "audio"
+    }
+  ],
+  "subtitle_link_count": 1,
+  "subtitle_public_hrefs": [
+    "https://studio.blender.org/api/videos/track/136/a6/a6cdd6d6aae66e73e1b7b8aea82967b1/a6cdd6d6aae66e73e1b7b8aea82967b1.vtt"
+  ],
+  "subtitle_source_sha256": "a4161b60d779c36223068b284b3fbfaf8df7fbac08612c15c6502e562c9c7a2e",
+  "one_fps_frame_count": 1772,
+  "contact_count": 23,
+  "contact_sha256": {
+    "CONTACT_00.jpg": "338d9db652d9f838712fca4edbaa4a110fc17106633c9024d2ffbce9aa0f9ff3",
+    "CONTACT_01.jpg": "62f60bdac9f65408d149ba0aaf4ed2f1b7001db61752418639dbe247bb305886",
+    "CONTACT_02.jpg": "f35c2e466a2c794d131fc31e179916932514e5a21d545720e64f86b7e8acff71",
+    "CONTACT_03.jpg": "c2295ed8da8627621ab3e1ec63e3144457c03d8d86059bcba6fc9dc437a693e8",
+    "CONTACT_04.jpg": "b4aab365b8aed60e739fb07e0741beef4a000ed6a06aefb3290e0446d6c2869b",
+    "CONTACT_05.jpg": "837cd0bc455065cc92841f026b2fc27be37655533457f3c44d9f7d0881b2b91b",
+    "CONTACT_06.jpg": "1dade421daaba10cc9080c93803c108868b1c01ff9b3a1926eb422a4802e91a1",
+    "CONTACT_07.jpg": "12c1775ad3777c95c0b2363021b87bf46040d70489e5b31aa5aa770439c18210",
+    "CONTACT_08.jpg": "1a96038b2f7f4ee82fbd50dce1f9f9b23ff2e843d287c598a493d476eddd5b61",
+    "CONTACT_09.jpg": "71e43c29851928de7a464fa8ffd2e783e14400eca041503506251037d94d1cea",
+    "CONTACT_10.jpg": "84504132823ff4a542f6c67022a04ceb426b84986951b5de9865e0f7b5c05337",
+    "CONTACT_11.jpg": "054c4db16bb9aa55e2bc14fff477fee3060db28fedbdd2d25b13958a7c3f15ab",
+    "CONTACT_12.jpg": "7f6074a6b93d5857cbd59c7501dc5b2307b0da8cea5294610fd20f33200b71ef",
+    "CONTACT_13.jpg": "4a1b95d4bfe867097ce9a7074dfecd4ccad95746e30d042325743c67e4515422",
+    "CONTACT_14.jpg": "43ee4fda5862bf832d856e67907cdf4b41c7d1ba916e3134668f681df6020879",
+    "CONTACT_15.jpg": "a2edefd414cc4fe2e93697954bcc0789f38a350c61fede9592531f2edeb0e9f8",
+    "CONTACT_16.jpg": "4d14d276f4304ddf4ce6a1535f68885bcbfc2e20aebd143f43e93874f875d26d",
+    "CONTACT_17.jpg": "0d34bbb9b77465778ebe50727c9466c2e173b9b909ec8ab15debdc6834eeec47",
+    "CONTACT_18.jpg": "95aec8dbbc0dbdd2a2c8442b23e515f0b055f84ef5566fecc78f6f8eeca1502a",
+    "CONTACT_19.jpg": "d9b56d373c22dee8e4540940b3eac7224b5cf6ee27ca41f3f741d0360252d12b",
+    "CONTACT_20.jpg": "a7f9e07eb69394fb8b90f571b2b14009fc66887b710cf97cb4dde03a9afe8be7",
+    "CONTACT_21.jpg": "2024fa93103fde40e69445be2bd085d6746ffb9dd94ecc4a78a88ab2a671cc3e",
+    "CONTACT_22.jpg": "2c3a0765fc6186c482e7db1f2f0839cb47f9f5d2758a649cde3d29a96e1e10be"
+  },
+  "audio_extracted": true,
+  "audio_sha256": "6daa412b2bacd3afe9638e8f7d6a1db8a3e01a197b07100dfd0c12cbc32d5520"
+}

@@ -74,7 +74,9 @@ for side in [-1,1]:
  draw('CheekRedirectPlan.'+suf,[(side*1.02,.35),(side*1.17,.08),(side*1.24,-.17),(side*1.32,-.43)],teal,.008)
  # Candidate pole marks are proposals on the outer cheek, NOT approved pole placement.
  px,pz=side*1.15,-.15
- sphere('SuggestedPole.NOT_APPROVED.'+suf,(px,front_y(px,pz)-.029,pz),(.025,.025,.025),red,12,8)
+ pole=sphere('SuggestedPole.NOT_APPROVED.'+suf,(px,front_y(px,pz)-.029,pz),(.025,.025,.025),red,12,8)
+ for owner in tuple(pole.users_collection):owner.objects.unlink(pole)
+ collection.objects.link(pole)
 draw('NasalDorsumPlan',[(0,.66),(0,.46),(0,.29),(0,.11),(0,-.04),(0,-.17)],orange,.013)
 
 bpy.ops.object.camera_add(location=(0,-6.2,.20));front=bpy.context.object;front.name='Camera.Front'

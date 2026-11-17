@@ -1,0 +1,23 @@
+{
+  "version": "V029",
+  "source_training": "V028 MK Graphics timed source + Julien Kaspar Blender Studio visual diagrams",
+  "original_code": "research/animation_v029/build_blender_v029.py",
+  "geometry": "contour_first_annular_two_eye_modules",
+  "Blender": "5.2.2",
+  "stage": "native_local_module_only",
+  "allowed": [
+    "new independent original meshes",
+    "isolated research branch",
+    "native .blend",
+    "6 workbench previews",
+    "measured camera raycast visibility",
+    "fresh reload receipt"
+  ],
+  "forbidden": [
+    "modify GS001",
+    "claim integrated full head",
+    "claim independent artist PASS",
+    "reuse proprietary tutorial mesh"
+  ],
+  "integrity": "original_geometry_v029"
+}

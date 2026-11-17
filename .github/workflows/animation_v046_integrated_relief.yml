@@ -1,0 +1,68 @@
+name: V046 Native original continuous orbital tissue geometry
+on:
+  push:
+    branches:
+      - research/animation-v046-integrated-orbit-relief-20261117
+    paths:
+      - research/animation_v046/trigger-v046.json
+permissions:
+  contents: write
+jobs:
+  actual-source-led-relief-and-art-observation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install exact checksum-verified Blender 5.2.2
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/blender522"; cd "$RUNNER_TEMP/blender522"
+          curl --fail --location --retry 2 --connect-timeout 30 --max-time 440 -sS -o blender-5.2.2-linux-x64.tar.xz https://download.blender.org/release/Blender5.2/blender-5.2.2-linux-x64.tar.xz
+          curl --fail --location --retry 2 --connect-timeout 30 --max-time 120 -sS -o blender-5.2.2.sha256 https://download.blender.org/release/Blender5.2/blender-5.2.2.sha256
+          grep 'blender-5.2.2-linux-x64.tar.xz' blender-5.2.2.sha256 | sha256sum -c -
+          tar -xJf blender-5.2.2-linux-x64.tar.xz
+          echo "BLENDER_BIN=$RUNNER_TEMP/blender522/blender-5.2.2-linux-x64/blender" >> "$GITHUB_ENV"
+      - name: Software renderer and GUI dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq --no-install-recommends libegl1 libgl1 libgl1-mesa-dri libegl-mesa0 libxi6 libxkbcommon0 libxxf86vm1 libxfixes3 libxrender1 libsm6 libx11-6 libxext6 xvfb
+      - name: Actual original Blender mesh relief compared with frozen baseline
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 180 xvfb-run -a "$BLENDER_BIN" --background --factory-startup --python-exit-code 46 --python research/animation_v046/integrated_orbit_relief_v046.py
+          python - <<'PY'
+          import json
+          r=json.load(open('research/animation_v046/native_v046/RECEIPT.json'))
+          assert r['native']=='NATIVE_CONNECTED_ORBITAL_RELIEF_SCOPED_PASS',r.get('error')
+          assert len(r['baseline_renders'])==len(r['treatment_renders'])==4
+          assert r['treatment_topology']['components']==1
+          assert r['art']=='HOLD' and r['GS001']=='UNTOUCHED'
+          print('V046_ORIGINAL_SCOPED_NATIVE_PASS')
+          PY
+      - name: Independent new Blender process saved blend and 8 PNG SHA readback
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 100 xvfb-run -a "$BLENDER_BIN" --background --factory-startup research/animation_v046/native_v046/V046_CONTINUOUS_TISSUE_EXPERIMENT.blend --python-exit-code 47 --python research/animation_v046/fresh_reload_v046.py
+          python - <<'PY'
+          import json
+          r=json.load(open('research/animation_v046/native_v046/FRESH_READBACK.json'))
+          assert r['status']=='V046_INDEPENDENT_FRESH_READBACK_PASS',r.get('error')
+          assert r['render_sha_verified']==8
+          PY
+      - name: Preserve actual Blender witnesses or failure receipt on isolated branch
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -d research/animation_v046/native_v046 ]; then
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git add research/animation_v046/native_v046
+            if ! git diff --cached --quiet; then
+              git commit -m 'V046 preserve actual continuous facial tissue experiment and independent receipt'
+              git push origin HEAD:research/animation-v046-integrated-orbit-relief-20261117
+            fi
+          fi

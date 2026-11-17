@@ -30,7 +30,7 @@ jobs:
           sudo apt-get install -y -qq --no-install-recommends libegl1 libgl1 libgl1-mesa-dri libegl-mesa0 libxi6 libxkbcommon0 libxxf86vm1 libxfixes3 libxrender1 libsm6 libx11-6 libxext6 xvfb
           ldconfig -p | grep libEGL.so.1
       - name: Static original sculpt and negative controls
-        run: python research/animation_v036/test_sculpt_v036.py
+        run: python research/animation_v036/test_geometry_v036.py
       - name: Build, native render, and save new target sculpt and facial patch guide
         shell: bash
         env:

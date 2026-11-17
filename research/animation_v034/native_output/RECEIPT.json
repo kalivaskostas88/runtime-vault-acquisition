@@ -105,7 +105,7 @@
       -1.04
     ]
   },
-  "guide_count": 11,
+  "guide_count": 13,
   "target_closed_mesh": true,
   "native_target_sculpt_gate": "PASS",
   "proposed_patch_plan_status": "UNTESTED_BEFORE_PROJECTION",
@@ -122,42 +122,42 @@
   ],
   "blend": {
     "name": "original_target_sculpt_v034.blend",
-    "sha256": "36ad54addb35bc223a79cef1fe970e795a1e5d8a78da7fb93f09359dd2f8db23",
-    "bytes": 447314
+    "sha256": "aabba055dc1c840acccb4ad8e8a2525f9a7eff4c6f15d62a2142a7c97db5a2b4",
+    "bytes": 448863
   },
   "previews": {
     "PREVIEW_FRONT_SCULPT.png": {
-      "sha256": "59455db6c071523a472bb0ba8cb7539f0671a731d0625af36889aed1ae15fb00",
-      "bytes": 534477,
+      "sha256": "09773a346b765625f40756b3fe432f1e233099ef53b98ceb67e2e5b8ec806528",
+      "bytes": 533431,
       "guides": false,
       "camera": "Camera.Front"
     },
     "PREVIEW_FRONT_GUIDES.png": {
-      "sha256": "a5a5aa3574d3d93ffa5be528115e6cebd5ed71e004cf90fe56ac32d996acc237",
+      "sha256": "2a673add48464b1cd9b72c5958b13bc69bb619bbe4bd218e484738c63e23f025",
       "bytes": 574790,
       "guides": true,
       "camera": "Camera.Front"
     },
     "PREVIEW_OBLIQUE_SCULPT.png": {
-      "sha256": "1cfd0ddeb9e3701e8797fd1537bb1e404fe240944ec313ba29c19dd275e598ed",
-      "bytes": 524507,
+      "sha256": "dfba4c500e4e9b23418e2fc225d8dac8d2c4fd85374d5596bdabb6fe4c86b624",
+      "bytes": 523493,
       "guides": false,
       "camera": "Camera.Oblique"
     },
     "PREVIEW_OBLIQUE_GUIDES.png": {
-      "sha256": "1ce941c391ba2ac3c65b078b2041d90017d132d695412124f3e46085886e4ff6",
+      "sha256": "8064141891351329ac72a3ab5f517f8b0985b6327ea05dddaae574564c13e244",
       "bytes": 561491,
       "guides": true,
       "camera": "Camera.Oblique"
     },
     "PREVIEW_PROFILE_SCULPT.png": {
-      "sha256": "6d2a38f8a94f85afe691ae509f52c8c769456bd3ee0b4ca7b0e4fe3e62d09392",
-      "bytes": 482815,
+      "sha256": "76baa3cdb89b7fb99748c57d08e569be77c722f91083bf05e20aa51f5e2e6e72",
+      "bytes": 482497,
       "guides": false,
       "camera": "Camera.Profile"
     },
     "PREVIEW_PROFILE_GUIDES.png": {
-      "sha256": "bffcf2f25db5bd642d9a3418caed4f806af4beacb32c121b1850b3bc490390fe",
+      "sha256": "d5b62c5a381bfd35deed90192e006911c701a3ec41c69dddcd799dea05025571",
       "bytes": 505711,
       "guides": true,
       "camera": "Camera.Profile"

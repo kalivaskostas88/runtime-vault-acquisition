@@ -1,0 +1,150 @@
+{
+  "version": "V031",
+  "runtime": "5.2.2 LTS",
+  "source_technique": "contour-first eyelid annular quads from professional video; original geometry",
+  "intent": "ISOLATED_ORBITAL_MODULE_NO_FACE_WELD",
+  "scope_no_false_claim": [
+    "not a complete head retopology",
+    "not integrated face topology",
+    "not expressive acting",
+    "no independent artist grade"
+  ],
+  "mesh_per_eye": {
+    "L": {
+      "vertex_count": 265,
+      "quad_count": 216,
+      "boundary_edges_expected_open_module": 98,
+      "overconnected_edges": 0,
+      "non_quad_faces": 0,
+      "outer_ring_exactly_fixed": true,
+      "inner_ring_moves": true
+    },
+    "R": {
+      "vertex_count": 265,
+      "quad_count": 216,
+      "boundary_edges_expected_open_module": 98,
+      "overconnected_edges": 0,
+      "non_quad_faces": 0,
+      "outer_ring_exactly_fixed": true,
+      "inner_ring_moves": true
+    }
+  },
+  "shape_key_isolation": [
+    {
+      "target": "L",
+      "target_max_move": 0.1890950542887086,
+      "other_max_move": 0.0,
+      "PASS": true
+    },
+    {
+      "target": "R",
+      "target_max_move": 0.1890950542887086,
+      "other_max_move": 0.0,
+      "PASS": true
+    }
+  ],
+  "open_to_closed_aperture_ratio": 0.027594936708861432,
+  "aperture_gap_open": 0.39499999999999996,
+  "aperture_gap_closed": 0.010899999999999965,
+  "raycast_front_occlusion": {
+    "OPEN": {
+      "L": {
+        "rays": 391,
+        "globe_visible_hits": 228,
+        "globe_first_hit_fraction": 0.5831202046035806,
+        "lid_first_hit_fraction": 0.309462915601023
+      },
+      "R": {
+        "rays": 391,
+        "globe_visible_hits": 228,
+        "globe_first_hit_fraction": 0.5831202046035806,
+        "lid_first_hit_fraction": 0.309462915601023
+      }
+    },
+    "HALF": {
+      "L": {
+        "rays": 391,
+        "globe_visible_hits": 115,
+        "globe_first_hit_fraction": 0.29411764705882354,
+        "lid_first_hit_fraction": 0.6751918158567775
+      },
+      "R": {
+        "rays": 391,
+        "globe_visible_hits": 115,
+        "globe_first_hit_fraction": 0.29411764705882354,
+        "lid_first_hit_fraction": 0.6751918158567775
+      }
+    },
+    "CLOSED": {
+      "L": {
+        "rays": 391,
+        "globe_visible_hits": 0,
+        "globe_first_hit_fraction": 0.0,
+        "lid_first_hit_fraction": 0.9974424552429667
+      },
+      "R": {
+        "rays": 391,
+        "globe_visible_hits": 0,
+        "globe_first_hit_fraction": 0.0,
+        "lid_first_hit_fraction": 0.9974424552429667
+      }
+    }
+  },
+  "technical_check_flags": {
+    "mesh_local_static_pass": true,
+    "closure_geometry_ratio_pass": true,
+    "bilateral_isolation_pass": true,
+    "negative_rectangle_control_rejected": true
+  },
+  "technical_local_gate": "PASS",
+  "occlusion_gate": "PASS",
+  "art_gate": "HOLD",
+  "full_face_integration": "NOT_TESTED",
+  "GS001": "UNTOUCHED",
+  "blend_file": "native_orbital_module_v031.blend",
+  "blend_sha256": "19acdc883e59ca945747979798978e8d523660b5ec4f5ac7920ce2b32c75d67c",
+  "previews": {
+    "OPEN": {
+      "file": "preview_OPEN.png",
+      "sha256": "a52a4d905d87546d47236713ae55dffcbe656b95387460523240d48b473e455b",
+      "bytes": 367872,
+      "L": 0.0,
+      "R": 0.0
+    },
+    "RIGHT_HALF": {
+      "file": "preview_RIGHT_HALF.png",
+      "sha256": "9781084515f6acaf1ed8bbf487fe0ed656dd5bd8d77fb7c00abacf2fbcced793",
+      "bytes": 366018,
+      "L": 0.0,
+      "R": 0.5
+    },
+    "RIGHT_CLOSED": {
+      "file": "preview_RIGHT_CLOSED.png",
+      "sha256": "565f49bef3d418073b56df2c49a1ff691599ed21c56c2eba6117cdccee046a97",
+      "bytes": 364802,
+      "L": 0.0,
+      "R": 1.0
+    },
+    "LEFT_CLOSED": {
+      "file": "preview_LEFT_CLOSED.png",
+      "sha256": "c52b0addb3c8268cbc8419055cdd253f07323f5edaee61fbcabda6d4e6d25ada",
+      "bytes": 364401,
+      "L": 1.0,
+      "R": 0.0
+    },
+    "BOTH_HALF": {
+      "file": "preview_BOTH_HALF.png",
+      "sha256": "d0c7acc14565d7d4b57436a451812bf0931b08b2e3f12b3a5e651eceb642c4ef",
+      "bytes": 362767,
+      "L": 0.5,
+      "R": 0.5
+    },
+    "BOTH_CLOSED": {
+      "file": "preview_BOTH_CLOSED.png",
+      "sha256": "502f0d6130d039f8b26946a51582b605d55e4516696f5084a0a43ff37e97f0f8",
+      "bytes": 359162,
+      "L": 1.0,
+      "R": 1.0
+    }
+  }
+}

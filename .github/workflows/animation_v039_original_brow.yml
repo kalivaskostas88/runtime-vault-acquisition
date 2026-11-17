@@ -1,10 +1,10 @@
-name: V039 original broad brow native Blender sculpt isolated research
+name: V039B reclassification of mask gradient real original brow native sculpt
 on:
   push:
     branches:
       - research/animation-v039-original-brow-20261117
     paths:
-      - research/animation_v039/run-v039-request.json
+      - research/animation_v039/run-v039b-request.json
 permissions:
   contents: write
 jobs:
@@ -33,11 +33,11 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          timeout 190 xvfb-run -a "$BLENDER_BIN" --factory-startup --python-exit-code 33 --python research/animation_v039/run_v039_native_brow.py
+          timeout 190 xvfb-run -a "$BLENDER_BIN" --factory-startup --python-exit-code 33 --python research/animation_v039/run_v039b_native_brow.py
           python - <<'PY'
           import json
-          d=json.load(open('research/animation_v039/native_v039/RECEIPT.json'))
-          print('V039_NATIVE_STATUS:',d['native_status'])
+          d=json.load(open('research/animation_v039/native_v039b/RECEIPT.json'))
+          print('V039B_NATIVE_STATUS:',d['native_status'])
           assert d['native_status']=='PASS_NARROW_BROW_SCULPT',d
           assert d['GS001']=='UNTOUCHED' and d['art_status']=='HOLD'
           PY
@@ -45,10 +45,10 @@ jobs:
         if: always()
         run: |
           set -euo pipefail
-          if [ -f research/animation_v039/native_v039/RECEIPT.json ]; then
+          if [ -f research/animation_v039/native_v039b/RECEIPT.json ]; then
              git config user.name 'github-actions[bot]'
              git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-             git add research/animation_v039/native_v039
+             git add research/animation_v039/native_v039b
              git diff --cached --quiet && exit 0
              git commit -m 'Record V039 isolated real Blender broad brow and negative receipts'
              git push origin HEAD:research/animation-v039-original-brow-20261117

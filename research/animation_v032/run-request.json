@@ -1,0 +1,20 @@
+{
+  "version": "V032",
+  "target": "Single connected all-quad facial skin with two welded orbital modules; not closed head",
+  "teachings": [
+    "MK Graphics V028 original lesson 13:49-15:29 bridge into cheek/nose",
+    "Julien Kaspar Blender Studio retopology patches/poles/creases",
+    "Blender 5.2 official Bridge Edge Loops"
+  ],
+  "carry_forward": "V031 reference blink profile + measured raycast not inherited without integration test",
+  "tests": [
+    "14/14 static topology checks",
+    "native mesh integrity and independent blink",
+    "same 391 front rays per eye",
+    "oblique preview",
+    "native .blend reload"
+  ],
+  "protected": "GS001_UNTOUCHED",
+  "art": "HOLD",
+  "run_only": "research/animation-v032-welded-face-20261117"
+}

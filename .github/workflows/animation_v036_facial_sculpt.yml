@@ -1,0 +1,65 @@
+name: V036 native Blender 5.2.2 original facial sculpt target
+on:
+  push:
+    branches:
+      - research/animation-v036-original-facial-sculpt-20261117
+    paths:
+      - research/animation_v036/run-request.json
+permissions:
+  contents: write
+jobs:
+  original-anatomical-reference:
+    runs-on: ubuntu-latest
+    timeout-minutes: 27
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download official Blender 5.2.2 and verify vendor checksum
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/blender522"
+          cd "$RUNNER_TEMP/blender522"
+          curl --fail --location --retry 2 --connect-timeout 30 --max-time 460 --silent --show-error -o blender-5.2.2-linux-x64.tar.xz https://download.blender.org/release/Blender5.2/blender-5.2.2-linux-x64.tar.xz
+          curl --fail --location --retry 2 --connect-timeout 30 --max-time 120 --silent --show-error -o blender-5.2.2.sha256 https://download.blender.org/release/Blender5.2/blender-5.2.2.sha256
+          grep 'blender-5.2.2-linux-x64.tar.xz' blender-5.2.2.sha256 | sha256sum -c -
+          tar -xJf blender-5.2.2-linux-x64.tar.xz
+          echo "BLENDER_BIN=$RUNNER_TEMP/blender522/blender-5.2.2-linux-x64/blender" >> "$GITHUB_ENV"
+      - name: Install headless software graphics
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq --no-install-recommends libegl1 libgl1 libgl1-mesa-dri libegl-mesa0 libxi6 libxkbcommon0 libxxf86vm1 libxfixes3 libxrender1 libsm6 libx11-6 libxext6 xvfb
+          ldconfig -p | grep libEGL.so.1
+      - name: Static original sculpt and negative controls
+        run: python research/animation_v036/test_sculpt_v036.py
+      - name: Build, native render, and save new target sculpt and facial patch guide
+        shell: bash
+        env:
+          ANIMATION_V036_OUT: ${{ github.workspace }}/research/animation_v036/native_output
+        run: |
+          set -euo pipefail
+          xvfb-run -a "$BLENDER_BIN" --background --factory-startup --python-exit-code 33 --python research/animation_v036/build_target_v036.py
+          test -s "$ANIMATION_V036_OUT/RECEIPT.json"
+          test -s "$ANIMATION_V036_OUT/original_stylized_sculpt_v036.blend"
+      - name: Independently reopen original Blender project
+        shell: bash
+        env:
+          ANIMATION_V036_OUT: ${{ github.workspace }}/research/animation_v036/native_output
+        run: |
+          set -euo pipefail
+          xvfb-run -a "$BLENDER_BIN" --background "$ANIMATION_V036_OUT/original_stylized_sculpt_v036.blend" --python-exit-code 34 --python research/animation_v036/verify_saved_v036.py
+          test -s "$ANIMATION_V036_OUT/FRESH_READBACK.json"
+          cd "$ANIMATION_V036_OUT"
+          sha256sum original_stylized_sculpt_v036.blend PREVIEW_*.png RECEIPT.json FRESH_READBACK.json > SHA256SUMS.txt
+      - name: Persist original technical fixture in research branch (no artifact quota)
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s research/animation_v036/native_output/RECEIPT.json
+          test -s research/animation_v036/native_output/FRESH_READBACK.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add research/animation_v036/native_output/
+          git diff --cached --quiet && exit 0
+          git commit -m 'Record V036 original target sculpt anatomical patch planning proof'
+          git push origin HEAD:research/animation-v036-original-facial-sculpt-20261117

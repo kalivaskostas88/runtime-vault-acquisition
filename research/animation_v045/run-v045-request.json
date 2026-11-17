@@ -11,5 +11,8 @@
     "NO_FOUR_VIEW_APPROVED",
     "NO_CROSS_BACKEND_CLAIM"
   ],
-  "date": "2026-11-17"
+  "date": "2026-11-17",
+  "attempt": "V045B",
+  "change": "ONLY bpy.context.view_layer.update() before actual matrix_world margin audit after location edits",
+  "initial_failure_run": "https://github.com/kalivaskostas88/runtime-vault-acquisition/actions/runs/44063223464"
 }

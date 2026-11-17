@@ -1,0 +1,48 @@
+name: V039B independent saved Blender 5.2.2 verification
+on:
+  push:
+    branches:
+      - research/animation-v039-original-brow-20261117
+    paths:
+      - research/animation_v039/run-v039-reopen-request.json
+permissions:
+  contents: write
+jobs:
+  independent-model-reload:
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+      - name: Acquire Blender 5.2.2 official vendor checksum
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/blender522"; cd "$RUNNER_TEMP/blender522"
+          curl --fail --location --retry 2 --connect-timeout 30 --max-time 460 -sS -o blender-5.2.2-linux-x64.tar.xz https://download.blender.org/release/Blender5.2/blender-5.2.2-linux-x64.tar.xz
+          curl --fail --location --retry 2 --connect-timeout 30 --max-time 120 -sS -o blender-5.2.2.sha256 https://download.blender.org/release/Blender5.2/blender-5.2.2.sha256
+          grep 'blender-5.2.2-linux-x64.tar.xz' blender-5.2.2.sha256 | sha256sum -c -
+          tar -xJf blender-5.2.2-linux-x64.tar.xz
+          echo "BLENDER_BIN=$RUNNER_TEMP/blender522/blender-5.2.2-linux-x64/blender" >> "$GITHUB_ENV"
+      - name: Reopen saved model as a separate Blender process, verify every image/hash and delta
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$BLENDER_BIN" --background --factory-startup --python-exit-code 35 --python research/animation_v039/verify_v039b_fresh.py
+          python - <<'PY'
+          import json
+          d=json.load(open('research/animation_v039/native_v039b/FRESH_READBACK.json'))
+          assert d['status']=='FRESH_RELOAD_PASS' and len(d['preview_hashes_verified'])==8
+          assert d['measured_after_reopen']['fully_masked_moved']==0
+          PY
+      - name: Preserve fresh independent receipt
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s research/animation_v039/native_v039b/FRESH_READBACK.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add research/animation_v039/native_v039b/FRESH_READBACK.json
+          git diff --cached --quiet && exit 0
+          git commit -m 'Independent V039B Blender 5.2.2 reopened native proof receipt'
+          git push origin HEAD:research/animation-v039-original-brow-20261117

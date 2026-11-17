@@ -183,7 +183,7 @@ def make_mesh_bvh(ob,deps):
 def eye_visibility(scene,cam,face_bvh, pupil_bvh):
     # Camera-parallel rays from real orthographic camera through fixed raster-plane offsets.
     rot=cam.rotation_euler.to_quaternion();direc=(rot@Vector((0,0,-1))).normalized()
-    right=rot@Vector((1,0,0));up=rot@Vector((0,1,0));eye=Vector((0.,-.774,0.))
+    right=rot@Vector((1,0,0));up=rot@Vector((0,1,0));eye=Vector((0.,-.744,0.))
     base=cam.location+right*((eye-cam.location).dot(right))+up*((eye-cam.location).dot(up))
     n=0;visible=0
     for a in range(-8,9):
@@ -231,7 +231,14 @@ def evaluate(variant):
     open_=records[0]['aperture_m'];close=next(x for x in records if x['frame']==32)['aperture_m']
     g1=(tp['components']==1 and tp['boundary_loops']==1 and tp['non_manifold_fan_edges']==0
         and tp['boundary_edges']==N and tp['euler_characteristic']==1 and tp['faces']==720 and tp['vertices']==721)
-    if variant=='WELDED_HEAD':ok=g1 and max_outer<.002 and max_behind<.002 and max_inner>.14 and close<.02 and open_>.30
+    if variant=='WELDED_HEAD':
+        open_angles=records[0]['multi_angle'];closed_angles=next(x for x in records if x['frame']==32)['multi_angle']
+        # V016A native camera-ray witness: 100% visible pupil at full blink in all 3 cameras.
+        # V016B depth-only repair must reverse that outcome without hiding open eye.
+        occlusion_ok=all(closed_angles[name]['pupil_visibility']['sampled_pupil_rays']>=15 and
+                         closed_angles[name]['pupil_visibility']['visible_fraction']<.12 and
+                         open_angles[name]['pupil_visibility']['visible_fraction']>.35 for name in STAGES)
+        ok=g1 and max_outer<.002 and max_behind<.002 and max_inner>.14 and close<.02 and open_>.30 and occlusion_ok
     elif variant=='SPLIT_SEAM':ok=(tp['components']==2 and tp['boundary_loops']==3 and tp['boundary_edges']==3*N
                                     and tp['faces']==672 and tp['vertices']==721 and max_inner>.14)
     else:ok=g1 and max_outer>.10 and max_behind>.10 and max_inner>.14
@@ -242,7 +249,7 @@ def evaluate(variant):
             'max_back_head_motion_m':round(max_behind,7),'min_evaluated_triangle_area_m2':round(min_area,10),
             'native_mechanical_gate':bool(ok),'samples':records,
             'scope':'original oval head with one eye aperture; not a full anatomical human face or hand animation',
-            'art_review':'HOLD','GS001':'UNTOUCHED'}
+            'art_review':'HOLD','occlusion_depth_repair':'V016B_EYE_ASSEMBLY_MOVED_0p040M_Y_ONLY','GS001':'UNTOUCHED'}
 
 def build(variant,out):
     bpy.ops.wm.read_factory_settings(use_empty=True)
@@ -255,9 +262,9 @@ def build(variant,out):
     scene.render.image_settings.file_format='PNG'
     face_color=material('FLESH',(.82,.55,.42));eye_color=material('SCLERA',(.94,.93,.85))
     iris_color=material('IRIS',(.13,.42,.43));pupil_color=material('PUPIL',(.018,.022,.036))
-    sphere('EYEBALL',.37,(0,-.40,0),eye_color)
-    i=sphere('IRIS',.080,(0,-.770,0),iris_color);i.scale=(1,.16,1)
-    p=sphere('PUPIL',.036,(0,-.784,0),pupil_color);p.scale=(1,.14,1)
+    sphere('EYEBALL',.37,(0,-.36,0),eye_color)
+    i=sphere('IRIS',.080,(0,-.730,0),iris_color);i.scale=(1,.16,1)
+    p=sphere('PUPIL',.036,(0,-.744,0),pupil_color);p.scale=(1,.14,1)
     r=rig();make_head(variant,r,face_color)
     cd=bpy.data.cameras.new('V016_CAM_DATA');cam=bpy.data.objects.new('V016_CAMERA',cd)
     bpy.context.collection.objects.link(cam);cd.type='ORTHO';cd.ortho_scale=2.7;scene.camera=cam

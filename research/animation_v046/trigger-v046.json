@@ -1,0 +1,12 @@
+{
+  "experiment": "V046_ORIGINAL_CONTINUOUS_FACIAL_TISSUE_RELIEF",
+  "date": "2026-11-17",
+  "baseline": "Original V039 same V046 head + sockets no relief",
+  "treatment": "compact broad supra/infra orbit relief on head same mesh",
+  "sources": [
+    "https://studio.blender.org/training/stylized-character-workflow/5d3a1c494980f083715e40ed/",
+    "https://studio.blender.org/training/stylized-character-workflow/5d3a1bd54bc3ff1bb9513d3e/"
+  ],
+  "protected": "GS001 untouched",
+  "art": "HOLD until reference + independent reviewer"
+}

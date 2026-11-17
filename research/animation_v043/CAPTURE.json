@@ -3,8 +3,8 @@
   "source_url": "https://studio.blender.org/training/stylized-character-workflow/5d3a1c494980f083715e40ed/",
   "author": "Julien Kaspar / Blender Studio",
   "license_claim": "Blender Studio page expressly marks lesson Free / License CC-BY",
-  "status": "CAPTURE_OR_RIGHTS_HOLD",
-  "source_acquired": false,
+  "status": "ORIGINAL_FULL_MP4_CAPTURED_ALL_SPAN_INDEXED",
+  "source_acquired": true,
   "visual_study": "NOT_YET_VISUALLY_REVIEWED",
   "audio_listening": "NOT_PERCEPTUALLY_AUDITED",
   "art": "HOLD",
@@ -14,5 +14,44 @@
   "official_download_href": "https://studio.blender.org/download-source/files/5c/5c4c90047b574232b2538b5487541748/5c4c90047b574232b2538b5487541748-1080p.mp4",
   "download_status": 200,
   "final_download_host": "studio.blender.org",
-  "error": "FileNotFoundError(2, 'No such file or directory')"
+  "video_sha256": "efbbd98eb0b268f8ccd4e7743ad1acae2f9fd3121b51fd904e9c682cfcfadb93",
+  "video_bytes": 154083652,
+  "duration_sec": 1084.437333,
+  "video_width": 1920,
+  "video_height": 1080,
+  "streams": [
+    {
+      "codec": "h264",
+      "type": "video"
+    },
+    {
+      "codec": "aac",
+      "type": "audio"
+    }
+  ],
+  "subtitle_link_count": 1,
+  "subtitle_public_hrefs": [
+    "https://studio.blender.org/api/videos/track/197/5c/5c4c90047b574232b2538b5487541748/5c4c90047b574232b2538b5487541748.vtt"
+  ],
+  "subtitle_source_sha256": "cebd2771cdbf0076af55e48140f10c9dd30e5575a10ad4f8a51c63ead4f19ee2",
+  "one_fps_frame_count": 1084,
+  "contact_count": 14,
+  "contact_sha256": {
+    "CONTACT_00.jpg": "97ded2b91d9b5143af735d414c805debd833018215c83e540649e53ca73dd07c",
+    "CONTACT_01.jpg": "64a574bb3256b01e432985ba3087c2fbb380dee3821f08baf0522881f545ab16",
+    "CONTACT_02.jpg": "25c8945d8103fcbb72845be2d743a17e54664971e66a32dfc4f7d45b848298d2",
+    "CONTACT_03.jpg": "a2773901513e41cde1ef64fe45a67616c0050d294b6fc9a1d1ee7238d55f74e4",
+    "CONTACT_04.jpg": "1e1ca84da89381066340dace1fbe3b53e44e68ea3cb3038daf59b684f958156d",
+    "CONTACT_05.jpg": "ac7f6e54441df3e63d4ab242ede29413f65567e2bbd015a142f9a664f299bb43",
+    "CONTACT_06.jpg": "e7a3002e118ae41d574502834075c0a01e068b90ae0892cf5c2ed9f6519b43fe",
+    "CONTACT_07.jpg": "4fc541e835b5ddb588cf753fcebc8e91d190afd28e4dcc2420e21881060cd4d5",
+    "CONTACT_08.jpg": "402dcbb7994938e188e8d66eb03403e43129179e83f9bff0c0ea69f5b2fd08ca",
+    "CONTACT_09.jpg": "caab30065d81988840a23a0a0462147c873b4971838c2a9f2afd63114ea241f9",
+    "CONTACT_10.jpg": "15691424e566a031d13a54512a01bb0adbf5bb848e3fb749f0aa097db0d1cfb0",
+    "CONTACT_11.jpg": "ccb26c1da9d383427fd5c8faef092c2845a5679330600992a168a3e35152c644",
+    "CONTACT_12.jpg": "e2d702097c2a1f528729b0045d271e87a204cd2aad3c1868ffa036a407033dad",
+    "CONTACT_13.jpg": "c49238600e68c2329369955ec27f09bcb9329c9dc28165b83d0f2424dff33882"
+  },
+  "audio_extracted": true,
+  "audio_sha256": "93fc76562048b535c8bcf150b653e09d36d0a9bf2fff66c4a97b824a9a835cb9"
 }

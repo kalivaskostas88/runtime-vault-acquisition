@@ -14,6 +14,7 @@ receipt={'version':'V037','scope':'MINIMAL_NATIVE_REAL_SCULPT_STROKE_FEASIBILITY
          'brush_asset_activated':False,'operator_called':False,'geometry_modified':False,'art_pass':False,
          'original_face_changed':False,'GS001':'UNTOUCHED'}
 try:
+    print('V037_STAGE: Blender UI context initialized',flush=True)
     bpy.ops.object.select_all(action='SELECT'); bpy.ops.object.delete(use_global=False)
     bpy.ops.mesh.primitive_uv_sphere_add(segments=128,ring_count=64,location=(0,0,0))
     obj=bpy.context.object;obj.name='OriginalV037.BRUSH_CAPABILITY_TEST_ONLY'
@@ -29,10 +30,13 @@ try:
     rv3.view_rotation=Euler((math.pi/2,0,0),'XYZ').to_quaternion()
     context=dict(window=bpy.context.window,screen=bpy.context.screen,area=area,region=region)
     with bpy.context.temp_override(**context):
+        print('V037_STAGE: before SCULPT mode',flush=True)
         bpy.ops.object.mode_set(mode='SCULPT')
+        print('V037_STAGE: sculpt mode entered',flush=True)
         last_errors=[]
         for name in ['Draw','Clay Strips','Draw Sharp','Blob']:
             try:
+                print('V037_STAGE: activate '+name,flush=True)
                 res=bpy.ops.brush.asset_activate(asset_library_type='ESSENTIALS', asset_library_identifier='',
                   relative_asset_identifier='brushes/essentials_brushes-mesh_sculpt.blend/Brush/'+name)
                 brush=bpy.context.tool_settings.sculpt.brush
@@ -55,7 +59,9 @@ try:
               'mouse':(cx+t*1.4,cy),'mouse_event':(cx+t*1.4,cy),
               'pressure':.95,'size':96,'time':i*.04,'is_start':i==0,'x_tilt':0.,'y_tilt':0.})
         receipt['stroke_points']=len(stroke)
+        print('V037_STAGE: before brush_stroke',flush=True)
         receipt['operator_result']=sorted(bpy.ops.sculpt.brush_stroke(stroke=stroke,mode='NORMAL'))
+        print('V037_STAGE: brush_stroke returned',flush=True)
         receipt['operator_called']=True
         bpy.ops.object.mode_set(mode='OBJECT')
     after=[tuple(v.co) for v in obj.data.vertices]
@@ -72,5 +78,8 @@ except Exception as e:
     traceback.print_exc()
 finally:
     (OUT/'BRUSH_PROBE_RECEIPT.json').write_text(json.dumps(receipt,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
-    print('V037_PROBE='+json.dumps(receipt,ensure_ascii=False))
-    if receipt['status']!='PASS_NATIVE_BRUSH_CHANGE':raise RuntimeError(receipt['status'])
+    print('V037_PROBE='+json.dumps(receipt,ensure_ascii=False),flush=True)
+    if not bpy.app.background:
+        try:bpy.ops.wm.quit_blender()
+        except Exception as e:print('V037_QUIT_EXCEPTION '+repr(e),flush=True)
+    elif receipt['status']!='PASS_NATIVE_BRUSH_CHANGE':raise RuntimeError(receipt['status'])

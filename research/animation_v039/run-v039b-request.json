@@ -1,0 +1,9 @@
+{
+  "id": "V039B",
+  "diagnosis": "V039A incorrectly defined protected as mask>0.999 rather than mask=1.0",
+  "change": "Validator ROI class only, same geometry and strokes",
+  "source_failure_commit": "62deb78",
+  "goal": "Show strictly fully masked 0 moved; far-field 0 moved; fractional transition diagnostic",
+  "art": "HOLD",
+  "GS001": "UNTOUCHED"
+}

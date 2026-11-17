@@ -16,5 +16,7 @@
   ],
   "protected": "GS001_UNTOUCHED",
   "art": "HOLD",
-  "run_only": "research/animation-v032-welded-face-20261117"
+  "run_only": "research/animation-v032-welded-face-20261117",
+  "revision": 2,
+  "environment_fix": "Correct YAML escaped newline in static preflight step"
 }

@@ -19,5 +19,7 @@
     "claim independent artist PASS",
     "reuse proprietary tutorial mesh"
   ],
-  "integrity": "original_geometry_v029"
+  "integrity": "original_geometry_v029",
+  "revision": 2,
+  "repair": "install libEGL Mesa graphics dependencies + xvfb, original geometry unchanged"
 }

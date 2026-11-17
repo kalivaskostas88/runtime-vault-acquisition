@@ -1,0 +1,49 @@
+name: V040 independent original Boolean cavity saved mesh and 8 previews proof
+on:
+  push:
+    branches:
+      - research/animation-v040-orbit-cavity-20261117
+    paths:
+      - research/animation_v040/run-v040-reopen-request.json
+permissions:
+  contents: write
+jobs:
+  independent-verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download Blender 5.2.2 and vendor hash
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/b522";cd "$RUNNER_TEMP/b522"
+          curl --fail --location --retry 2 --max-time 440 -sS -o blender-5.2.2-linux-x64.tar.xz https://download.blender.org/release/Blender5.2/blender-5.2.2-linux-x64.tar.xz
+          curl --fail --location --retry 2 --max-time 120 -sS -o blender-5.2.2.sha256 https://download.blender.org/release/Blender5.2/blender-5.2.2.sha256
+          grep 'blender-5.2.2-linux-x64.tar.xz' blender-5.2.2.sha256 | sha256sum -c -
+          tar -xJf blender-5.2.2-linux-x64.tar.xz
+          echo "BIN=$RUNNER_TEMP/b522/blender-5.2.2-linux-x64/blender" >> "$GITHUB_ENV"
+      - name: Independent fresh load and hash/raycast/topology verification
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 160 "$BIN" --background --factory-startup --python-exit-code 38 --python research/animation_v040/verify_v040_fresh.py
+          python - <<'PY'
+          import json
+          d=json.load(open('research/animation_v040/native_v040/FRESH_READBACK.json'))
+          assert d['status']=='FRESH_READBACK_PASS',d
+          assert len(d['verified_png_sha256'])==8 and d['art']=='HOLD'
+          PY
+      - name: Commit independent receipt without mutating .blend
+        if: always()
+        run: |
+          set -euo pipefail
+          if [ -s research/animation_v040/native_v040/FRESH_READBACK.json ]; then
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git add research/animation_v040/native_v040/FRESH_READBACK.json
+            if ! git diff --cached --quiet;then
+              git commit -m 'V040 independent saved topology depth and 8 PNG SHA verification'
+              git push origin HEAD:research/animation-v040-orbit-cavity-20261117
+            fi
+          fi

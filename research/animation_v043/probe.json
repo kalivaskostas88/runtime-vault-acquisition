@@ -1,0 +1,716 @@
+{
+  "url": "https://studio.blender.org/training/stylized-character-workflow/5d3a1c494980f083715e40ed/",
+  "status": 200,
+  "bytes": 488525,
+  "matching_anchors": [
+    {
+      "tag": "a",
+      "href": "/",
+      "src": null,
+      "download": null,
+      "title": null
+    },
+    {
+      "tag": "a",
+      "href": "/films/",
+      "src": null,
+      "download": null,
+      "title": null
+    },
+    {
+      "tag": "a",
+      "href": "/projects/",
+      "src": null,
+      "download": null,
+      "title": null
+    },
+    {
+      "tag": "a",
+      "href": "/training/",
+      "src": null,
+      "download": null,
+      "title": null
+    },
+    {
+      "tag": "a",
+      "href": "/characters/",
+      "src": null,
+      "download": null,
+      "title": null
+    },
+    {
+      "tag": "a",
+      "href": "/tools/",
+      "src": null,
+      "download": null,
+      "title": null
+    },
+    {
+      "tag": "a",
+      "href": "/blog/",
+      "src": null,
+      "download": null,
+      "title": null
+    },
+    {
+      "tag": "a",
+      "href": "/search/",
+      "src": null,
+      "download": null,
+      "title": null
+    },
+    {
+      "tag": "a",
+      "href": "/oauth/login",
+      "src": null,
+      "download": null,
+      "title": null
+    },
+    {
+      "tag": "a",
+      "href": "/join/",
+      "src": null,
+      "download": null,
+      "title": null
+    },
+    {
+      "tag": "a",
+      "href": "https://www.blender.org/?utm_medium=nav-global",
+      "src": null,
+      "download": null,
+      "title": null
+    },
+    {
+      "tag": "a",
+      "href": "https://www.blender.org/download/?utm_medium=nav-global",
+      "src": null,
+      "download": null,
+      "title": null
+    },
+    {
+      "tag": "a",
+      "href": "https://www.blender.org/download/releases/?utm_medium=nav-global",
+      "src": null,
+      "download": null,
+      "title": null
+    },
+    {
+      "tag": "a",
+      "href": "https://projects.blender.org/?utm_medium=nav-global",
+      "src": null,
+      "download": null,
+      "title": null
+    },
+    {
+      "tag": "a",
+      "href": "https://code.blender.org/roadmap/?utm_medium=nav-global",
+      "src": null,
+      "download": null,
+      "title": null
+    },
+    {
+      "tag": "a",
+      "href": "https://developer.blender.org/docs/?utm_medium=nav-global",
+      "src": null,
+      "download": null,
+      "title": null
+    },
+    {
+      "tag": "a",
+      "href": "https://studio.blender.org/?utm_medium=nav-global",
+      "src": null,
+      "download": null,
+      "title": null
+    },
+    {
+      "tag": "a",
+      "href": "https://studio.blender.org/?utm_medium=nav-global",
+      "src": null,
+      "download": null,
+      "title": null
+    },
+    {
+      "tag": "a",
+      "href": "https://docs.blender.org/manual/en/latest/?utm_medium=nav-global",
+      "src": null,
+      "download": null,
+      "title": null
+    },
+    {
+      "tag": "a",
+      "href": "https://opendata.blender.org/?utm_medium=nav-global",
+      "src": null,
+      "download": null,
+      "title": null
+    },
+    {
+      "tag": "a",
+      "href": "https://conference.blender.org/?utm_medium=nav-global",
+      "src": null,
+      "download": null,
+      "title": null
+    },
+    {
+      "tag": "a",
+      "href": "https://fund.blender.org/?utm_medium=nav-global",
+      "src": null,
+      "download": null,
+      "title": null
+    },
+    {
+      "tag": "a",
+      "href": "https://fund.blender.org/?utm_medium=nav-global",
+      "src": null,
+      "download": null,
+      "title": null
+    },
+    {
+      "tag": "a",
+      "href": "https://www.blender.org/about/donations/?utm_medium=nav-global",
+      "src": null,
+      "download": null,
+      "title": null
+    },
+    {
+      "tag": "a",
+      "href": "/training/rigging-fundamentals/",
+      "src": null,
+      "download": null,
+      "title": null
+    },
+    {
+      "tag": "a",
+      "href": "/training/customizing-material-assets/",
+      "src": null,
+      "download": null,
+      "title": null
+    },
+    {
+      "tag": "a",
+      "href": "/training/facial-rigging/",
+      "src": null,
+      "download": null,
+      "title": null
+    },
+    {
+      "tag": "a",
+      "href": "/training/3d-printing/",
+      "src": null,
+      "download": null,
+      "title": null
+    },
+    {
+      "tag": "a",
+      "href": "/training/?studio[menu][type]=course#all-training",
+      "src": null,
+      "download": null,
+      "title": null
+    },
+    {
+      "tag": "a",
+      "href": "/training/?studio[menu][type]=documentation#all-training",
+      "src": null,
+      "download": null,
+      "title": null
+    },
+    {
+      "tag": "a",
+      "href": "/training/?studio[menu][type]=production lesson#all-training",
+      "src": null,
+      "download": null,
+      "title": null
+    },
+    {
+      "tag": "a",
+      "href": "/training/?studio[menu][type]=workshop#all-training",
+      "src": null,
+      "download": null,
+      "title": null
+    },
+    {
+      "tag": "a",
+      "href": "/training/?studio%5Bquery%5D=animation#all-training",
+      "src": null,
+      "download": null,
+      "title": null
+    },
+    {
+      "tag": "a",
+      "href": "/training/?studio%5Bquery%5D=geometry%20nodes#all-training",
+      "src": null,
+      "download": null,
+      "title": null
+    },
+    {
+      "tag": "a",
+      "href": "/training/?studio%5Bquery%5D=lighting#all-training",
+      "src": null,
+      "download": null,
+      "title": null
+    },
+    {
+      "tag": "a",
+      "href": "/training/?studio[query]=rendering#all-training",
+      "src": null,
+      "download": null,
+      "title": null
+    },
+    {
+      "tag": "a",
+      "href": "/training/?studio%5Bquery%5D=rigging#all-training",
+      "src": null,
+      "download": null,
+      "title": null
+    },
+    {
+      "tag": "a",
+      "href": "/training/?studio%5Bquery%5D=shading#all-training",
+      "src": null,
+      "download": null,
+      "title": null
+    },
+    {
+      "tag": "a",
+      "href": "/projects/cowboi/",
+      "src": null,
+      "download": null,
+      "title": null
+    },
+    {
+      "tag": "a",
+      "href": "/projects/overgrown/",
+      "src": null,
+      "download": null,
+      "title": null
+    },
+    {
+      "tag": "a",
+      "href": "/projects/singularity/",
+      "src": null,
+      "download": null,
+      "title": null
+    },
+    {
+      "tag": "a",
+      "href": "/projects/wing-it/",
+      "src": null,
+      "download": null,
+      "title": null
+    },
+    {
+      "tag": "a",
+      "href": "/projects/impulse-purchase/",
+      "src": null,
+      "download": null,
+      "title": null
+    },
+    {
+      "tag": "a",
+      "href": "/projects/storm/",
+      "src": null,
+      "download": null,
+      "title": null
+    },
+    {
+      "tag": "a",
+      "href": "/projects/dogwalk/",
+      "src": null,
+      "download": null,
+      "title": null
+    },
+    {
+      "tag": "a",
+      "href": "/projects/gold/",
+      "src": null,
+      "download": null,
+      "title": null
+    },
+    {
+      "tag": "a",
+      "href": "/characters/",
+      "src": null,
+      "download": null,
+      "title": null
+    },
+    {
+      "tag": "a",
+      "href": "/search/?type=asset&media_type=file",
+      "src": null,
+      "download": null,
+      "title": null
+    },
+    {
+      "tag": "a",
+      "href": "/search/?query=library&type=asset&tags[0]=library",
+      "src": null,
+      "download": null,
+      "title": null
+    },
+    {
+      "tag": "a",
+      "href": "/vault/",
+      "src": null,
+      "download": null,
+      "title": null
+    },
+    {
+      "tag": "a",
+      "href": "/training/stylized-character-workflow/",
+      "src": null,
+      "download": null,
+      "title": null
+    },
+    {
+      "tag": "a",
+      "href": "/training/stylized-character-workflow/chapter/intro-stylized-character-workflow/",
+      "src": null,
+      "download": null,
+      "title": "Intro"
+    },
+    {
+      "tag": "a",
+      "href": null,
+      "src": null,
+      "download": null,
+      "title": null
+    },
+    {
+      "tag": "a",
+      "href": "/training/stylized-character-workflow/5d3a1a214bc3ff1bb9513d30/",
+      "src": null,
+      "download": null,
+      "title": "Introduction"
+    },
+    {
+      "tag": "a",
+      "href": "/training/stylized-character-workflow/5e578b890130b67d1c17b7c4/",
+      "src": null,
+      "download": null,
+      "title": "Introduction Update"
+    },
+    {
+      "tag": "a",
+      "href": "/training/stylized-character-workflow/chapter/5d384e5fa5b8f5c2c32c8503/",
+      "src": null,
+      "download": null,
+      "title": "1: Head Sculpting"
+    },
+    {
+      "tag": "a",
+      "href": null,
+      "src": null,
+      "download": null,
+      "title": null
+    },
+    {
+      "tag": "a",
+      "href": "/training/stylized-character-workflow/5d3a1b3d4bc3ff1bb9513d38/",
+      "src": null,
+      "download": null,
+      "title": "Defining Goals"
+    },
+    {
+      "tag": "a",
+      "href": "/training/stylized-character-workflow/5d3a1b734bc3ff1bb9513d3a/",
+      "src": null,
+      "download": null,
+      "title": "Research"
+    },
+    {
+      "tag": "a",
+      "href": "/training/stylized-character-workflow/5d3a1b8dd4efee8f4fb28c03/",
+      "src": null,
+      "download": null,
+      "title": "Blender Setup"
+    },
+    {
+      "tag": "a",
+      "href": "/training/stylized-character-workflow/5d3a1bb1d4efee8f4fb28c06/",
+      "src": null,
+      "download": null,
+      "title": "Sculpting a Primitive Head Shape"
+    },
+    {
+      "tag": "a",
+      "href": "/training/stylized-character-workflow/5d3a1bd54bc3ff1bb9513d3e/",
+      "src": null,
+      "download": null,
+      "title": "Sculpting a complete Planar Head"
+    },
+    {
+      "tag": "a",
+      "href": "/training/stylized-character-workflow/5d3a1bfe4980f083715e40e6/",
+      "src": null,
+      "download": null,
+      "title": "Smoothing the Planar Head"
+    },
+    {
+      "tag": "a",
+      "href": "/training/stylized-character-workflow/5d3a1c1b4980f083715e40e9/",
+      "src": null,
+      "download": null,
+      "title": "Stylising the Head Sculpt"
+    },
+    {
+      "tag": "a",
+      "href": "/training/stylized-character-workflow/5d3a1c494980f083715e40ed/",
+      "src": null,
+      "download": null,
+      "title": "Timelapse: Sculpting Rain's Head"
+    },
+    {
+      "tag": "a",
+      "href": "/training/stylized-character-workflow/5d3a1c68fa5e1feb5a307836/",
+      "src": null,
+      "download": null,
+      "title": "Timelapse: Vertex Painting"
+    },
+    {
+      "tag": "a",
+      "href": "/training/stylized-character-workflow/5d3a1c874980f083715e40f4/",
+      "src": null,
+      "download": null,
+      "title": "Timelapse: Sculpting Hair"
+    },
+    {
+      "tag": "a",
+      "href": "/training/stylized-character-workflow/5d3a1ca8fa5e1feb5a307839/",
+      "src": null,
+      "download": null,
+      "title": "Timelapse: Head Design Variations"
+    },
+    {
+      "tag": "a",
+      "href": "/training/stylized-character-workflow/5d3a1ccafa5e1feb5a30783b/",
+      "src": null,
+      "download": null,
+      "title": "Timelapse: Finishing Rain's Head Design"
+    },
+    {
+      "tag": "a",
+      "href": "/training/stylized-character-workflow/chapter/5d384eb4a5b8f5c2c32c8505/",
+      "src": null,
+      "download": null,
+      "title": "2: Body & Outfit Sculpting"
+    },
+    {
+      "tag": "a",
+      "href": null,
+      "src": null,
+      "download": null,
+      "title": null
+    },
+    {
+      "tag": "a",
+      "href": "/training/stylized-character-workflow/5d7f7cf055ccaf1a4a78102d/",
+      "src": null,
+      "download": null,
+      "title": "Creating a Primitive Body"
+    },
+    {
+      "tag": "a",
+      "href": "/training/stylized-character-workflow/5d7f7dcd9889b3993224bea2/",
+      "src": null,
+      "download": null,
+      "title": "Sculpting the Planar Torso"
+    },
+    {
+      "tag": "a",
+      "href": "/training/stylized-character-workflow/5d7f7e61db37a94301d88fef/",
+      "src": null,
+      "download": null,
+      "title": "Sculpting the Planar Arms & Legs"
+    },
+    {
+      "tag": "a",
+      "href": "/training/stylized-character-workflow/5d7f7f4c9bc439fdf7f65b31/",
+      "src": null,
+      "download": null,
+      "title": "Sculpting the Planar Hands & Feet"
+    },
+    {
+      "tag": "a",
+      "href": "/training/stylized-character-workflow/5d7f7fa1db37a94301d88ff6/",
+      "src": null,
+      "download": null,
+      "title": "Smoothing & Stylising the Body"
+    },
+    {
+      "tag": "a",
+      "href": "/training/stylized-character-workflow/5d7f7fc5db37a94301d88ff9/",
+      "src": null,
+      "download": null,
+      "title": "Creating Clothing Basemeshes"
+    },
+    {
+      "tag": "a",
+      "href": "/training/stylized-character-workflow/5ed776b1132a731221f74010/",
+      "src": null,
+      "download": null,
+      "title": "Update: Optimal Clothing Basemesh"
+    },
+    {
+      "tag": "a",
+      "href": "/training/stylized-character-workflow/5d7f808f9bc439fdf7f65b38/",
+      "src": null,
+      "download": null,
+      "title": "Modelling additional Basemeshes"
+    },
+    {
+      "tag": "a",
+      "href": "/training/stylized-character-workflow/5d7f80ebdb37a94301d89000/",
+      "src": null,
+      "download": null,
+      "title": "Stretching vs Compression"
+    },
+    {
+      "tag": "a",
+      "href": "/training/stylized-character-workflow/5d7f9598e7de39444aa9171f/",
+      "src": null,
+      "download": null,
+      "title": "Sculpting Wrinkles & Folds"
+    },
+    {
+      "tag": "a",
+      "href": "/training/stylized-character-workflow/5d7f81219bc439fdf7f65b3e/",
+      "src": null,
+      "download": null,
+      "title": "Polishing the Surfaces"
+    },
+    {
+      "tag": "a",
+      "href": "/training/stylized-character-workflow/5d7f8189db37a94301d89005/",
+      "src": null,
+      "download": null,
+      "title": "Finishing the additional Elements"
+    },
+    {
+      "tag": "a",
+      "href": "/training/stylized-character-workflow/5d7f81b99bc439fdf7f65b43/",
+      "src": null,
+      "download": null,
+      "title": "Timelapse: Sculpting Rains Body"
+    },
+    {
+      "tag": "a",
+      "href": "/training/stylized-character-workflow/5d7f81e59bc439fdf7f65b46/",
+      "src": null,
+      "download": null,
+      "title": "Timelapse: Rains Autumn Outfit"
+    },
+    {
+      "tag": "a",
+      "href": "/training/stylized-character-workflow/5d7f82679bc439fdf7f65b4e/",
+      "src": null,
+      "download": null,
+      "title": "Timelapse: Adjusting Proportions and the Outfit"
+    },
+    {
+      "tag": "a",
+      "href": "/training/stylized-character-workflow/5d9601fae4e9f2c6499b09bd/",
+      "src": null,
+      "download": null,
+      "title": "Timelapse: Rains Summer Outfit"
+    },
+    {
+      "tag": "a",
+      "href": "/training/stylized-character-workflow/5d7f82a4db37a94301d89012/",
+      "src": null,
+      "download": null,
+      "title": "Timelapse: Sculpting Rains final Outfit"
+    },
+    {
+      "tag": "a",
+      "href": "/training/stylized-character-workflow/chapter/5d384ecb3a9adc4a3852c172/",
+      "src": null,
+      "download": null,
+      "title": "3: Expression Testing"
+    },
+    {
+      "tag": "a",
+      "href": null,
+      "src": null,
+      "download": null,
+      "title": null
+    },
+    {
+      "tag": "a",
+      "href": "/training/stylized-character-workflow/5da058397dfc052a67018c02/",
+      "src": null,
+      "download": null,
+      "title": "Fast & rough Retopology for the Head"
+    },
+    {
+      "tag": "a",
+      "href": "/training/stylized-character-workflow/5da058f0e2e7bac4cc81bd56/",
+      "src": null,
+      "download": null,
+      "title": "Modelling the inner Head & transferring Details"
+    },
+    {
+      "tag": "a",
+      "href": "/training/stylized-character-workflow/5dc4235ef7f24231f6f62cae/",
+      "src": null,
+      "download": null,
+      "title": "Adding the teeth, gums & tongue"
+    },
+    {
+      "tag": "a",
+      "href": "/training/stylized-character-workflow/5da05942e2e7bac4cc81bd5a/",
+      "src": null,
+      "download": null,
+      "title": "Basic Expression Shapekeys"
+    },
+    {
+      "tag": "a",
+      "href": "/training/stylized-character-workflow/5da05969e2e7bac4cc81bd5e/",
+      "src": null,
+      "download": null,
+      "title": "Sculpting an Expression"
+    },
+    {
+      "tag": "a",
+      "href": "/training/stylized-character-workflow/5da0599be2e7bac4cc81bd61/",
+      "src": null,
+      "download": null,
+      "title": "Breakdown: Expression Guide Part 1"
+    },
+    {
+      "tag": "a",
+      "href": "/training/stylized-character-workflow/5dcc21ae8d4508c525d56fe1/",
+      "src": null,
+      "download": null,
+      "title": "Breakdown: Expression Guide Part 2"
+    },
+    {
+      "tag": "a",
+      "href": "/training/stylized-character-workflow/5da059bae2e7bac4cc81bd64/",
+      "src": null,
+      "download": null,
+      "title": "Breakdown: Design Adjustments"
+    },
+    {
+      "tag": "a",
+      "href": "/training/stylized-character-workflow/5da059db7dfc052a67018c0c/",
+      "src": null,
+      "download": null,
+      "title": "Breakdown: Adding extra Appeal"
+    },
+    {
+      "tag": "a",
+      "href": "/training/stylized-character-workflow/chapter/5d384edea5b8f5c2c32c8507/",
+      "src": null,
+      "download": null,
+      "title": "4: Clean Retopology"
+    }
+  ],
+  "snippets": [
+    ".ORG</h3>\n              </a>\n              <ul>\n                <li>\n                  <a href=\"https://www.blender.org/download/?utm_medium=nav-global\" target=\"_blank\">\n                    <figure>\n                      <svg class=\"nav-global-icon\" height=\"100px\" width=\"100px\" viewbox=\"",
+    "></path>\n                      </svg>\n                    </figure>\n                    <div>\n                      <h4>Download</h4>\n                      <p>Get the latest Blender, older versions, or experimental builds.</p>\n                    </div>\n                  </a>\n           ",
+    "v>\n                  </a>\n                </li>\n                <li>\n                  <a href=\"https://www.blender.org/download/releases/?utm_medium=nav-global\" target=\"_blank\">\n                    <div>\n                      <h4>What&apos;s New</h4>\n                      <p>Stay up-to-",
+    "tudio.blender.org/files/public/thumbnail/5c/5c4c90047b574232b2538b5487541748/5c4c90047b574232b2538b5487541748.png\" data-download-button=\"true\">\n    <source src=\"https://studio.blender.org/files/5c/5c4c90047b574232b2538b5487541748/5c4c90047b574232b2538b5487541748-1080p.mp4?X-Amz-Algorithm",
+    "none d-md-flex\">\n    \n    \n\n    \n      \n      \n      \n      \n        <button data-bs-toggle=\"dropdown\" data-bs-target=\"#downloadDropdown\" class=\"btn btn-link dropdown-toggle\">\n          <i class=\"i-chevron-down\"></i>\n        </button>\n        <div class=\"dropdown-menu dropdown-menu-end\" ",
+    "e\">\n          <i class=\"i-chevron-down\"></i>\n        </button>\n        <div class=\"dropdown-menu dropdown-menu-end\" id=\"downloadDropdown\">\n          \n\n          \n          \n            <a href=\"/download-source/files/5c/5c4c90047b574232b2538b5487541748/5c4c90047b574232b2538b5487541748-10",
+    " class=\"dropdown-menu dropdown-menu-end\" id=\"downloadDropdown\">\n          \n\n          \n          \n            <a href=\"/download-source/files/5c/5c4c90047b574232b2538b5487541748/5c4c90047b574232b2538b5487541748-1080p.mp4\"\n      target=\"_blank\"\n      title=\"Download (146.9\u00a0MB)\"\n      down"
+  ]
+}

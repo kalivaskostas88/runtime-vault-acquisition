@@ -84,3 +84,4 @@ jobs:
           path: native_v064/
           retention-days: 5
           if-no-files-found: warn
+# V064_REPEAT_CHECK: unchanged Smooth script and original V063 source file; independent rerun.

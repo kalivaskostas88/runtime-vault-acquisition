@@ -97,3 +97,5 @@ jobs:
           path: v067_native/
           retention-days: 7
           if-no-files-found: warn
+
+# V067_INDEPENDENT_REPEAT: same frozen Mask and Draw script and same V063 input; no parameter changes.

@@ -1,0 +1,23 @@
+{
+  "schema": "V061_KASPAR_ORIGINAL_CC_BY_CAPTURE",
+  "source_url": "https://studio.blender.org/training/stylized-character-workflow/5d5e6141b01c790d39b7ed4e/",
+  "author": "Julien Kaspar / Blender Studio",
+  "license_claim": "Blender Studio page expressly marks lesson Free / License CC-BY",
+  "status": "CAPTURE_OR_RIGHTS_HOLD",
+  "source_acquired": false,
+  "visual_study": "NOT_YET_VISUALLY_REVIEWED",
+  "audio_listening": "NOT_PERCEPTUALLY_AUDITED",
+  "art": "HOLD",
+  "new_native_blender": "NOT_RUN",
+  "gs001": "UNTOUCHED",
+  "date": "2026-11-17",
+  "official_download_href": "https://studio.blender.org/download-source/files/9b/9b96df6588d9480ea9861de7c2472586/9b96df6588d9480ea9861de7c2472586-1080p.mp4",
+  "download_status": 503,
+  "final_download_host": "studio.blender.org",
+  "error": "HTTPError('503 Server Error: Service Unavailable for url: https://studio.blender.org/files/9b/9b96df6588d9480ea9861de7c2472586/9b96df6588d9480ea9861de7c2472586-1080p.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=WPXVUIKB8MLIOWB7INUX%2F20261118%2Feu-central-1%2Fs3%2Faws4_request&X-Amz-Date=20261118T022807Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=6c1edb89f82eff21440a2abf4f5d632c9d8dfe6071eacd056309f863ebad1436')",
+  "github_run_id": "44223412241",
+  "workflow_source_commit": "a0c3a84fe503f8ccff3d5033a88cd18f9b4842f9",
+  "media_reviewed_perceptually": false,
+  "own_native_sculpt_executed": false,
+  "teacher_first_scope": "SOURCE_CAPTURE_AND_TEMPORAL_INDEX_ONLY"
+}

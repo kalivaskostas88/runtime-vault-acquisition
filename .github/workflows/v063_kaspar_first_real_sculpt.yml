@@ -63,3 +63,4 @@ jobs:
           path: native_v063/
           retention-days: 5
           if-no-files-found: warn
+# V063_REPRODUCIBILITY_REPEAT: unchanged Blender script and stroke inputs; repeat evidence

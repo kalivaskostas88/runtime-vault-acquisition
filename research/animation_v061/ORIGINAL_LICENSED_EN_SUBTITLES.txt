@@ -1,0 +1,1513 @@
+WEBVTT
+
+0
+00:00:00.440 --> 00:00:05.330
+So in this video I'll go over the fundamentals of blender sculpt mode.
+
+1
+00:00:05.650 --> 00:00:07.970
+I'll try to keep this video as short as possible
+
+2
+00:00:07.970 --> 00:00:11.560
+and only talk about the essential sculpt mode related features.
+
+3
+00:00:11.940 --> 00:00:16.200
+A lot more can be found and looked up further on the blender manual.
+
+4
+00:00:16.370 --> 00:00:19.880
+If you might have any questions on how a setting in the interface works,
+
+5
+00:00:19.890 --> 00:00:21.150
+you can always right,
+
+6
+00:00:21.150 --> 00:00:25.620
+click on anything in the interface and click on online manual
+
+7
+00:00:25.680 --> 00:00:29.660
+or hover over it with the mouse and press F one.
+
+8
+00:00:30.040 --> 00:00:31.990
+This will take you directly to the official
+
+9
+00:00:31.990 --> 00:00:35.460
+documentation of any particular feature in the interface.
+
+10
+00:00:36.440 --> 00:00:39.520
+These fundamentals I will be talking about might not seem like much
+
+11
+00:00:39.520 --> 00:00:43.660
+but don't mistake that for lacking depth for the sculpting workflow.
+
+12
+00:00:44.040 --> 00:00:47.300
+Most of the features modes and editors are kind of
+
+13
+00:00:47.300 --> 00:00:51.660
+feeding into the possibilities of blender as a sculpting tool.
+
+14
+00:00:52.040 --> 00:00:55.960
+There will also be features that I will be intentionally leaving out
+
+15
+00:00:56.640 --> 00:00:59.760
+to not make this video too bloated or complex.
+
+16
+00:01:00.540 --> 00:01:02.290
+Also, before we start,
+
+17
+00:01:02.310 --> 00:01:08.310
+I can highly recommend you to get a pen tablet to really get the most out of sculpting,
+
+18
+00:01:08.320 --> 00:01:10.350
+drawing and painting and blender.
+
+19
+00:01:10.840 --> 00:01:13.790
+There are many settings that relate to pressure sensitivity
+
+20
+00:01:13.800 --> 00:01:17.480
+and sculpting with the pen is generally faster,
+
+21
+00:01:17.490 --> 00:01:22.020
+easier, more comfortable and economic for your hands.
+
+22
+00:01:22.030 --> 00:01:25.350
+It doesn't need to be a very expensive pen display.
+
+23
+00:01:25.360 --> 00:01:28.660
+There are many affordable options for tablets on the market
+
+24
+00:01:29.040 --> 00:01:32.440
+so if you're not familiar at all with sculpting in digital
+
+25
+00:01:32.440 --> 00:01:35.850
+software then look at it more like traditional sculpting with clay
+
+26
+00:01:36.640 --> 00:01:39.190
+instead of modifying the geometry of your object.
+
+27
+00:01:39.200 --> 00:01:42.430
+In edit mode, you are dynamically adding,
+
+28
+00:01:42.440 --> 00:01:46.350
+removing and moving around the shapes of your object to
+
+29
+00:01:46.350 --> 00:01:50.260
+affect your surfaces and volumes more freely and dynamically.
+
+30
+00:01:50.640 --> 00:01:52.260
+To enter sculpt mode and blender.
+
+31
+00:01:52.270 --> 00:01:55.300
+You can switch the mode in the top left corner of the three
+
+32
+00:01:55.300 --> 00:01:59.960
+D view port or use the pie menu with a shortcut control tap.
+
+33
+00:02:00.940 --> 00:02:02.910
+This will change the options in the interface
+
+34
+00:02:02.910 --> 00:02:06.060
+and replace your cursor with a brush circle.
+
+35
+00:02:06.740 --> 00:02:10.150
+The way you interact with your object and sculpt mode is
+
+36
+00:02:10.160 --> 00:02:14.760
+generally to left click onto the surface of your object.
+
+37
+00:02:14.770 --> 00:02:18.610
+By default you're using the draw brush and emergencies
+
+38
+00:02:18.610 --> 00:02:21.910
+within the brush radius are then pushed outwards.
+
+39
+00:02:21.920 --> 00:02:26.230
+Holding control while doing this will result in the opposite
+
+40
+00:02:26.230 --> 00:02:30.350
+effect in this case pushing the affected vortices inwards.
+
+41
+00:02:31.540 --> 00:02:32.710
+When holding shift
+
+42
+00:02:32.830 --> 00:02:34.800
+it will smooth the affected for disease.
+
+43
+00:02:35.540 --> 00:02:40.850
+Press F. To change the scale of your brush and left click to apply the change
+
+44
+00:02:41.840 --> 00:02:45.640
+also press shift F. To change the strength of your brush.
+
+45
+00:02:46.740 --> 00:02:50.380
+All these settings can be seen and changed in the tool settings in
+
+46
+00:02:50.380 --> 00:02:53.660
+the top bar and the sidebar of your three D view port.
+
+47
+00:02:55.140 --> 00:02:57.730
+If you cannot see these areas of the interface.
+
+48
+00:02:57.970 --> 00:03:01.950
+The way to toggle them is by using the shortcut T for the toolbar
+
+49
+00:03:02.740 --> 00:03:06.760
+and for the sidebar and looking into the tab called tool
+
+50
+00:03:07.640 --> 00:03:10.420
+and right mouse button clicking on the header
+
+51
+00:03:10.720 --> 00:03:13.660
+and enabling tool settings to get the top bar.
+
+52
+00:03:15.140 --> 00:03:17.270
+It's not called top bar anymore.
+
+53
+00:03:17.280 --> 00:03:21.070
+It was at some point during the development of Planet 2.8.
+
+54
+00:03:21.080 --> 00:03:26.230
+So the name kind of stuck with me and it's going to stay there for a while.
+
+55
+00:03:26.240 --> 00:03:31.760
+You can also toggle these areas while clicking on view and tackling them. There
+
+56
+00:03:32.740 --> 00:03:37.060
+there might also be a bit of confusion with the difference between tools
+
+57
+00:03:37.440 --> 00:03:40.810
+and brushes. So to explain the terminology a bit more.
+
+58
+00:03:40.940 --> 00:03:46.650
+The tools you see in the toolbar each have distinct settings and behaviors.
+
+59
+00:03:47.140 --> 00:03:48.270
+If you switch between them,
+
+60
+00:03:48.270 --> 00:03:50.400
+you might notice that the options and the top
+
+61
+00:03:50.400 --> 00:03:54.760
+R and particularly in the brush settings are different.
+
+62
+00:03:55.540 --> 00:04:00.250
+A brush in this case is a saved preset for these settings.
+
+63
+00:04:01.140 --> 00:04:05.050
+You can change the available brush settings freely at any point and
+
+64
+00:04:05.050 --> 00:04:08.360
+their settings will be saved to the brush you are currently using
+
+65
+00:04:09.540 --> 00:04:13.300
+if you want to reset the brush to the default settings at any point,
+
+66
+00:04:13.540 --> 00:04:15.140
+you can do it in brush
+
+67
+00:04:15.540 --> 00:04:16.600
+and clicking on
+
+68
+00:04:16.709 --> 00:04:17.750
+reset brush.
+
+69
+00:04:18.640 --> 00:04:23.850
+Or alternatively you can also press f. three and search for reset brush.
+
+70
+00:04:25.740 --> 00:04:29.460
+You can also create new brushes at any time in the brush settings.
+
+71
+00:04:29.940 --> 00:04:32.570
+To delete a brush properly. Hold shift
+
+72
+00:04:32.860 --> 00:04:34.650
+and click on the X. Icon
+
+73
+00:04:35.340 --> 00:04:38.550
+after reloading your file, the brush should be gone for good.
+
+74
+00:04:39.140 --> 00:04:42.650
+But let's actually go through the tools that are at your disposal
+
+75
+00:04:43.040 --> 00:04:46.550
+what they are for and what settings they provide.
+
+76
+00:04:48.340 --> 00:04:53.280
+So one thing you might notice is that the tools in the toolbar are color coded.
+
+77
+00:04:53.290 --> 00:04:59.640
+So blue generally stands for simple adding and subtracting of volume.
+
+78
+00:04:59.650 --> 00:05:03.850
+Red is increasing and decreasing contrast in different ways.
+
+79
+00:05:04.340 --> 00:05:10.460
+Yellow is for grabbing behavior instead of drawing lines on the surface
+
+80
+00:05:11.140 --> 00:05:14.080
+and gray is for tools that affect the model
+
+81
+00:05:14.090 --> 00:05:17.460
+in different ways like hiding or masking geometry,
+
+82
+00:05:17.840 --> 00:05:20.450
+but we'll get into all of these tools in a moment.
+
+83
+00:05:20.840 --> 00:05:22.990
+The default and topmost
+
+84
+00:05:23.180 --> 00:05:24.760
+is the draw tool.
+
+85
+00:05:25.240 --> 00:05:27.360
+This one is the simplest one out of the blue
+
+86
+00:05:27.360 --> 00:05:31.260
+selection with the main effect of adding and subtracting.
+
+87
+00:05:31.940 --> 00:05:36.500
+The direction that the brush pushes the geometry in is based on
+
+88
+00:05:36.500 --> 00:05:41.360
+the average normal direction of all the vortices within your brush radius.
+
+89
+00:05:41.940 --> 00:05:44.090
+If you don't know what normals are,
+
+90
+00:05:44.100 --> 00:05:50.760
+they are basically the direction that any vertex edge or face is facing towards
+
+91
+00:05:51.340 --> 00:05:55.560
+to have them visualized, you can enable the normal overlays in edit mode.
+
+92
+00:05:56.440 --> 00:05:59.560
+The shortcut for the draw tool is X.
+
+93
+00:06:01.140 --> 00:06:05.760
+The next two tools in the list of clay and clay strips which are very similar
+
+94
+00:06:06.140 --> 00:06:09.660
+just like draw they add and subtract but have
+
+95
+00:06:09.660 --> 00:06:13.760
+a secondary effect of flattening the affected surfaces.
+
+96
+00:06:14.440 --> 00:06:16.540
+This makes these brushes great for building
+
+97
+00:06:16.540 --> 00:06:18.920
+shapes and forms early on while sculpting
+
+98
+00:06:19.120 --> 00:06:22.060
+since they can easily replace previous strokes by
+
+99
+00:06:22.060 --> 00:06:25.440
+flattening them out while you add and remove
+
+100
+00:06:25.560 --> 00:06:26.460
+more volume.
+
+101
+00:06:27.340 --> 00:06:31.310
+The difference between the two is that clay strips uses a
+
+102
+00:06:31.310 --> 00:06:37.340
+square sharper profile while clay is very circular and smooth.
+
+103
+00:06:37.340 --> 00:06:38.050
+Instead
+
+104
+00:06:38.640 --> 00:06:44.240
+place trips is generally great as a more aggressive and rather version of the two
+
+105
+00:06:44.470 --> 00:06:46.050
+to build volumes and shapes.
+
+106
+00:06:46.940 --> 00:06:49.330
+The clay tool has the shortcut see while the
+
+107
+00:06:49.330 --> 00:06:52.460
+clay strips brush has no shortcut by default.
+
+108
+00:06:53.140 --> 00:06:56.730
+The layer tool is also for adding and subtracting but
+
+109
+00:06:56.730 --> 00:07:00.250
+has the extra settings to define a maximum height.
+
+110
+00:07:01.040 --> 00:07:05.260
+This way you can more precisely add strokes that won't exceed a certain
+
+111
+00:07:05.260 --> 00:07:08.430
+height and even make the heights persistent
+
+112
+00:07:08.430 --> 00:07:10.760
+for multiple strokes after one another.
+
+113
+00:07:11.640 --> 00:07:13.650
+This one shortcut is L.
+
+114
+00:07:15.040 --> 00:07:18.590
+The inflate tool is the most unique out of the blue ones
+
+115
+00:07:18.830 --> 00:07:24.100
+it adds and subtracts based on individual vertex normals instead of
+
+116
+00:07:24.100 --> 00:07:27.850
+the average of everything that is in your brush radius.
+
+117
+00:07:28.440 --> 00:07:30.120
+This makes the affected areas
+
+118
+00:07:30.270 --> 00:07:33.450
+essentially inflate and D. Or deflate,
+
+119
+00:07:33.840 --> 00:07:37.650
+which can be great when sculpting thin and small objects.
+
+120
+00:07:38.040 --> 00:07:40.460
+The shortcut for this tool is I
+
+121
+00:07:41.340 --> 00:07:45.150
+blob and crease are very similar to each other as well.
+
+122
+00:07:45.540 --> 00:07:47.450
+In addition to adding and subtracting,
+
+123
+00:07:47.450 --> 00:07:52.250
+they have the secondary effect of pinching or magnifying,
+
+124
+00:07:52.260 --> 00:07:55.160
+so essentially pulling the verses together
+
+125
+00:07:55.640 --> 00:07:56.660
+or apart.
+
+126
+00:07:57.440 --> 00:07:59.840
+This effect can be made stronger or weaker
+
+127
+00:08:00.080 --> 00:08:02.750
+in the brush settings by changing the pinch slider
+
+128
+00:08:03.740 --> 00:08:04.810
+with all these tools,
+
+129
+00:08:04.810 --> 00:08:07.790
+it's good to keep in mind that the main effect
+
+130
+00:08:07.800 --> 00:08:11.820
+like adding and subtracting can be inverted by holding control.
+
+131
+00:08:11.840 --> 00:08:14.280
+But the secondary effects in the brush settings
+
+132
+00:08:14.300 --> 00:08:18.030
+like pinching and flattening cannot be inverted.
+
+133
+00:08:18.040 --> 00:08:23.660
+Crease has the shortcut of shift. See all blob has none by default.
+
+134
+00:08:24.940 --> 00:08:27.660
+The first of the red tools is smooth.
+
+135
+00:08:28.040 --> 00:08:31.850
+This one is very straightforward since it has almost no brush options.
+
+136
+00:08:32.240 --> 00:08:38.260
+It smoothes the affected vertex is by averaging their position to each other.
+
+137
+00:08:38.840 --> 00:08:43.960
+Keep in mind that this also results in loss of volume, not just surface detail.
+
+138
+00:08:44.740 --> 00:08:47.250
+The common way of smoothing is holding shift,
+
+139
+00:08:47.740 --> 00:08:50.760
+but the tool also has the shortcut. S
+
+140
+00:08:52.540 --> 00:08:57.050
+after that comes flattened fill and scrape which are also similar to
+
+141
+00:08:57.050 --> 00:09:01.740
+each other while the flattening is a secondary effect for the clay brushes
+
+142
+00:09:01.980 --> 00:09:05.050
+in these particular tools, it's the main effect.
+
+143
+00:09:06.040 --> 00:09:10.970
+What these tools basically do is to push Virtus is within the brush radius
+
+144
+00:09:10.980 --> 00:09:15.960
+up or down to meet each other in the middle on an average height.
+
+145
+00:09:16.540 --> 00:09:21.650
+The fill and scrape tools are similar but only do this in one direction.
+
+146
+00:09:21.660 --> 00:09:24.430
+So the scrape brush is always pushing the Virtus is
+
+147
+00:09:24.440 --> 00:09:27.960
+down while the fill brushes always pushing them up.
+
+148
+00:09:28.740 --> 00:09:31.440
+These brushes can be a more aggressive way of
+
+149
+00:09:31.440 --> 00:09:36.450
+smoothing large sections of your surfaces or flattening areas completely
+
+150
+00:09:37.140 --> 00:09:38.670
+while holding control.
+
+151
+00:09:38.680 --> 00:09:42.770
+They will do the opposite though and essentially enhance the contrast
+
+152
+00:09:42.780 --> 00:09:46.460
+of your surfaces by pushing away from the average height,
+
+153
+00:09:47.140 --> 00:09:52.920
+you can also change the plane offset slider in the brush settings to define
+
+154
+00:09:53.160 --> 00:09:55.810
+the average height where these vortices meets.
+
+155
+00:09:56.340 --> 00:09:59.320
+So instead of meeting at the middle they can be
+
+156
+00:09:59.320 --> 00:10:02.850
+pushed further up and down to meet somewhere else.
+
+157
+00:10:04.840 --> 00:10:11.460
+Flattening has the shortcut of shift. T while scrape and Phil have none. By default
+
+158
+00:10:12.140 --> 00:10:14.260
+pinch is also very familiar.
+
+159
+00:10:14.840 --> 00:10:20.050
+Instead of only existing as a secondary effect for the crease and block brushes,
+
+160
+00:10:20.060 --> 00:10:22.150
+it also has its own tool,
+
+161
+00:10:22.160 --> 00:10:26.650
+so by default it will pull in or pinch your purchases
+
+162
+00:10:26.660 --> 00:10:31.360
+and when holding control it will push them apart or magnify.
+
+163
+00:10:31.840 --> 00:10:34.060
+This tool is using the shortcut. P
+
+164
+00:10:35.140 --> 00:10:38.350
+next in the list of the yellow tools. Starting with grap
+
+165
+00:10:39.640 --> 00:10:42.440
+with this one, you can move vortices within your radius
+
+166
+00:10:42.580 --> 00:10:45.550
+round by making them follow your mouths.
+
+167
+00:10:46.540 --> 00:10:49.850
+Holding control while doing this will not invert
+
+168
+00:10:49.850 --> 00:10:53.450
+the effect with these brushes but change the direction
+
+169
+00:10:53.450 --> 00:10:56.590
+to be consistent with the average normal direction
+
+170
+00:10:56.670 --> 00:10:58.860
+instead of following the mouse across the screen.
+
+171
+00:10:59.740 --> 00:11:02.380
+This effect is called normal weight and can also
+
+172
+00:11:02.380 --> 00:11:05.050
+be adjusted as a slider in the brush settings.
+
+173
+00:11:05.540 --> 00:11:07.320
+The shortcut for the grabbed war
+
+174
+00:11:07.510 --> 00:11:09.160
+is g. By default,
+
+175
+00:11:09.940 --> 00:11:13.060
+Snake hook is also very familiar to grab.
+
+176
+00:11:13.540 --> 00:11:17.060
+The behavior is different and interesting ways though,
+
+177
+00:11:17.240 --> 00:11:19.850
+instead of only moving the verges is that are
+
+178
+00:11:19.850 --> 00:11:22.880
+within your brush at the start of your stroke,
+
+179
+00:11:22.890 --> 00:11:26.160
+it lets them go and picks up more along the way.
+
+180
+00:11:26.540 --> 00:11:29.450
+This gives it an almost liquid like feeling.
+
+181
+00:11:29.840 --> 00:11:34.020
+With this brush, you can also basically pull out snakes from your object,
+
+182
+00:11:34.030 --> 00:11:35.060
+hence the name.
+
+183
+00:11:39.940 --> 00:11:42.330
+The two most important options for this tool
+
+184
+00:11:42.340 --> 00:11:46.060
+are rake and pinch in the brush settings.
+
+185
+00:11:47.540 --> 00:11:53.060
+When increasing rake. The geometry will follow the rotation of your brush stroke
+
+186
+00:11:53.740 --> 00:11:58.450
+while increasing pinch will avoid the loss of volume during that stroke.
+
+187
+00:12:00.240 --> 00:12:04.350
+The shortcut for this tool is shift K. By default,
+
+188
+00:12:05.340 --> 00:12:07.350
+the thumb and nudge tools are
+
+189
+00:12:07.740 --> 00:12:10.860
+each very similar to grab and snake hook,
+
+190
+00:12:11.540 --> 00:12:13.530
+they behave exactly like them,
+
+191
+00:12:13.540 --> 00:12:16.570
+but instead of moving the vortices around based on
+
+192
+00:12:16.570 --> 00:12:18.930
+the direction that you're looking at the mesh,
+
+193
+00:12:18.960 --> 00:12:21.760
+it moves them based on the average normals.
+
+194
+00:12:22.140 --> 00:12:25.500
+This way you can slide verses along the surface
+
+195
+00:12:25.500 --> 00:12:28.050
+of your object instead of along the screen.
+
+196
+00:12:29.640 --> 00:12:32.160
+The last of the red tools is rotate.
+
+197
+00:12:32.540 --> 00:12:37.550
+This one essentially twists the affected vertex is based on how long your stroke is
+
+198
+00:12:37.940 --> 00:12:39.460
+and the angle that you take.
+
+199
+00:12:39.840 --> 00:12:44.250
+It's a bit of an odd brush but it could be useful at times.
+
+200
+00:12:45.140 --> 00:12:48.650
+The great tools at the bottom are pretty simple actually.
+
+201
+00:12:49.040 --> 00:12:54.650
+We'll start with mask and skip, simplify for now until we talk about later settings.
+
+202
+00:12:55.440 --> 00:12:58.190
+What this brush allows you to do is to place
+
+203
+00:12:58.200 --> 00:13:03.060
+a mask on your geometry indicated by a dark color.
+
+204
+00:13:03.740 --> 00:13:07.660
+This mask will not be affected by any other brush.
+
+205
+00:13:09.340 --> 00:13:15.380
+A mask with the strength of one is shielding the affected areas from any changes.
+
+206
+00:13:15.390 --> 00:13:19.510
+While a mask of half the strength makes the
+
+207
+00:13:19.510 --> 00:13:22.560
+other brushes affect the surface only half a strong.
+
+208
+00:13:23.540 --> 00:13:26.770
+This brush can be incredibly helpful for many
+
+209
+00:13:26.770 --> 00:13:31.250
+things like sculpting overlapping areas or custom patterns.
+
+210
+00:13:32.940 --> 00:13:34.420
+You can hold control
+
+211
+00:13:34.580 --> 00:13:36.000
+to unmask areas
+
+212
+00:13:36.170 --> 00:13:38.850
+and hold shift to smooth the mask.
+
+213
+00:13:39.840 --> 00:13:42.430
+You can adjust how dark the mask appears
+
+214
+00:13:42.650 --> 00:13:45.360
+in the overlays with the mask slider.
+
+215
+00:13:46.440 --> 00:13:52.390
+You can even talk all the mask overlay off to make the mask temporarily invisible.
+
+216
+00:13:52.400 --> 00:13:55.950
+This can also be toggled with a shortcut Control M.
+
+217
+00:13:56.640 --> 00:14:02.060
+You can invert your mask with control I and remove it completely with old M.
+
+218
+00:14:03.940 --> 00:14:07.260
+Very similar to the mask tool. Is the box mask.
+
+219
+00:14:07.840 --> 00:14:13.150
+If you click and hold on the tool, it will actually reveal the lasso mask tool as well.
+
+220
+00:14:13.640 --> 00:14:18.110
+These are very similar to the regular box and lasso select an object and edit mode
+
+221
+00:14:18.430 --> 00:14:21.530
+at the moment. They unfortunately have no additional options
+
+222
+00:14:21.660 --> 00:14:24.350
+but they're surely coming for the next blender release.
+
+223
+00:14:24.740 --> 00:14:28.470
+You can also access the box masking with a shortcut B.
+
+224
+00:14:28.480 --> 00:14:33.760
+And that's why I'm asking with holding down control, shift and left mouse click.
+
+225
+00:14:34.240 --> 00:14:39.070
+It's important to know these types of masking are infinitely deep.
+
+226
+00:14:39.080 --> 00:14:43.280
+So box masking will also select through your surfaces
+
+227
+00:14:43.290 --> 00:14:45.460
+and affect the other side of your model.
+
+228
+00:14:46.840 --> 00:14:49.570
+The last great tool is box hiding,
+
+229
+00:14:49.580 --> 00:14:53.260
+which can be a quick way of hiding geometry and sculpt mode.
+
+230
+00:14:54.140 --> 00:14:58.660
+Hiding geometry is not just invisible but also unaffected by tools.
+
+231
+00:14:59.140 --> 00:15:03.250
+Any geometry that is hidden in edit mode is also hidden in sculpt mode.
+
+232
+00:15:09.840 --> 00:15:15.060
+The last tool in the list is annotate to draw annotations just like in any other mode.
+
+233
+00:15:15.740 --> 00:15:18.000
+To get a bit deeper into the tools.
+
+234
+00:15:18.010 --> 00:15:20.860
+I will also explain the most common brush settings.
+
+235
+00:15:21.340 --> 00:15:23.430
+This will not be an extensive overview.
+
+236
+00:15:23.430 --> 00:15:27.420
+So again I can recommend to visit the blender manual if you have any questions
+
+237
+00:15:27.430 --> 00:15:33.160
+in the right mouse button menu or pressing F1 or hovering over any setting.
+
+238
+00:15:33.840 --> 00:15:37.460
+All these tools settings can be found in the top bar and the sidebar
+
+239
+00:15:37.570 --> 00:15:41.360
+as well as the tool settings. Tab in the properties editor to the right.
+
+240
+00:15:43.140 --> 00:15:48.560
+Some of the ones that are most exposed, our radius and strength and they are part of
+
+241
+00:15:48.940 --> 00:15:51.460
+basically every brush and sculpt mode.
+
+242
+00:15:51.940 --> 00:15:54.800
+For the most part you will be changing these via the shortcut.
+
+243
+00:15:54.810 --> 00:15:57.640
+F and shift F like mentioned before,
+
+244
+00:15:57.840 --> 00:16:01.660
+but the slightest can give you an overview on what they are currently set to.
+
+245
+00:16:02.040 --> 00:16:06.360
+You can also enable the button next to them to enable pressure sensitivity.
+
+246
+00:16:06.740 --> 00:16:09.430
+This will adjust the setting based on how much
+
+247
+00:16:09.430 --> 00:16:12.950
+pressure you apply with your pen on the tablet.
+
+248
+00:16:13.540 --> 00:16:16.360
+The setting is not relevant for mouse users though.
+
+249
+00:16:17.040 --> 00:16:20.870
+The next most use settings are the ones that are tied to holding control
+
+250
+00:16:21.090 --> 00:16:26.250
+namely the direction of your brush or the plus and minus in the tool settings
+
+251
+00:16:27.040 --> 00:16:28.300
+like I mentioned before.
+
+252
+00:16:28.310 --> 00:16:33.780
+This is to invert the main effect of your brush holding control with grab, snake,
+
+253
+00:16:33.780 --> 00:16:35.460
+hook, nudge, and thumb though
+
+254
+00:16:35.840 --> 00:16:38.150
+Instead inverts the normal weight.
+
+255
+00:16:38.640 --> 00:16:42.080
+You also have more advanced settings in the brush drop down here
+
+256
+00:16:42.080 --> 00:16:46.070
+you can adjust the behavior of your brush in more detailed ways.
+
+257
+00:16:47.040 --> 00:16:51.840
+A very common brush setting for almost every brush is auto smooth,
+
+258
+00:16:51.850 --> 00:16:55.860
+which adds a secondary smoothing effect for your brush stroke.
+
+259
+00:16:56.240 --> 00:17:00.470
+You can enable pressure sensitivity on a lot of these settings as well.
+
+260
+00:17:00.480 --> 00:17:04.000
+For example enabling pressure sensitivity on both.
+
+261
+00:17:04.010 --> 00:17:10.960
+The strength and auto smooth has the effect of applying more pressure to add or
+
+262
+00:17:11.540 --> 00:17:18.349
+subtract volume and applying less pressure to get more of a smoothing effect.
+
+263
+00:17:19.540 --> 00:17:22.609
+More examples for brush settings are settings like pinch
+
+264
+00:17:22.619 --> 00:17:25.660
+rake and plane offset which we mentioned before.
+
+265
+00:17:26.640 --> 00:17:32.030
+Another very common one is accumulate which removes the strength cap of
+
+266
+00:17:32.030 --> 00:17:36.450
+your brush and lets you infinitely apply the stroke on your surface.
+
+267
+00:17:38.440 --> 00:17:41.050
+You can also apply textures to your brushes.
+
+268
+00:17:41.540 --> 00:17:44.180
+This allows you to use patterns for your
+
+269
+00:17:44.180 --> 00:17:47.960
+brushes instead of just the usual circular fall off
+
+270
+00:17:49.540 --> 00:17:51.460
+for this. You can click on new
+
+271
+00:17:51.840 --> 00:17:55.460
+and or select an existing texture from the texture list.
+
+272
+00:17:56.140 --> 00:17:58.650
+New textures are blank by default so
+
+273
+00:17:58.760 --> 00:18:00.560
+to load an image to your texture,
+
+274
+00:18:00.560 --> 00:18:03.960
+you need to go to the texture tab and the properties editor
+
+275
+00:18:04.340 --> 00:18:08.660
+and select create or open a new image from the file browser.
+
+276
+00:18:09.540 --> 00:18:13.950
+Once an image is selected, you can rename the texture for organizations sake
+
+277
+00:18:15.040 --> 00:18:19.060
+for textures you have a variety of options in the tool settings.
+
+278
+00:18:19.540 --> 00:18:22.510
+You can for example change the mapping which will change
+
+279
+00:18:22.510 --> 00:18:25.860
+the way the texture is being projected through your brush.
+
+280
+00:18:26.340 --> 00:18:31.400
+You can also change the angle of your texture or enable rake to make
+
+281
+00:18:31.400 --> 00:18:35.360
+it follow the rotation of your stroke just like with the snake hook brush.
+
+282
+00:18:37.450 --> 00:18:41.060
+The offset and size architecture is also freely adjustable below.
+
+283
+00:18:42.040 --> 00:18:44.770
+For your stroke you can also change the behavior.
+
+284
+00:18:45.140 --> 00:18:49.100
+The default stroke method is often space which applies the brush
+
+285
+00:18:49.100 --> 00:18:53.270
+strength every time after a certain distance in your stroke,
+
+286
+00:18:53.840 --> 00:18:58.720
+increase the spacing and he will get dots that are further apart and
+
+287
+00:18:58.720 --> 00:19:03.050
+decrease it to get a very smooth but also very strong stroke.
+
+288
+00:19:03.840 --> 00:19:09.770
+Smooth stroke is also often used and has the shortcut shift. S to toggle it.
+
+289
+00:19:10.140 --> 00:19:14.920
+The effect this has on the brush is like dragging a paint brush along a rubber band.
+
+290
+00:19:14.940 --> 00:19:20.670
+You can change the radius and factor to make the stroke more or less smooth.
+
+291
+00:19:22.940 --> 00:19:26.100
+The fall of curve settings are relatively simple.
+
+292
+00:19:26.110 --> 00:19:29.170
+You're sculpting stroke always has a profile
+
+293
+00:19:29.640 --> 00:19:32.030
+by default. It's using a smooth curve
+
+294
+00:19:32.170 --> 00:19:34.260
+that you can see in these settings
+
+295
+00:19:34.840 --> 00:19:38.170
+or by pressing F or shift F.
+
+296
+00:19:39.940 --> 00:19:44.290
+You can either manually change the curve to be sharper or rounder
+
+297
+00:19:44.290 --> 00:19:49.660
+by adding and moving points or even make a completely custom profile.
+
+298
+00:19:50.040 --> 00:19:53.010
+Points on the curve are added and moved by
+
+299
+00:19:53.150 --> 00:19:54.060
+left clicking
+
+300
+00:19:54.440 --> 00:19:59.560
+and you can remove them easily by dragging them to the end points of the curve.
+
+301
+00:20:00.740 --> 00:20:05.560
+You can also just select a preset which will give you the most optimal results
+
+302
+00:20:07.640 --> 00:20:10.610
+with the display options. You can change the look of your brush
+
+303
+00:20:10.750 --> 00:20:12.670
+but not much functionality wise.
+
+304
+00:20:13.540 --> 00:20:17.350
+And then further down in the tool settings, we finally get to symmetry
+
+305
+00:20:17.940 --> 00:20:18.690
+these options,
+
+306
+00:20:18.690 --> 00:20:23.160
+let you mirror or duplicate your stroke on your object while you sculpt
+
+307
+00:20:23.540 --> 00:20:29.460
+the most basic ways to use symmetry is to total X. Y and or Z.
+
+308
+00:20:29.460 --> 00:20:33.460
+Mirror to mirror your stroke across a certain axis.
+
+309
+00:20:35.040 --> 00:20:39.170
+The symmetry options will use the origin of the object
+
+310
+00:20:39.640 --> 00:20:44.860
+and its rotation as the center axis of where to mirror your strokes from.
+
+311
+00:20:48.740 --> 00:20:52.550
+You can also lock and tile your stroke and certain axes.
+
+312
+00:20:55.840 --> 00:20:58.310
+Even radio symmetry is available to repeat
+
+313
+00:20:58.310 --> 00:21:01.830
+strokes multiple times around your object.
+
+314
+00:21:01.840 --> 00:21:06.420
+Unfortunately there's no dynamic preview of these points
+
+315
+00:21:06.420 --> 00:21:09.300
+where it's going to be murdered or duplicated.
+
+316
+00:21:09.340 --> 00:21:12.760
+But this is a feature that is coming for the next version of blender.
+
+317
+00:21:13.940 --> 00:21:17.860
+Lastly it's time to talk about adaptive sculpting methods.
+
+318
+00:21:19.040 --> 00:21:22.400
+You could of course just sculpt on your subdivided cube.
+
+319
+00:21:22.410 --> 00:21:26.960
+But there are better ways of providing you with more resolution to sculpt on
+
+320
+00:21:27.440 --> 00:21:31.600
+one of them. Is dynamic topology or dine topo.
+
+321
+00:21:31.610 --> 00:21:35.770
+In short you can find it towards the end of your tool settings. Usually
+
+322
+00:21:36.240 --> 00:21:40.060
+when enabled your sculpting brushes will dynamically tessalit
+
+323
+00:21:40.060 --> 00:21:42.960
+your surfaces to add or remove detail.
+
+324
+00:21:43.440 --> 00:21:46.380
+This way you don't really have to worry about running out of
+
+325
+00:21:46.390 --> 00:21:50.850
+geometry to sculpt on because it will always auto generated for you.
+
+326
+00:21:50.860 --> 00:21:54.560
+You can enable dynamic topology with a shortcut control D.
+
+327
+00:21:55.040 --> 00:21:57.090
+You might get a warning message when trying
+
+328
+00:21:57.090 --> 00:21:59.550
+to enable the enemy topology letting you know
+
+329
+00:21:59.550 --> 00:22:02.070
+that it will not preserve some object data
+
+330
+00:22:02.080 --> 00:22:05.270
+like you ve vertex groups and vertex colors
+
+331
+00:22:05.740 --> 00:22:08.560
+since it constantly re measures your geometry,
+
+332
+00:22:08.940 --> 00:22:12.450
+this will delete any of this data that you might have
+
+333
+00:22:12.940 --> 00:22:14.350
+So keep that in mind.
+
+334
+00:22:15.240 --> 00:22:20.550
+Dynamic topology will also not preview any modify as you might have active
+
+335
+00:22:21.240 --> 00:22:23.140
+within the dynamic topology options.
+
+336
+00:22:23.150 --> 00:22:27.010
+You can then change a couple of settings and are presented with more options.
+
+337
+00:22:27.060 --> 00:22:31.170
+One of them is the method of re meshing that is being used.
+
+338
+00:22:31.540 --> 00:22:34.880
+You can set it to constant detail which has a
+
+339
+00:22:34.880 --> 00:22:39.160
+set constant detailed level that every new triangle is using.
+
+340
+00:22:39.640 --> 00:22:43.510
+This way the resolution will remain consistent across the object.
+
+341
+00:22:43.520 --> 00:22:47.440
+You can change the resolution value manually or pick a resolution
+
+342
+00:22:47.440 --> 00:22:50.260
+from the three D view port with the picker icon.
+
+343
+00:22:51.340 --> 00:22:52.660
+The higher the value
+
+344
+00:22:52.960 --> 00:22:54.850
+the more dense the geometry.
+
+345
+00:22:55.240 --> 00:22:57.960
+If you change the method to relative detail.
+
+346
+00:22:57.970 --> 00:23:03.550
+On the other hand, it will base the resolution on how far you zoomed into your model.
+
+347
+00:23:04.040 --> 00:23:07.370
+The resolution gets renamed to detail size and now
+
+348
+00:23:07.370 --> 00:23:11.020
+it relates to the screen size of the triangles.
+
+349
+00:23:11.140 --> 00:23:15.480
+Set the number to a lower amount of pixels for denser geometry,
+
+350
+00:23:16.440 --> 00:23:22.040
+the other two methods are used less but what they do is simple brush detail
+
+351
+00:23:22.040 --> 00:23:26.850
+ties the resolution to the brush size and how far you zoomed into your model.
+
+352
+00:23:27.340 --> 00:23:29.450
+And manual detail on the other hand,
+
+353
+00:23:29.650 --> 00:23:33.640
+doesn't dynamically remesch by using the brushes which
+
+354
+00:23:33.690 --> 00:23:35.770
+leads me to the extra options below.
+
+355
+00:23:36.340 --> 00:23:40.730
+When using constant or manual detail, you can flood fill
+
+356
+00:23:40.840 --> 00:23:43.660
+the set resolution to your entire object.
+
+357
+00:23:44.040 --> 00:23:47.750
+This is the only way to remesch when using manual detail
+
+358
+00:23:47.760 --> 00:23:51.060
+but also very useful at times when you're using constant detail.
+
+359
+00:23:55.540 --> 00:23:59.860
+You can also symmetries the object by re meshing 1/2
+
+360
+00:24:00.240 --> 00:24:03.170
+to copy the other half of your geometry.
+
+361
+00:24:03.840 --> 00:24:05.630
+Just set a symmetry axis
+
+362
+00:24:05.810 --> 00:24:09.060
+and click the button to make your model perfectly symmetrical.
+
+363
+00:24:10.540 --> 00:24:14.480
+The optimized button optimizes the performance of your view port.
+
+364
+00:24:14.490 --> 00:24:16.450
+Should it become particularly slow.
+
+365
+00:24:17.140 --> 00:24:20.590
+Almost all brushes are using dynamic apology,
+
+366
+00:24:20.600 --> 00:24:25.270
+but the simplified tool is the one that exclusively reacts to it.
+
+367
+00:24:26.240 --> 00:24:29.560
+There is also another way of adding more geometry to your
+
+368
+00:24:29.560 --> 00:24:33.860
+object apart from dynamic topology and that is multi resolution.
+
+369
+00:24:34.340 --> 00:24:39.350
+This is a modifier that can be added in the modifier, tap and the Properties editor.
+
+370
+00:24:39.840 --> 00:24:43.680
+This adds an interface to add subdivisions to your object
+
+371
+00:24:43.690 --> 00:24:47.270
+while being able to sculpt on the individual levels.
+
+372
+00:24:47.740 --> 00:24:51.500
+You can set different levels of your subdivisions to be visible
+
+373
+00:24:51.620 --> 00:24:54.180
+in your view port preview. In general
+
+374
+00:24:54.290 --> 00:24:57.060
+sculpt mode specifically and doing rendering.
+
+375
+00:24:57.640 --> 00:25:01.430
+I can recommend to always leave it at Catmull Clark Since
+
+376
+00:25:01.540 --> 00:25:05.710
+Simple just adds more geometry without smoothing the results.
+
+377
+00:25:06.440 --> 00:25:10.960
+And those are the basics. The rest can be found in the online manual for blender

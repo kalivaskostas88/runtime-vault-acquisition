@@ -1,0 +1,25 @@
+name: Transfer encrypted Plot Hunter research to review runtime
+on:
+  push:
+    branches:
+      - research/plot-hunter-encrypted-handoff-20261118
+    paths:
+      - 'research_artifacts/plot_hunter_two_stories.sealed.b64'
+permissions:
+  contents: read
+jobs:
+  transfer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate ciphertext is present without decrypting
+        run: |
+          test -s research_artifacts/plot_hunter_two_stories.sealed.b64
+          echo 'Encrypted study file present; no plaintext material is handled'
+      - name: Upload encrypted bytes only
+        uses: actions/upload-artifact@v4
+        with:
+          name: plot-hunter-encrypted-handoff
+          path: research_artifacts/plot_hunter_two_stories.sealed.b64
+          retention-days: 1

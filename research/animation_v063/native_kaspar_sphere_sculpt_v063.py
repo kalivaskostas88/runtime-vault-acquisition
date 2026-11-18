@@ -78,7 +78,7 @@ def build():
         if 'FINISHED' not in activated:raise RuntimeError("DRAW_ASSET_ACTIVATION_NOT_FINISHED")
     brush=bpy.context.tool_settings.sculpt.brush
     if brush is None or brush.name!='Draw':raise RuntimeError("ACTIVE_DRAW_BRUSH_NOT_CONFIRMED")
-    brush.strength=0.72
+    brush.strength=0.16
     brush.size=110
     bpy.ops.ed.undo_push()
     bpy.ops.object.mode_set(mode='OBJECT')

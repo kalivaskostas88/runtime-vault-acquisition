@@ -106,3 +106,5 @@ jobs:
           path: v065_native/
           retention-days: 7
           if-no-files-found: warn
+
+# V065_REPEAT: original source, Blender build, strokes and native script unchanged; independent repeat.

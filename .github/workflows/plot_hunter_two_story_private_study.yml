@@ -1,0 +1,115 @@
+name: Plot Hunter two-story private research
+on:
+  push:
+    branches:
+      - research/plot-hunter-story-review-20261118
+permissions:
+  contents: read
+jobs:
+  study:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      PUB_DER_B64: "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnyQ+BKXAOmYD5ySJtttKglNxaW5nEAdUkiBIVsC/0dbeRgilK6y73fo6zvljdQPS+F/D/ZL2rqXCgQS6a+7KfE9TFO3Y53Zwzlym0nS+EiuGZOwZxNRw0j7hD9AgEu8teRaDvIws9Znw/TfbqxOyPHazH/5QIIsTnNmMzarr4joSbDETCtsGn5e5E6eH9yN0UC2uXlscCWh1qWvr7Oizv4cUcvY0s+ZBye/p1mAmlzHkbGCtjAAyefXkLJXhn0nEvFKvTl25A6RuEk73soC/xETx6hf5za7sHWztX2upVNh8CnBRNjyBz9oeatYamb7cCngavNMDJtTT/oSe6/We3wIDAQAB"
+    steps:
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install narrow research dependencies
+        run: python -m pip install --quiet yt-dlp cryptography
+      - name: Search original creator and retrieve caption tracks for private review
+        shell: bash
+        run: |
+          python - <<'PY'
+          import os, json, pathlib, tempfile, shutil, re, html, difflib, base64, hashlib, traceback
+          import yt_dlp
+          from cryptography.hazmat.primitives import hashes, serialization
+          from cryptography.hazmat.primitives.asymmetric import padding
+          from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+          
+          targets = [
+              ("The Human Girl Who Married an Elf", "The Human Girl Who Married an Elf And Became a Legend Plot Hunter"),
+              ("She Loved a Prince Who Couldn't Keep His Promise", "She Loved a Prince Who Couldn't Keep His Promise Plot Hunter"),
+          ]
+          work = pathlib.Path(tempfile.mkdtemp(prefix="plot_hunter_private_"))
+          result = {"purpose":"private evaluation of two public Plot Hunter stories; no rehosting","sources":[],"retrieved_texts":{}}
+          def norm(s):
+              return re.sub(r"[^a-z0-9]+", " ", (s or "").lower()).strip()
+          def get_candidates(query):
+              with yt_dlp.YoutubeDL({"quiet": True, "no_warnings": True, "skip_download": True, "extract_flat": "in_playlist", "ignoreerrors": True, "socket_timeout": 15}) as y:
+                  r = y.extract_info("ytsearch15:" + query, download=False) or {}
+              return [e for e in r.get("entries",[]) if isinstance(e,dict)]
+          def rank(c, title):
+              n=norm(c.get("title",""))
+              q=norm(title)
+              score=difflib.SequenceMatcher(None,n,q).ratio()
+              if q in n:score+=1
+              if "plot hunter" in norm(c.get("channel","")+" "+c.get("uploader","")):score+=0.6
+              return score
+          for i,(title,query) in enumerate(targets,1):
+              entry={"requested_title":title,"status":"DISCOVERY_PENDING"}
+              try:
+                  hits=get_candidates(query)
+                  if not hits:
+                      entry.update(status="SEARCH_EMPTY")
+                      result["sources"].append(entry); print("SEARCH_EMPTY",i);continue
+                  hits.sort(key=lambda x:rank(x,title), reverse=True)
+                  match=hits[0]
+                  entry.update(match_title=match.get("title"),video_id=match.get("id"),channel=match.get("channel"),search_candidates=len(hits),match_score=round(rank(match,title),3))
+                  if rank(match,title)<1.2:
+                      entry["status"]="MATCH_UNCERTAIN";result["sources"].append(entry);print("MATCH_UNCERTAIN",i,entry["match_title"]);continue
+                  vid=match.get("id")
+                  url="https://www.youtube.com/watch?v="+vid
+                  entry["url"]=url
+                  output = str(work / ("source_"+str(i)+".%(ext)s"))
+                  opts={"quiet":True,"no_warnings":True,"skip_download":True,"writesubtitles":True,"writeautomaticsub":True,"subtitleslangs":["en","en.*"],"subtitlesformat":"vtt","outtmpl":output,"socket_timeout":20,"retries":2,"ignoreerrors":False}
+                  try:
+                      with yt_dlp.YoutubeDL(opts) as y:
+                          info=y.extract_info(url,download=True)
+                      entry.update(status="VIDEO_METADATA_FOUND", uploader=info.get("uploader"),duration=info.get("duration"),description=(info.get("description") or "")[:1200])
+                      actual_channel = norm((info.get("uploader") or "")+" "+(info.get("channel") or ""))
+                      if "plot hunter" not in actual_channel:
+                          entry["status"]="WRONG_CHANNEL_SKIP"
+                          result["sources"].append(entry);print("WRONG_CHANNEL_SKIP",i,actual_channel);continue
+                      vtts=sorted(work.glob("source_"+str(i)+".*.vtt"))
+                      if vtts:
+                          raw=vtts[0].read_text(encoding="utf-8",errors="replace")
+                          texts=[]
+                          for line in raw.splitlines():
+                              s=line.strip()
+                              if not s or s=="WEBVTT" or "-->" in s or s.startswith(("Kind:","Language:","NOTE","STYLE")) or s.isdigit():continue
+                              s=html.unescape(re.sub(r"<[^>]*>","",s))
+                              s=re.sub(r"\s+"," ",s).strip()
+                              if s and (not texts or texts[-1]!=s):texts.append(s)
+                          transcript="\n".join(texts)
+                          result["retrieved_texts"][str(i)]={"raw_vtt":raw,"clean_text":transcript}
+                          entry.update(status="CAPTIONS_ACQUIRED",text_chars=len(transcript),caption_track=vtts[0].name,source_sha256=hashlib.sha256(raw.encode()).hexdigest())
+                      else:
+                          entry["status"]="NO_PUBLIC_CAPTION_TRACK"
+                  except Exception as e:
+                      entry["status"]="VIDEO_OR_CAPTION_EXTRACTION_ERROR"
+                      entry["error_type"]=type(e).__name__;entry["error_message"]=str(e)[:300]
+              except Exception as e:
+                  entry.update(status="DISCOVERY_ERROR",error_type=type(e).__name__,error_message=str(e)[:300])
+              result["sources"].append(entry)
+              print("SOURCE_RECEIPT", i, json.dumps({k:v for k,v in entry.items() if k not in ("description",)},ensure_ascii=False))
+          payload=json.dumps(result,ensure_ascii=False).encode("utf-8")
+          pub_der=base64.b64decode(os.environ["PUB_DER_B64"])
+          pub=serialization.load_der_public_key(pub_der)
+          key=AESGCM.generate_key(bit_length=256)
+          nonce=os.urandom(12)
+          cipher=AESGCM(key).encrypt(nonce,payload,None)
+          wrapped=pub.encrypt(key,padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()),algorithm=hashes.SHA256(),label=None))
+          path=pathlib.Path("plot_hunter_private_study.sealed")
+          path.write_bytes(b"PHST01"+len(wrapped).to_bytes(2,"big")+wrapped+nonce+cipher)
+          print("ENCRYPTED_RESEARCH_ARTIFACT",path.name,"bytes",path.stat().st_size,"retrieved",len(result["retrieved_texts"]))
+          shutil.rmtree(work)
+          PY
+      - name: Upload encrypted study material only
+        uses: actions/upload-artifact@v4
+        with:
+          name: plot-hunter-encrypted-transcript-study
+          path: plot_hunter_private_study.sealed
+          retention-days: 1
+          if-no-files-found: error

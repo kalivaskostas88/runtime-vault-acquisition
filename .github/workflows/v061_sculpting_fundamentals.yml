@@ -1,0 +1,57 @@
+name: V061 original CC-BY teacher video study
+on:
+  push:
+    branches:
+      - research/animation-v061-kaspar-sculpting-fundamentals-20261118
+    paths:
+      - .github/workflows/v061_sculpting_fundamentals.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  capture-original-teacher-lesson:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install free media dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg
+          python -m pip install --quiet requests Pillow
+      - name: Download public CC-BY source, check actual MP4 and time-index
+        shell: bash
+        run: |
+          python research/animation_v061/capture_full_licensed_kaspar_fundamentals.py || echo "Capture did not satisfy legal or media gates: inspect CAPTURE.json"
+          python - <<'PY'
+          import json,os,pathlib
+          p=pathlib.Path('research/animation_v061/CAPTURE.json')
+          if p.is_file():
+            d=json.loads(p.read_text())
+            d['github_run_id']=os.environ['GITHUB_RUN_ID']
+            d['workflow_source_commit']=os.environ['GITHUB_SHA']
+            d['media_reviewed_perceptually']=False
+            d['own_native_sculpt_executed']=False
+            d['teacher_first_scope']='SOURCE_CAPTURE_AND_TEMPORAL_INDEX_ONLY'
+            p.write_text(json.dumps(d,ensure_ascii=False,indent=2)+'\n')
+          PY
+      - name: Save actual source receipt and contacts to research branch
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add research/animation_v061/CAPTURE.json research/animation_v061/contacts/ research/animation_v061/ORIGINAL_LICENSED_EN_SUBTITLES.txt 2>/dev/null || git add research/animation_v061/CAPTURE.json
+          git diff --cached --quiet || (git commit -m 'V061: verified teacher-source capture receipt and contact evidence' && git push)
+      - name: Upload original CC-BY media artifact for actual private study
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v061-kaspar-sculpting-fundamentals-licensed-original
+          path: |
+            research/animation_v061/CAPTURE.json
+            research/animation_v061/contacts/
+            research/animation_v061/ORIGINAL_LICENSED_EN_SUBTITLES.txt
+            ${{ runner.temp }}/v061_licensed_video/sculpting_fundamentals_original.mp4
+            ${{ runner.temp }}/v061_licensed_video/source_audio_16khz_mono.wav
+          retention-days: 3
+          if-no-files-found: warn

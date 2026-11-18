@@ -5,6 +5,7 @@ on:
       - research/animation-v063-kaspar-native-sculpt-stroke-20261118
     paths:
       - .github/workflows/v063_kaspar_first_real_sculpt.yml
+      - research/animation_v063/native_kaspar_sphere_sculpt_v063.py
   workflow_dispatch:
 permissions:
   contents: read

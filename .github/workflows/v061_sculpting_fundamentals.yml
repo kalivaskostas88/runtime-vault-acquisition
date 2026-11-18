@@ -18,11 +18,11 @@ jobs:
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y -qq ffmpeg
-          python -m pip install --quiet requests Pillow
+          python -m pip install --quiet requests Pillow yt-dlp
       - name: Download public CC-BY source, check actual MP4 and time-index
         shell: bash
         run: |
-          python research/animation_v061/capture_full_licensed_kaspar_fundamentals.py || echo "Capture did not satisfy legal or media gates: inspect CAPTURE.json"
+          python research/animation_v061/capture_full_licensed_kaspar_fundamentals.py || (echo "Official Blender Studio source unavailable: evaluating official public YouTube edition" && python research/animation_v061/capture_official_youtube_fundamentals.py) || echo "All lawful public routes unavailable; inspect CAPTURE.json"
           python - <<'PY'
           import json,os,pathlib
           p=pathlib.Path('research/animation_v061/CAPTURE.json')

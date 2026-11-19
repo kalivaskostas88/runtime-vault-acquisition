@@ -22,6 +22,7 @@ STRENGTH=0.64
 SIZE=105
 EVENTS=61
 VIEW=Vector((-1.15,-1.00,3.0))
+VIEW_DISTANCE=2.8  # measured 3.8 yielded 13.2008px; zoom only, do NOT relax >15px gate
 ORIGIN=Vector((-1.24,-1.43,3.25))  # world-space upper/outboard fan contour
 END=Vector((-1.24,-1.62,3.37))     # mild outboard+upward Grab, no ear-root dragging
 CAMERAS={"SIDE":(0,-9,3.0),"FACE":(-9,0,3.0),"THREE_QUARTER":(-7,-8,5.0),"TOP":(0,-0.3,11)}
@@ -35,7 +36,7 @@ status={"schema":"V075_ACTUAL_NATIVE_GRAB_STYLIZED_EAR_FAN_CONTOUR",
 "original_anatomy_reference":"San Diego Zoo / elephant species variation, generic stylized artistic result not species approved",
 "new_specific_teacher_full_AV_watched":False,"actual_native_grab_claim":True,
 "source_sha256_expected":SOURCE_SHA,"blender_version":"5.2.2",
-"frozen_preflight":{"asset":"Grab","strength":STRENGTH,"size_px":SIZE,"events":EVENTS,
+"frozen_preflight":{"asset":"Grab","strength":STRENGTH,"size_px":SIZE,"events":EVENTS,"view_distance_calibrated_from_measured_13_2008px":VIEW_DISTANCE,
 "stroke_world_origin":list(ORIGIN),"stroke_world_end":list(END),
 "max_vertex_displacement":MAX_DISP,"root_max_displacement":ROOT_SAFE_MAX,
 "max_abs_volume_change_pct":VOL_ABS_PERCENT_MAX,"max_world_mirror_diff":MIRROR_TOL,
@@ -78,7 +79,7 @@ def viewport():
    if region:
     ctx.update(area=area,region=region)
     p=area.spaces.active.region_3d
-    p.view_location=VIEW;p.view_distance=3.8
+    p.view_location=VIEW;p.view_distance=VIEW_DISTANCE
     p.view_rotation=(VIEW-Vector((-10,-1,3.15))).to_track_quat("-Z","Y")
     p.view_perspective="ORTHO"
     return ctx

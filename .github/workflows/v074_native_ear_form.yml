@@ -1,0 +1,80 @@
+name: V074 Original Stylized Elephant Ear Primary Form - Native 4 View QA
+on:
+  push:
+    branches:
+      - research/animation-v074-anatomy-guided-ear-silhouette-20261119
+    paths:
+      - .github/workflows/v074_native_ear_form.yml
+      - research/animation_v074/native_art_directed_ear_fan_form.py
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  original-ear-form-tech-evidence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Retrieve actual previous native art candidate with exact SHA
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p v072_targeted_smooth
+          gh run download 44468180166 --repo kalivaskostas88/runtime-vault-acquisition -n v072-teacher-targeted-native-smooth-evidence -D v072_targeted_smooth
+          echo "e551ec647ff1714b341567f6512ecf92344f229f672ae04ef37bab590cb5591d  v072_targeted_smooth/V072_SMALL_SMOOTH_CANDIDATE.blend" | sha256sum -c -
+      - name: Obtain Blender 5.2.2 official vendor binary and signed SHA manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/blender522"
+          cd "$RUNNER_TEMP/blender522"
+          if ! curl -fLsS --connect-timeout 30 --max-time 300 -o blender-5.2.2-linux-x64.tar.xz https://download.blender.org/release/Blender5.2/blender-5.2.2-linux-x64.tar.xz; then
+            curl -fLsS --connect-timeout 30 --max-time 300 -o blender-5.2.2-linux-x64.tar.xz https://mirror.blender.org/release/Blender5.2/blender-5.2.2-linux-x64.tar.xz
+          fi
+          if ! curl -fLsS --connect-timeout 30 --max-time 60 -o blender-5.2.2.sha256 https://download.blender.org/release/Blender5.2/blender-5.2.2.sha256; then
+            curl -fLsS --connect-timeout 30 --max-time 60 -o blender-5.2.2.sha256 https://mirror.blender.org/release/Blender5.2/blender-5.2.2.sha256
+          fi
+          grep 'blender-5.2.2-linux-x64.tar.xz' blender-5.2.2.sha256 | sha256sum -c -
+          tar -xf blender-5.2.2-linux-x64.tar.xz
+          echo "$RUNNER_TEMP/blender522/blender-5.2.2-linux-x64" >> "$GITHUB_PATH"
+      - name: Install native headless viewport runtime
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq libegl1 libgl1 libglx-mesa0 libgbm1 libx11-6 libxkbcommon0 libxi6 libxfixes3 libxrender1 libxcursor1 libxinerama1
+      - name: Apply ONE freeze-parameter original fan-ear shape fix to V072 only
+        shell: bash
+        run: |
+          set -euo pipefail
+          blender -b --python research/animation_v074/native_art_directed_ear_fan_form.py
+          test -s v074_ear_art_blockout/V074_ORIGINAL_EAR_FAN_BLOCKOUT_CANDIDATE.blend
+          test -s v074_ear_art_blockout/V074_EAR_FORM_AND_SOURCE_RECEIPT.json
+      - name: Independent saved reopen and TECH vs ART gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          blender -b v074_ear_art_blockout/V074_ORIGINAL_EAR_FAN_BLOCKOUT_CANDIDATE.blend --python-expr "import bpy; o=bpy.data.objects; assert o['06_EAR_NEAR'].get('stage')=='V074_EAR_FAN_SHAPE_BLOCKOUT_ART_HOLD'; assert o['06_EAR_FAR'].get('stage')=='V074_EAR_FAN_SHAPE_BLOCKOUT_ART_HOLD'; assert len([x for x in bpy.data.images if x.packed_file])>=3; print('V074_REAL_SAVED_ART_FORM_REOPEN_PASS')"
+          python - <<'PY'
+          import pathlib,json,hashlib
+          p=pathlib.Path("v074_ear_art_blockout")
+          r=json.loads((p/"V074_EAR_FORM_AND_SOURCE_RECEIPT.json").read_text())
+          assert r["state"].startswith("NATIVE_REAL_EDIT_MODE_FORM_BLOCKOUT_TECH_PASS")
+          assert r["art_approved"] is False and r["no_unrelated_component_mutation"]
+          assert len(r["head_ear_triangle_crossings_after"])==2 and all(v>0 for v in r["head_ear_triangle_crossings_after"].values())
+          assert r["cc0_packed_reference_metadata_unchanged"]
+          for name,h in {**r["before_renders"],**r["after_renders"]}.items():
+              assert hashlib.sha256((p/name).read_bytes()).hexdigest()==h
+          assert hashlib.sha256((p/"V074_ORIGINAL_EAR_FAN_BLOCKOUT_CANDIDATE.blend").read_bytes()).hexdigest()==r["saved_blend_sha256"]
+          print("V074_REAL_NATIVE_2EAR_4VIEW_MECHANICAL_PASS_ART_HOLD")
+          PY
+          find v074_ear_art_blockout -type f -print0 | sort -z | xargs -0 sha256sum > v074_ear_art_blockout/SHA256SUMS.txt
+      - name: Preserve native evidence or diagnosed failure without false art claims
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v074-actual-original-ear-form-native-evidence
+          path: v074_ear_art_blockout/
+          retention-days: 7
+          if-no-files-found: warn

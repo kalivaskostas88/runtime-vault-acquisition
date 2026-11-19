@@ -78,6 +78,20 @@ try:
     "sample_vertex_to_torso_surface_distance":proximity,
     "native_unchanged_mesh_sha256":originals[name],
     "art_status":"SEPARATE_PROXY; INTERFACE_SHAPE_NOT_ART_APPROVED"}
+ # Second read-only adjacency layer: muzzle and ears must be assessed against the HEAD,
+ # not mistakenly against the torso. Do not confuse a zero torso overlap with bad art.
+ head=bpy.data.objects["04_HEAD"]
+ headverts,headtris,headbvh=triangles(head)
+ r["head_to_face_interfaces"]={}
+ for name in ["05_MUZZLE_ROOT","06_EAR_NEAR","06_EAR_FAR"]:
+  other=bpy.data.objects[name]
+  verts,tris,bvh=triangles(other)
+  intersections=headbvh.overlap(bvh)
+  r["head_to_face_interfaces"][name]={
+    "head_surface_crossing_triangle_pairs":len(intersections),
+    "bbox_overlap_widths":bbox_intersection(bbox_world(head),bbox_world(other)),
+    "sampled_distances_to_head_surface":sample_nearest(verts,headbvh),
+    "status":"UNSIGNED_READONLY_DISTANCE_AND_CROSSING_ONLY; NOT_ANATOMICAL_PROOF"}
  r["no_other_mesh_mutation"]=all(mesh_hash(bpy.data.objects[n])==h for n,h in originals.items())
  r["object_count_unchanged"]=original_count==len(bpy.data.objects)
  r["original_packed_refs_unchanged"]=cc0=={im.name:tuple(im.size) for im in bpy.data.images if im.packed_file}

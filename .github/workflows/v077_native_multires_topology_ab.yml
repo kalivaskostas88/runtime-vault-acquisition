@@ -1,0 +1,83 @@
+name: V077 Original Blender Native Multires SIMPLE vs CATMULL Topology Readiness
+on:
+  push:
+    branches:
+      - research/animation-v077-topology-integrated-fold-20261119
+    paths:
+      - .github/workflows/v077_native_multires_topology_ab.yml
+      - research/animation_v077/native_multires_ear_topology_ab.py
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  native-multires-comparison-original-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Retrieve V076 exact protected ear+curve original for isolated topology test
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p v076_curve_ear_rim
+          gh run download 44498625671 --repo kalivaskostas88/runtime-vault-acquisition -n v077-native-multires-original-ear-ab-evidence -D v076_curve_ear_rim
+          echo "2c537d34ec5eb68ec1b7ba1b99677f68f5730fae2b3e24efd474f548b4d4e99d  v077_topology_preflight/V077_NATIVE_MULTRES_A_B_READINESS.blend" | sha256sum -c -
+      - name: Download official Blender 5.2.2 with vendor SHA; official mirror fallback
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/blender522"
+          cd "$RUNNER_TEMP/blender522"
+          if ! curl -fLsS --connect-timeout 30 --max-time 300 -o blender-5.2.2-linux-x64.tar.xz https://download.blender.org/release/Blender5.2/blender-5.2.2-linux-x64.tar.xz; then
+            curl -fLsS --connect-timeout 30 --max-time 300 -o blender-5.2.2-linux-x64.tar.xz https://mirror.blender.org/release/Blender5.2/blender-5.2.2-linux-x64.tar.xz
+          fi
+          if ! curl -fLsS --connect-timeout 30 --max-time 60 -o blender-5.2.2.sha256 https://download.blender.org/release/Blender5.2/blender-5.2.2.sha256; then
+            curl -fLsS --connect-timeout 30 --max-time 60 -o blender-5.2.2.sha256 https://mirror.blender.org/release/Blender5.2/blender-5.2.2.sha256
+          fi
+          grep 'blender-5.2.2-linux-x64.tar.xz' blender-5.2.2.sha256 | sha256sum -c -
+          tar -xf blender-5.2.2-linux-x64.tar.xz
+          echo "$RUNNER_TEMP/blender522/blender-5.2.2-linux-x64" >> "$GITHUB_PATH"
+      - name: Native Blender EGL/Workbench requirements
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq libegl1 libgl1 libglx-mesa0 libgbm1 libx11-6 libxkbcommon0 libxi6 libxfixes3 libxrender1 libxcursor1 libxinerama1
+      - name: Actual native Blender 5.2.2 two Multires subdivision modes on source-protected ear copies
+        shell: bash
+        run: |
+          set -euo pipefail
+          blender -b --python research/animation_v077/native_multires_ear_topology_ab.py
+          test -s v077_topology_preflight/V077_NATIVE_MULTRES_A_B_READINESS.blend
+          test -s v077_topology_preflight/V077_REAL_NATIVE_MULTRES_READINESS_RECEIPT.json
+      - name: Independent native diagnostic reopen, source preservation and topology checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          blender -b v077_topology_preflight/V077_NATIVE_MULTRES_A_B_READINESS.blend --python-expr "import bpy; o=bpy.data.objects; assert o['V077_MULTRES_SIMPLE_DIAGNOSTIC_ONLY'].modifiers[0].total_levels==2; assert o['V077_MULTRES_CATMULL_CLARK_DIAGNOSTIC_ONLY'].modifiers[0].total_levels==2; assert len([x for x in bpy.data.images if x.packed_file])>=3; print('V077_TWO_NATIVE_MULTRES_MODES_SAVED_REOPEN_PASS_NO_ART_CLAIM')"
+          python - <<'PY'
+          import hashlib,json,pathlib
+          p=pathlib.Path('v077_topology_preflight')
+          d=json.loads((p/'V077_REAL_NATIVE_MULTRES_READINESS_RECEIPT.json').read_text())
+          assert d['status'].startswith('NATIVE_MULTRES_TOPOLOGY_AB_TECH_PASS')
+          assert not d['real_fold_created'] and not d['art_approved']
+          assert d['all_original_meshes_curves_unchanged'] and d['three_packed_cc0_references_unchanged']
+          assert set(d['modes'])=={'SIMPLE','CATMULL_CLARK'}
+          for mode,x in d['modes'].items():
+              assert x['total_levels']==2 and x['evaluated']['verts']>d['base_ear']['verts']
+              assert x['evaluated']['boundary_edges']==0 and x['evaluated']['nonmanifold_edges']==0
+          assert hashlib.sha256((p/'V077_NATIVE_MULTRES_A_B_READINESS.blend').read_bytes()).hexdigest()==d['output_file_sha256']
+          print('V077_MULTRES_TOPOLOGY_READINESS_PASS_ART_HOLD')
+          PY
+          find v077_topology_preflight -type f -print0 | sort -z | xargs -0 sha256sum > v077_topology_preflight/SHA256SUMS.txt
+      - name: Preserve real evidence or honest failure receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v077-native-multires-original-ear-ab-evidence
+          path: v077_topology_preflight/
+          retention-days: 7
+          if-no-files-found: warn
+
+# V077 new source-protected A/B comparison; no artist approval.

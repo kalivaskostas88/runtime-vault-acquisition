@@ -81,3 +81,5 @@ jobs:
           if-no-files-found: warn
 
 # V077 new source-protected A/B comparison; no artist approval.
+
+# V077 independent fresh runner repeat, exact original script, same two native Multires modes and two levels.

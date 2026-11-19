@@ -6,6 +6,7 @@ on:
     paths:
       - .github/workflows/v081_professional_av_access_probe.yml
       - research/animation_v081/probe_official_teacher_public_video.py
+      - research/animation_v081/map_public_professional_video_segments.py
   workflow_dispatch:
 permissions:
   contents: read
@@ -16,14 +17,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install only webpage inspection dependency (no expensive tool credits)
-        run: python -m pip install --quiet requests
+        run: python -m pip install --quiet requests beautifulsoup4
       - name: Detect genuine official public original video and license, not inferred viewing
         run: python research/animation_v081/probe_official_teacher_public_video.py
+      - name: Map actual live official video clip sequences, headings and bytes
+        run: python research/animation_v081/map_public_professional_video_segments.py
       - name: Preserve real source discovery evidence
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: v081-official-original-teacher-video-access-receipt
-          path: research/animation_v081/V081_OFFICIAL_PROFESSIONAL_AV_ACCESS_PREFLIGHT.json
+          path: |
+            research/animation_v081/V081_OFFICIAL_PROFESSIONAL_AV_ACCESS_PREFLIGHT.json
+            research/animation_v081/V081_OFFICIAL_FREE_TEACHER_CLIP_ORDER.json
           retention-days: 7
           if-no-files-found: warn

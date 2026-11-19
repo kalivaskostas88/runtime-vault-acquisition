@@ -192,13 +192,34 @@ try:
  assert abs(volume_delta_pct)<VOL_ABS_PERCENT_MAX,"Unexpected volume distortion"
  # Local native sculpt on NEAR; mirror to FAR by copying owned mesh data only.
  # V074 already proves local coordinate symmetry and world mirror placement.
+ # Honest bilateral repair: copying the same sculpted local Y delta into
+ # both translated ears pushes BOTH in the same world-Y direction. Rejected
+ # V075 0.14-strength attempt showed +2.756pct volume PASS but mirror error
+ # 0.030479 units FAIL. Mirror FAR's geometry across its LOCAL Y=0 plane
+ # and reverse face winding to retain outward normals. Actual Grab was
+ # applied ONLY to NEAR; this native Blender mesh mirror is NOT a second Grab.
  ears[1].data=ears[0].data.copy()
+ mb=bmesh.new()
+ try:
+  mb.from_mesh(ears[1].data)
+  for v in mb.verts:v.co.y=-v.co.y
+  bmesh.ops.reverse_faces(mb,faces=list(mb.faces))
+  mb.to_mesh(ears[1].data)
+ finally:mb.free()
+ ears[1].data.update()
  bpy.context.view_layer.update()
- assert ears[0].data!=ears[1].data and mesh_hash(ears[0])==mesh_hash(ears[1])
- near_y=sorted((ears[0].matrix_world@v.co).y for v in ears[0].data.vertices)
- far_y=sorted((ears[1].matrix_world@v.co).y for v in ears[1].data.vertices)
- mirror_error=max(abs(p+q) for p,q in zip(near_y,reversed(far_y)))
+ assert ears[0].data!=ears[1].data
+ assert len(ears[0].data.vertices)==len(ears[1].data.vertices)
+ # Stronger world-space full-XYZ vertex-pair mirror QA, not only Y ranges.
+ near_world=[ears[0].matrix_world@v.co for v in ears[0].data.vertices]
+ far_world=[ears[1].matrix_world@v.co for v in ears[1].data.vertices]
+ mirror_error=max((Vector((p.x,-p.y,p.z))-q).length for p,q in zip(near_world,far_world))
  status["world_mirror_max_error"]=mirror_error
+ status["mirrored_far_transfer"]={"method":"Native Blender BMesh local Y reflection + reverse_faces",
+    "actual_sculpt_brush_applied_directly_to":"06_EAR_NEAR",
+    "opposite_ear":"06_EAR_FAR is mirrored copy of original Grab result; no second direct sculpt stroke",
+    "prior_failed_world_pair_error":0.030479252338409424,
+    "strict_full_xyz_mirror_gate":MIRROR_TOL}
  assert mirror_error<MIRROR_TOL,"Sculpt ruined paired ear symmetry"
  head_bvh=bvh(objects["04_HEAD"])
  crosses={o.name:len(head_bvh.overlap(bvh(o))) for o in ears}
@@ -215,6 +236,8 @@ try:
  for o in ears:
   o["stage"]="V075_REAL_GRAB_EAR_CONTOUR_CANDIDATE_ART_HOLD"
   o["native_brush"]="Grab"
+  o["actual_brush_directly_used_on_this_object"]=bool(o.name==NEAR)
+  if o.name==FAR:o["derivation"]="Mirrored native Blender BMesh transfer from real NEAR Grab; not second brush"
  dest=(OUT/"V075_REAL_GRAB_EAR_CONTOUR_CANDIDATE.blend").resolve()
  bpy.ops.wm.save_as_mainfile(filepath=str(dest))
  status["result_blend_sha256"]=sha(dest)

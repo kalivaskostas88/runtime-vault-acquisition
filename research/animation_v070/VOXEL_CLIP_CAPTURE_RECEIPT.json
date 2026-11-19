@@ -1,0 +1,18 @@
+{
+  "schema": "V070_ORIGINAL_EMBEDDED_VOXEL_TEACHER_CLIP",
+  "source_page": "https://studio.blender.org/training/blender-fundamentals-45-lts/basic-sculpting/",
+  "embedded_source_path": "/files/4e/73/4e7348f5f064ed1eb9470da770cf566c-1-1080p.mp4",
+  "teacher": "Julien Kaspar, Blender Studio",
+  "usage": "research, CC-BY attribution; no source video republication",
+  "source_video_full_review": false,
+  "teacher_audio_actually_listened": false,
+  "new_blender_native_run": "NOT_RUN",
+  "art": "HOLD",
+  "status": "SOURCE_ACCESS_HOLD",
+  "date_utc": "2026-11-19T05:16:58.637284+00:00",
+  "html_sha256": "e4a8d31528a7820cf84aab3986695d7defa26e46efc47380f231d2930ac41289",
+  "license_page_indicator": "CC-BY published on source page",
+  "source_http_status": 403,
+  "final_host": "studio.blender.org",
+  "error": "403 Client Error: Forbidden for url: https://studio.blender.org/files/4e/73/4e7348f5f064ed1eb9470da770cf566c-1-1080p.mp4"
+}

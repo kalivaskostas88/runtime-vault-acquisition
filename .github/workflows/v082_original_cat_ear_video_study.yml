@@ -1,0 +1,34 @@
+name: V082 Genuine Professional Cat Ear Video First (No Credits)
+on:
+  push:
+    branches:
+      - research/animation-v082-flat-animal-ear-video-20261119
+    paths:
+      - .github/workflows/v082_original_cat_ear_video_study.yml
+      - research/animation_v082/capture_public_cat_ear_video_ephemeral.py
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  visual-teacher-study-before-experiments:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Official public-source tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg
+          python -m pip install --quiet --upgrade yt-dlp pillow
+      - name: Actually acquire public teacher video and sample original frames
+        run: python research/animation_v082/capture_public_cat_ear_video_ephemeral.py
+      - name: Preserve access failure receipt or temporary visual contact only, never source media
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v082-cat-ear-teacher-source-and-private-frame-contact
+          path: |
+            research/animation_v082/V082_OFFICIAL_VIDEO_SOURCE_RECEIPT.json
+            research/animation_v082/internal_contact_sheets/
+          retention-days: 1
+          if-no-files-found: warn

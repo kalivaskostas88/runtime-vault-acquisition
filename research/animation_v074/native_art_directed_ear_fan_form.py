@@ -99,6 +99,7 @@ try:
   bpy.ops.object.mode_set(mode="OBJECT")
   sign=-1 if "NEAR" in o.name else 1
   o.location.y+=sign*OUTWARD_SHIFT
+  bpy.context.view_layer.update()  # update world matrices before any world-space QA
   assert all(abs(s-1)<1e-6 for s in o.scale)
   o["stage"]="V074_EAR_FAN_SHAPE_BLOCKOUT_ART_HOLD"
   o["source"]="V072_TRUE_SAVED_SOURCE"
@@ -116,6 +117,7 @@ try:
     "repair":"FAR ear receives deep copy of transformed NEAR native ear mesh datablock; frozen scale/position same"}
  if len(set(local_before_symmetry.values()))!=1:
   ears[1].data=ears[0].data.copy()
+  bpy.context.view_layer.update()  # force depsgraph refresh after swapping mesh datablock
  assert ears[0].data!=ears[1].data,"Require separate mesh datablocks even after symmetry lock"
  # The initial successful TECH run revealed a distinct WORLD mirror failure:
  # same local mesh hashes do not imply that ear placement is mirrored, because
@@ -124,6 +126,7 @@ try:
  ny=box(ears[0])[1];fy=box(ears[1])[1]
  delta=(((-ny[1])-fy[0])+((-ny[0])-fy[1]))/2.0
  ears[1].location.y+=delta
+ bpy.context.view_layer.update()  # avoid stale matrix_world reads in background Blender
  mirror_near=sorted(float((ears[0].matrix_world@v.co).y) for v in ears[0].data.vertices)
  mirror_far=sorted(float((ears[1].matrix_world@v.co).y) for v in ears[1].data.vertices)
  mirror_error=max(abs(a+b) for a,b in zip(mirror_near,reversed(mirror_far)))

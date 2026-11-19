@@ -18,8 +18,8 @@ PARAM={"native_source_mode":"MULTIRES_SIMPLE","levels":2,"ridge_amplitude":0.052
  "trough_amplitude":0.034,"ridge_offset_signed":0.024,"trough_offset_signed":-0.094,
  "ridge_sigma":0.066,"trough_sigma":0.052,"min_vertices_moved":25,
  "max_vertices_moved":2600,"max_abs_volume_change_pct":3.0,
- "max_world_vertex_displacement":0.08,"root_mask_y_from":0.68,
- "root_mask_y_to":0.98,"root_max_world_displacement":0.008,
+ "max_world_vertex_displacement":0.08,"root_mask_y_from":0.82,
+ "root_mask_y_to":1.12,"root_max_world_displacement":0.008,
  "mirror_max_error":0.00001,"min_both_ridge_and_groove_vertices":8}
 rec={"schema":"V078_REAL_INTEGRATED_ELEPHANT_EAR_FOLD_TECH_PROOF",
  "source":"V077 exact native Blender Multires A/B .blend","source_sha256_expected":INPUT_SHA,
@@ -27,7 +27,9 @@ rec={"schema":"V078_REAL_INTEGRATED_ELEPHANT_EAR_FOLD_TECH_PROOF",
  "anatomical_scope":"Elephant upper rolling fold observed in scientific imagery, no species lock and no copied artwork",
  "licensed_new_teacher_full_av_watched":False,"native_crease_brush_used":False,
  "native_multires_evaluated":True,"original_bounded_deformation_used":True,
- "parameters_frozen":PARAM,"art_approved":False,"independent_artist_review":False,
+ "parameters_frozen":PARAM,
+ "first_rejected_run":"44518890956: 497 moved, +0.803871% volume, near-root 0.015853 > 0.008; repaired by moving mask outward WITHOUT relaxing root gate",
+ "art_approved":False,"independent_artist_review":False,
  "status":"INIT","tool_version":"Blender 5.2.2"}
 CAMERAS={"FACE":(-9,0,3),"SIDE":(0,-9,3),"THREE_QUARTER":(-7,-8,5),"TOP":(0,-.3,11)}
 TGT=Vector((-.25,0,1.89))

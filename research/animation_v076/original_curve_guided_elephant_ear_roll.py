@@ -88,14 +88,23 @@ def sample_upper_front_surface(o):
   pool=[v for v in verts if abs(v.y-y)<.125]
   assert len(pool)>=3,("Not enough real top guide samples",fraction,len(pool))
   topz=max(v.z for v in pool)
-  target_z=topz-Z_BELOW_LOCAL_TOP
-  world_origin=Vector((-6.,y,target_z))
-  local_origin=mat_inv@world_origin
-  hit,normal,face,distance=o.ray_cast(local_origin,local_dir,distance=15.)
-  assert face>=0,("Guide ray missed original ear surface",fraction,target_z)
+  # A neighbour-bin maximum Z is not the exact projected silhouette at
+  # one given Y. First real run 44498049599 was rejected at fraction 0.11.
+  # Use pre-bounded downward raycast search, never invent off-mesh guide points.
+  selected=None
+  for extra_below in (0.,.06,.12,.18,.24,.30,.36):
+   target_z=topz-(Z_BELOW_LOCAL_TOP+extra_below)
+   world_origin=Vector((-6.,y,target_z))
+   local_origin=mat_inv@world_origin
+   hit,normal,face,distance=o.ray_cast(local_origin,local_dir,distance=15.)
+   if face<0:continue
+   n=(o.matrix_world.to_3x3().inverted().transposed()@normal).normalized()
+   if n.x<-.25:
+    selected=(hit,normal,face,distance,extra_below,target_z,n)
+    break
+  assert selected is not None,("No actual front-facing surface in bounded upper rim search",fraction,topz)
+  hit,normal,face,distance,extra_below,target_z,n=selected
   hit_world=o.matrix_world@hit
-  n=(o.matrix_world.to_3x3().inverted().transposed()@normal).normalized()
-  assert n.x<-.25,("Guide not projected on the true front-facing ear surface",fraction,n[:])
   guided=hit_world+n*WORLD_OFFSET
   nearest=tree.find_nearest(guided)
   assert nearest is not None
@@ -103,7 +112,8 @@ def sample_upper_front_surface(o):
   assert actual_distance<.055,("Guide is detached from original ear surface",fraction,actual_distance)
   points.append(guided)
   records.append({"fraction":fraction,"target_y":y,"sampled_upper_z":topz,
-   "raycast_face_id":int(face),"point":[float(q) for q in guided],
+   "raycast_face_id":int(face),"extra_downward_search":extra_below,
+   "first_rejected_run_id":"44498049599","point":[float(q) for q in guided],
    "actual_nearest_mesh_distance":float(actual_distance),
    "front_normal_x":float(n.x)})
  return points,records

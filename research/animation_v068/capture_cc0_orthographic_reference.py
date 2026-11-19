@@ -16,7 +16,7 @@ def get(name):
     f=out/(name+".png");f.write_bytes(r.content)
     refs[name]={"url":url,"sha256":hashlib.sha256(r.content).hexdigest(),"bytes":len(r.content),"size":im.size,"mime":r.headers.get("Content-Type")}
     return im
-for i,name in enumerate(("orth_front","orth_side","orth_top","preview")):
+for i,name in enumerate(("orth_front","orth_side","orth_top")):
     im=get(name)
     thumb=ImageOps.contain(im,(740,420))
     x=20+(i%2)*800+(740-thumb.width)//2

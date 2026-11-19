@@ -43,6 +43,7 @@ for label,url in URLS.items():
   "visible_text_chars":len(txt),"headings":list(dict.fromkeys(parsed.headings))[:50],
   "explicit_mp4_links":explicitly_downloadable[:10],"media_elements_count":len(media),
   "media_element_types":[{"tag":x["tag"],"host":urlparse(urljoin(url,x["url"])).netloc if x["url"] else None} for x in media[:20]],
+  "public_video_candidates":[{"tag":x["tag"],"host":urlparse(urljoin(url,x["url"])).netloc,"path":urlparse(urljoin(url,x["url"])).path,"type":x["type"]} for x in media if x["url"] and urlparse(urljoin(url,x["url"])).path.lower().endswith((".mp4",".webm",".ogv",".m3u8"))][:40],
   "free_text_indicator":bool(re.search(r"\bFree\b",txt)),"license_cc_by_explicit":bool(re.search(r"\bCC[- ]?BY\b",txt,re.I))})
   # Store small context snippets for decisions, NOT a reproduction of original lessons.
   examples=[]

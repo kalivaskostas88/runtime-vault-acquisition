@@ -1,0 +1,459 @@
+{
+  "schema": "V070_ORIGINAL_TEACHER_LESSON_ACCESS_PROBE",
+  "date_utc": "2026-11-19T05:12:36.297378+00:00",
+  "method": "requests public GET, HTMLParser; no auth, no paywall bypass",
+  "native_blender": "NOT_RUN",
+  "art": "HOLD",
+  "actual_media_watched": false,
+  "audio_listened": false,
+  "pages": {
+    "basic_sculpting": {
+      "url": "https://studio.blender.org/training/blender-fundamentals-45-lts/basic-sculpting/",
+      "status": "PUBLIC_SOURCE_HTML_READ",
+      "http_status": 200,
+      "final_host": "studio.blender.org",
+      "bytes": 176219,
+      "html_sha256": "1c655b98e9de79a4050e1cdf4580e3990d4625970c2cf480e808ac8641d37286",
+      "visible_text_sha256": "0a89a47a1f625192fa00d01e0853bbded220cadeaee48b0fc652833fdbc39f8c",
+      "visible_text_chars": 25641,
+      "headings": [
+        "BLENDER.ORG",
+        "DEVELOPMENT",
+        "LEARNING & RESOURCES",
+        "DONATE",
+        "Basic Sculpting",
+        "The Sculpting Workspace",
+        "Brushes",
+        "Brush Selection",
+        "Keeping it Symmetrical",
+        "Changing the Overall Shape",
+        "Running out of Geoemtry",
+        "Wireframe Overlay",
+        "The Voxel Remesher",
+        "Smoothing",
+        "Login to view this content",
+        "Flattening Surfaces",
+        "Building Up Clay",
+        "Dynamic Topology & the Snake Hook",
+        "Remeshing Surfaces instead of Volumes",
+        "Dynamic Resolution",
+        "Inflating the mesh",
+        "Keeping it Sharp",
+        "Mini Assignment",
+        "Importing the reference image",
+        "Tips to keep in Mind"
+      ],
+      "explicit_mp4_links": [],
+      "media_elements_count": 66,
+      "media_element_types": [
+        {
+          "tag": "source",
+          "host": null
+        },
+        {
+          "tag": "source",
+          "host": null
+        },
+        {
+          "tag": "source",
+          "host": null
+        },
+        {
+          "tag": "source",
+          "host": null
+        },
+        {
+          "tag": "source",
+          "host": null
+        },
+        {
+          "tag": "source",
+          "host": null
+        },
+        {
+          "tag": "source",
+          "host": null
+        },
+        {
+          "tag": "source",
+          "host": null
+        },
+        {
+          "tag": "video",
+          "host": null
+        },
+        {
+          "tag": "source",
+          "host": "studio.blender.org"
+        },
+        {
+          "tag": "video",
+          "host": null
+        },
+        {
+          "tag": "source",
+          "host": "studio.blender.org"
+        },
+        {
+          "tag": "source",
+          "host": null
+        },
+        {
+          "tag": "source",
+          "host": null
+        },
+        {
+          "tag": "source",
+          "host": null
+        },
+        {
+          "tag": "source",
+          "host": null
+        },
+        {
+          "tag": "source",
+          "host": null
+        },
+        {
+          "tag": "source",
+          "host": null
+        },
+        {
+          "tag": "video",
+          "host": null
+        },
+        {
+          "tag": "source",
+          "host": "studio.blender.org"
+        }
+      ],
+      "free_text_indicator": true,
+      "license_cc_by_explicit": true,
+      "short_context_snippets": [
+        {
+          "term": "voxel",
+          "context_excerpt": "ase or decrease the resolution of your mesh: Voxel Remeshing Dynamic Topology We will also cover the basics of Mirror for Sculpt Mode t"
+        },
+        {
+          "term": "remesh",
+          "context_excerpt": "e of them. You will also learn the basics of remeshing. These are two prominent features to increase or decrease the resolution of your"
+        },
+        {
+          "term": "Ctrl J",
+          "context_excerpt": "hem and Join them together into one object ( Ctrl J ) Go back into Sculpt Mode The duplicated objects joined together, right before rem"
+        },
+        {
+          "term": "Join",
+          "context_excerpt": "io Films Projects Training Assets Tools Blog Join BLENDER.ORG Download Get the latest Blender, older versions, or experimental builds."
+        },
+        {
+          "term": "Scale",
+          "context_excerpt": "oth objects intersect Duplicate it again and scale it down ( S ) so that it's compeltely inside one of the objects Select all of them a"
+        },
+        {
+          "term": "resolution",
+          "context_excerpt": "ominent features to increase or decrease the resolution of your mesh: Voxel Remeshing Dynamic Topology We will also cover the basics of"
+        },
+        {
+          "term": "finger",
+          "context_excerpt": "earby surfaces can get merged together (Like fingers on a hand) If your mesh is not a closed volume, the remesher will break your mesh."
+        },
+        {
+          "term": "open meshes",
+          "context_excerpt": "Dyntopo a fantastic alternative for flat and open meshes that don't have a clear thickness. It also can't merge disconnected surfaces t"
+        },
+        {
+          "term": "mask",
+          "context_excerpt": "remesh all vertices that are visible and not masked). These two are the most frequently used settings. If you don't want the remeshing"
+        }
+      ]
+    },
+    "fine_control": {
+      "url": "https://studio.blender.org/training/blender-fundamentals-45-lts/fine-control/",
+      "status": "PUBLIC_SOURCE_HTML_READ",
+      "http_status": 200,
+      "final_host": "studio.blender.org",
+      "bytes": 151280,
+      "html_sha256": "20722b8f0ee61f4e3b7c0857f6d740f72bbafa47a0405c8370a3601b4569a85a",
+      "visible_text_sha256": "e349d1961251ee8ec60f52aae0c7043b9ec94a0fd86875b1f8fe07a6464581f7",
+      "visible_text_chars": 17556,
+      "headings": [
+        "BLENDER.ORG",
+        "DEVELOPMENT",
+        "LEARNING & RESOURCES",
+        "DONATE",
+        "Fine Control on a Single Object",
+        "Keep Around Versions",
+        "Merging and Refining the Gnome",
+        "Masking",
+        "Refining the Hair",
+        "Applying Modifiers even faster!",
+        "Face Sets & Hiding",
+        "Auto-Masking",
+        "Sculpting the Hand",
+        "Expand Masks & Transforming",
+        "Expanding & Painting Face Sets",
+        "Masking your Face Sets",
+        "Posing Made Easy"
+      ],
+      "explicit_mp4_links": [],
+      "media_elements_count": 58,
+      "media_element_types": [
+        {
+          "tag": "source",
+          "host": null
+        },
+        {
+          "tag": "source",
+          "host": null
+        },
+        {
+          "tag": "source",
+          "host": null
+        },
+        {
+          "tag": "source",
+          "host": null
+        },
+        {
+          "tag": "source",
+          "host": null
+        },
+        {
+          "tag": "source",
+          "host": null
+        },
+        {
+          "tag": "video",
+          "host": null
+        },
+        {
+          "tag": "source",
+          "host": "studio.blender.org"
+        },
+        {
+          "tag": "source",
+          "host": null
+        },
+        {
+          "tag": "source",
+          "host": null
+        },
+        {
+          "tag": "video",
+          "host": null
+        },
+        {
+          "tag": "source",
+          "host": "studio.blender.org"
+        },
+        {
+          "tag": "source",
+          "host": null
+        },
+        {
+          "tag": "source",
+          "host": null
+        },
+        {
+          "tag": "source",
+          "host": null
+        },
+        {
+          "tag": "source",
+          "host": null
+        },
+        {
+          "tag": "source",
+          "host": null
+        },
+        {
+          "tag": "source",
+          "host": null
+        },
+        {
+          "tag": "source",
+          "host": null
+        },
+        {
+          "tag": "source",
+          "host": null
+        }
+      ],
+      "free_text_indicator": true,
+      "license_cc_by_explicit": false,
+      "short_context_snippets": [
+        {
+          "term": "voxel",
+          "context_excerpt": "tails of the hair meshes. But do not use the voxel remesher on this object! The clean quad topology of separate meshes will make it ver"
+        },
+        {
+          "term": "remesh",
+          "context_excerpt": "nter Sculpt Mode. Set a resolution ( R ) and remesh ( Ctrl R ). The result of joining and remeshing the torso objects. Important Be awa"
+        },
+        {
+          "term": "Ctrl J",
+          "context_excerpt": "it's active. Join the arms into the torso ( Ctrl J ). Enter Sculpt Mode. Set a resolution ( R ) and remesh ( Ctrl R ). The result of jo"
+        },
+        {
+          "term": "Join",
+          "context_excerpt": "io Films Projects Training Assets Tools Blog Join BLENDER.ORG Download Get the latest Blender, older versions, or experimental builds."
+        },
+        {
+          "term": "Scale",
+          "context_excerpt": "nd editing Mask & Face Sets Move, Rotate and Scale in Sculpt Mode By the end of this lesson you will have all the tools needed to make"
+        },
+        {
+          "term": "resolution",
+          "context_excerpt": "e torso ( Ctrl J ). Enter Sculpt Mode. Set a resolution ( R ) and remesh ( Ctrl R ). The result of joining and remeshing the torso obje"
+        },
+        {
+          "term": "finger",
+          "context_excerpt": "ill make it difficult to keep the individual fingers apart. The resolution we have right now should be enough for now. Just make sure t"
+        },
+        {
+          "term": "mask",
+          "context_excerpt": "ound Versions Merging and Refining the Gnome Masking Refining the Hair Applying Modifiers even faster! Face Sets & Hiding Auto-Masking"
+        }
+      ]
+    },
+    "multiple_objects": {
+      "url": "https://studio.blender.org/training/blender-fundamentals-45-lts/using-multiple-objects/",
+      "status": "PUBLIC_SOURCE_HTML_READ",
+      "http_status": 200,
+      "final_host": "studio.blender.org",
+      "bytes": 150552,
+      "html_sha256": "512cb483394afd5ca8315b5972a78da0e593f59054e5071dd769b90a155d67af",
+      "visible_text_sha256": "e242491af1f97726d7cd5eecd3f11ceca4233623490b44e3c8412e7d801f7343",
+      "visible_text_chars": 17090,
+      "headings": [
+        "BLENDER.ORG",
+        "DEVELOPMENT",
+        "LEARNING & RESOURCES",
+        "DONATE",
+        "Sculpting Multiple Objects",
+        "Blocking the Gnome",
+        "Non-destructive Mirroring",
+        "Modeling a Base Mesh",
+        "Trimming Shapes",
+        "Switching Objects",
+        "Base Meshes via the Skin Modifier",
+        "Rough Base Mesh Modeling",
+        "More Asymmetry",
+        "Mini-Assignment"
+      ],
+      "explicit_mp4_links": [],
+      "media_elements_count": 60,
+      "media_element_types": [
+        {
+          "tag": "source",
+          "host": null
+        },
+        {
+          "tag": "source",
+          "host": null
+        },
+        {
+          "tag": "source",
+          "host": null
+        },
+        {
+          "tag": "source",
+          "host": null
+        },
+        {
+          "tag": "source",
+          "host": null
+        },
+        {
+          "tag": "source",
+          "host": null
+        },
+        {
+          "tag": "video",
+          "host": null
+        },
+        {
+          "tag": "source",
+          "host": "studio.blender.org"
+        },
+        {
+          "tag": "video",
+          "host": null
+        },
+        {
+          "tag": "source",
+          "host": "studio.blender.org"
+        },
+        {
+          "tag": "source",
+          "host": null
+        },
+        {
+          "tag": "source",
+          "host": null
+        },
+        {
+          "tag": "source",
+          "host": null
+        },
+        {
+          "tag": "source",
+          "host": null
+        },
+        {
+          "tag": "video",
+          "host": null
+        },
+        {
+          "tag": "source",
+          "host": "studio.blender.org"
+        },
+        {
+          "tag": "source",
+          "host": null
+        },
+        {
+          "tag": "source",
+          "host": null
+        },
+        {
+          "tag": "video",
+          "host": null
+        },
+        {
+          "tag": "source",
+          "host": "studio.blender.org"
+        }
+      ],
+      "free_text_indicator": true,
+      "license_cc_by_explicit": false,
+      "short_context_snippets": [
+        {
+          "term": "voxel",
+          "context_excerpt": "ting the general shape. Feel free to use the voxel remesher or dyntopo to get more resolution to sculpt on. Now that we have multiple o"
+        },
+        {
+          "term": "remesh",
+          "context_excerpt": "he general shape. Feel free to use the voxel remesher or dyntopo to get more resolution to sculpt on. Now that we have multiple objects"
+        },
+        {
+          "term": "Join",
+          "context_excerpt": "io Films Projects Training Assets Tools Blog Join BLENDER.ORG Download Get the latest Blender, older versions, or experimental builds."
+        },
+        {
+          "term": "Scale",
+          "context_excerpt": "ether a body and a head. We move, rotate and scale them to roughly make up the characters shapes. Duplicate existing objects when neede"
+        },
+        {
+          "term": "resolution",
+          "context_excerpt": "the Subdivision Surface modifier to get more resolution to work with. Feel free to go into Sculpt Mode to give the hat the shape that y"
+        },
+        {
+          "term": "finger",
+          "context_excerpt": "width and height ( Ctrl R ) Extrude out the fingers, thumb and wrist ( E ) Spread them out a bit by moving the finger ends ( G ) Add mo"
+        }
+      ]
+    }
+  }
+}

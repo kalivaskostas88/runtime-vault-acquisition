@@ -1,0 +1,91 @@
+name: V080 African Savanna Elephant Graded Thin Pinna and Root Safety
+on:
+  push:
+    branches:
+      - research/animation-v080-graded-ear-membrane-thickness-20261119
+    paths:
+      - .github/workflows/v080_native_membrane_thickness.yml
+      - research/animation_v080/native_membrane_thickness_root_gradient.py
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  original-graded-thin-pinna-bilateral-root-protected:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch exact V079 real broad silhouette Blender project and verify source SHA
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p v079_savanna_ear_silhouette
+          gh run download 44523017315 --repo kalivaskostas88/runtime-vault-acquisition -n v079-original-savanna-ear-flap-evidence -D v079_savanna_ear_silhouette
+          echo "b04204cd78581b7ebe95731d9ccc3f61ed454d35ebe3ed923d80b08b148a9aea  v079_savanna_ear_silhouette/V079_ORIGINAL_SAVANNA_EAR_FLAP_NATIVE_CANDIDATE.blend" | sha256sum -c -
+      - name: Download official Blender 5.2.2 with vendor SHA; official mirror fallback
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/blender522"
+          cd "$RUNNER_TEMP/blender522"
+          if ! curl -fLsS --connect-timeout 30 --max-time 300 -o blender-5.2.2-linux-x64.tar.xz https://download.blender.org/release/Blender5.2/blender-5.2.2-linux-x64.tar.xz; then
+            curl -fLsS --connect-timeout 30 --max-time 300 -o blender-5.2.2-linux-x64.tar.xz https://mirror.blender.org/release/Blender5.2/blender-5.2.2-linux-x64.tar.xz
+          fi
+          if ! curl -fLsS --connect-timeout 30 --max-time 60 -o blender-5.2.2.sha256 https://download.blender.org/release/Blender5.2/blender-5.2.2.sha256; then
+            curl -fLsS --connect-timeout 30 --max-time 60 -o blender-5.2.2.sha256 https://mirror.blender.org/release/Blender5.2/blender-5.2.2.sha256
+          fi
+          grep 'blender-5.2.2-linux-x64.tar.xz' blender-5.2.2.sha256 | sha256sum -c -
+          tar -xf blender-5.2.2-linux-x64.tar.xz
+          echo "$RUNNER_TEMP/blender522/blender-5.2.2-linux-x64" >> "$GITHUB_PATH"
+      - name: Native Blender EGL/Workbench requirements
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq libegl1 libgl1 libglx-mesa0 libgbm1 libx11-6 libxkbcommon0 libxi6 libxfixes3 libxrender1 libxcursor1 libxinerama1
+      - name: Native Blender graded-thickness ear membrane study on protected original V079
+        shell: bash
+        run: |
+          set -euo pipefail
+          blender -b --python research/animation_v080/native_membrane_thickness_root_gradient.py
+          test -s v080_membrane_thickness/V080_NATIVE_GRADIENT_THIN_EAR_CANDIDATE.blend
+          test -s v080_membrane_thickness/V080_REAL_THICKNESS_AND_ROOT_RECEIPT.json
+      - name: Reopen native output and prove geometry, root, head contact, source and ART HOLD
+        shell: bash
+        run: |
+          set -euo pipefail
+          blender -b v080_membrane_thickness/V080_NATIVE_GRADIENT_THIN_EAR_CANDIDATE.blend --python-expr "import bpy; o=bpy.data.objects; assert len(o['V080_NEAR_GRADIENT_THIN_EAR'].data.vertices)==3314; assert len(o['V080_FAR_GRADIENT_THIN_EAR'].data.vertices)==3314; assert len([i for i in bpy.data.images if i.packed_file])>=3; print('V080_NATIVE_THIN_EAR_SAVED_REOPEN_PASS_ART_HOLD')"
+          python - <<'PY'
+          import json,pathlib,hashlib
+          p=pathlib.Path("v080_membrane_thickness")
+          d=json.loads((p/"V080_REAL_THICKNESS_AND_ROOT_RECEIPT.json").read_text())
+          assert d['status'].startswith("NATIVE_GRADED_THIN_EAR_TECH_PASS")
+          assert d['art_approved'] is False and d['head_mesh_fused'] is False
+          assert d['all_previous_mesh_curve_data_unchanged'] and d['all_three_original_cc0_refs_unchanged']
+          assert d['near_deformation']['root_max_world_displacement']<1e-5
+          assert d['near_deformation']['outer_x_depth_reduction_fraction']>.27
+          assert d['full_xyz_mirror_error']<1e-5
+          assert d['head_ear_contact_diagnostic']['new_triangle_surface_crossings']>0
+          for n,h in {**d['before_renders'],**d['after_renders']}.items():
+            assert hashlib.sha256((p/n).read_bytes()).hexdigest()==h
+          assert hashlib.sha256((p/'V080_NATIVE_GRADIENT_THIN_EAR_CANDIDATE.blend').read_bytes()).hexdigest()==d['saved_blend_sha256']
+          print("V080_REAL_NATIVE_THICKNESS_AND_HEAD_CONTACT_TECH_PASS_ART_HOLD")
+          PY
+          find v080_membrane_thickness -type f -print0 | sort -z | xargs -0 sha256sum > v080_membrane_thickness/SHA256SUMS.txt
+      - name: Preserve real evidence or honest failure receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v080-native-gradient-thin-ear-evidence
+          path: v080_membrane_thickness/
+          retention-days: 7
+          if-no-files-found: warn
+
+# V077 new source-protected A/B comparison; no artist approval.
+
+# V080 new source-locked graded ear membrane, not artist approved.
+
+# V080 new source-locked graded ear membrane, not artist approved.
+
+# V080 new source-locked graded ear membrane, not artist approved.

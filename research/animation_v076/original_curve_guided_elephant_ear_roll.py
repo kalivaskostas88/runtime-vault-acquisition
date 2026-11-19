@@ -96,14 +96,16 @@ def sample_upper_front_surface(o):
    target_z=topz-(Z_BELOW_LOCAL_TOP+extra_below)
    world_origin=Vector((-6.,y,target_z))
    local_origin=mat_inv@world_origin
-   hit,normal,face,distance=o.ray_cast(local_origin,local_dir,distance=15.)
-   if face<0:continue
+   # Blender 5.2 Object.ray_cast returns (hit_bool,location,normal,face_index).
+   # Prior run 44498351186 exposed wrong tuple unpack, NOT an art failure.
+   success,local_hit,normal,face_index=o.ray_cast(local_origin,local_dir,distance=15.)
+   if not success:continue
    n=(o.matrix_world.to_3x3().inverted().transposed()@normal).normalized()
    if n.x<-.25:
-    selected=(hit,normal,face,distance,extra_below,target_z,n)
+    selected=(local_hit,face_index,extra_below,target_z,n)
     break
   assert selected is not None,("No actual front-facing surface in bounded upper rim search",fraction,topz)
-  hit,normal,face,distance,extra_below,target_z,n=selected
+  hit,face,extra_below,target_z,n=selected
   hit_world=o.matrix_world@hit
   guided=hit_world+n*WORLD_OFFSET
   nearest=tree.find_nearest(guided)

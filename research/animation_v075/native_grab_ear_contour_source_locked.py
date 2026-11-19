@@ -128,9 +128,14 @@ try:
  c=viewport();reg=c["region"];rv=c["area"].spaces.active.region_3d
  a=location_3d_to_region_2d(reg,rv,ORIGIN)
  b=location_3d_to_region_2d(reg,rv,END)
+ status["viewport_projection"]={"region_wh":[reg.width,reg.height],
+   "from_xy":None if a is None else list(a),"to_xy":None if b is None else list(b),
+   "pixel_stroke_length":None if a is None or b is None else math.dist(tuple(a),tuple(b)),
+   "region_view_distance":float(rv.view_distance),
+   "zoom_outcome":"SOURCE_DIAGNOSTIC_PRE_STROKE_ONLY"}
  if a is None or b is None:raise RuntimeError("Contour target off front sculpt screen")
- assert 0.08*reg.width<a.x<.92*reg.width and .08*reg.height<a.y<.92*reg.height
- assert math.dist(tuple(a),tuple(b))>15,"Contour stroke too short"
+ assert 0.08*reg.width<a.x<.92*reg.width and .08*reg.height<a.y<.92*reg.height,("Anchor outside usable viewport",status["viewport_projection"])
+ assert math.dist(tuple(a),tuple(b))>15,("Contour stroke too short",status["viewport_projection"])
  stroke=[]
  for i in range(EVENTS):
   t=i/(EVENTS-1)

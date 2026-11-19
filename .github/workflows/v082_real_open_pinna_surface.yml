@@ -1,0 +1,83 @@
+name: V082 Professional-V081-Video Guided Open Quad Ear Surface + Native Solidify
+on:
+  push:
+    branches:
+      - research/animation-v082-flat-animal-ear-video-20261119
+    paths:
+      - .github/workflows/v082_real_open_pinna_surface.yml
+      - research/animation_v082/source_locked_open_quads_solidify.py
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  professional-video-guided-pinna-surface:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch source-locked canonical V079 actual Blender and verify SHA
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p v079_savanna_ear_silhouette
+          gh run download 44523017315 --repo kalivaskostas88/runtime-vault-acquisition -n v079-original-savanna-ear-flap-evidence -D v079_savanna_ear_silhouette
+          echo "b04204cd78581b7ebe95731d9ccc3f61ed454d35ebe3ed923d80b08b148a9aea  v079_savanna_ear_silhouette/V079_ORIGINAL_SAVANNA_EAR_FLAP_NATIVE_CANDIDATE.blend" | sha256sum -c -
+      - name: Download official Blender 5.2.2 with vendor SHA; official mirror fallback
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/blender522"
+          cd "$RUNNER_TEMP/blender522"
+          if ! curl -fLsS --connect-timeout 30 --max-time 300 -o blender-5.2.2-linux-x64.tar.xz https://download.blender.org/release/Blender5.2/blender-5.2.2-linux-x64.tar.xz; then
+            curl -fLsS --connect-timeout 30 --max-time 300 -o blender-5.2.2-linux-x64.tar.xz https://mirror.blender.org/release/Blender5.2/blender-5.2.2-linux-x64.tar.xz
+          fi
+          if ! curl -fLsS --connect-timeout 30 --max-time 60 -o blender-5.2.2.sha256 https://download.blender.org/release/Blender5.2/blender-5.2.2.sha256; then
+            curl -fLsS --connect-timeout 30 --max-time 60 -o blender-5.2.2.sha256 https://mirror.blender.org/release/Blender5.2/blender-5.2.2.sha256
+          fi
+          grep 'blender-5.2.2-linux-x64.tar.xz' blender-5.2.2.sha256 | sha256sum -c -
+          tar -xf blender-5.2.2-linux-x64.tar.xz
+          echo "$RUNNER_TEMP/blender522/blender-5.2.2-linux-x64" >> "$GITHUB_PATH"
+      - name: Native Blender EGL/Workbench requirements
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq libegl1 libgl1 libglx-mesa0 libgbm1 libx11-6 libxkbcommon0 libxi6 libxfixes3 libxrender1 libxcursor1 libxinerama1
+      - name: Real Blender new open low-poly elephant surface plus Subdivision and Solidify
+        shell: bash
+        run: |
+          set -euo pipefail
+          blender -b --python research/animation_v082/source_locked_open_quads_solidify.py
+          test -s v082_open_pinna_surface/V082_ORIGINAL_OPEN_SURFACE_EAR_PROOF.blend
+          test -s v082_open_pinna_surface/V082_REAL_OPEN_SURFACE_TECH_RECEIPT.json
+      - name: Independent Blender reopen, topology, source, variable-thickness and honest art gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          blender -b v082_open_pinna_surface/V082_ORIGINAL_OPEN_SURFACE_EAR_PROOF.blend --python-expr "import bpy; x=bpy.data.objects; assert all(len(x[n].data.vertices)==70 and len(x[n].modifiers)==2 for n in ['V082_NEAR_OPEN_QUAD_PINNA','V082_FAR_OPEN_QUAD_PINNA']); assert len([i for i in bpy.data.images if i.packed_file])>=3; print('V082_REAL_OPEN_QUAD_SOLIDIFY_SAVED_REOPEN_PASS')"
+          python - <<'PY'
+          import json,pathlib,hashlib
+          p=pathlib.Path("v082_open_pinna_surface")
+          r=json.loads((p/"V082_REAL_OPEN_SURFACE_TECH_RECEIPT.json").read_text())
+          assert r["status"].startswith("REAL_OPEN_QUAD_NATIVE_SUBSURF_SOLIDIFY_TECH_PASS")
+          assert r["protected_previous_geometry_unchanged"] and r["three_packed_photo_refs_unchanged"]
+          assert not r["artist_approved"] and not r["joint_fused_to_head"]
+          for n,d in r["object_proof"].items():
+              assert d["base"]["verts"]==70 and d["base"]["open_boundary_edges"]>0
+              assert d["evaluated"]["open_boundary_edges"]==0 and d["evaluated"]["nonmanifold_edges"]==0
+              assert d["modifier_stack"][0]["type"]=="SUBSURF" and d["modifier_stack"][1]["type"]=="SOLIDIFY"
+          for n,h in {**r["before_renders"],**r["after_renders"]}.items():
+              assert hashlib.sha256((p/n).read_bytes()).hexdigest()==h
+          assert hashlib.sha256((p/"V082_ORIGINAL_OPEN_SURFACE_EAR_PROOF.blend").read_bytes()).hexdigest()==r["saved_blend_sha256"]
+          print("V082_TRUE_OPEN_QUADS_NATIVE_SUBSURF_SOLIDIFY_TECH_PASS_ART_HOLD")
+          PY
+          find v082_open_pinna_surface -type f -print0 | sort -z | xargs -0 sha256sum > v082_open_pinna_surface/SHA256SUMS.txt
+      - name: Preserve real evidence or honest failure receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v082-original-native-open-quad-pinna-evidence
+          path: v082_open_pinna_surface/
+          retention-days: 7
+          if-no-files-found: warn

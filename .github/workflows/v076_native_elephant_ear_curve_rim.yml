@@ -78,3 +78,5 @@ jobs:
           path: v076_curve_ear_rim/
           retention-days: 7
           if-no-files-found: warn
+
+# V076 exact independent repeat of same source-locked curve source and frozen parameters on a fresh runner.

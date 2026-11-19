@@ -81,3 +81,5 @@ jobs:
           path: v082_open_pinna_surface/
           retention-days: 7
           if-no-files-found: warn
+
+# V082 frozen independent native repeat on fresh runner, unchanged original 70-vertex design and modifier parameters.

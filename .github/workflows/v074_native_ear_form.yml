@@ -78,3 +78,5 @@ jobs:
           path: v074_ear_art_blockout/
           retention-days: 7
           if-no-files-found: warn
+
+# V074 independent exact-parameter repeat on a fresh runner; native source unchanged.

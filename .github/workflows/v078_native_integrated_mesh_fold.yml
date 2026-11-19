@@ -1,0 +1,86 @@
+name: V078 Genuine Source-Locked Integrated Elephant Ear Mesh Fold
+on:
+  push:
+    branches:
+      - research/animation-v078-integrated-ear-fold-20261119
+    paths:
+      - .github/workflows/v078_native_integrated_mesh_fold.yml
+      - research/animation_v078/true_mesh_curve_guided_fold.py
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  native-embedded-original-ear-surface-fold:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Retrieve protected V077 exact Multires technical proof for new isolated ear mesh candidate
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p v077_topology_preflight
+          gh run download 44505063530 --repo kalivaskostas88/runtime-vault-acquisition -n v077-native-multires-original-ear-ab-evidence -D v077_topology_preflight
+          echo "33d2d9a839df0b8b9e203244670f292d329324b04aee5fd34ab33999a4a8e7a8  v077_topology_preflight/V077_NATIVE_MULTRES_A_B_READINESS.blend" | sha256sum -c -
+      - name: Download official Blender 5.2.2 with vendor SHA; official mirror fallback
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/blender522"
+          cd "$RUNNER_TEMP/blender522"
+          if ! curl -fLsS --connect-timeout 30 --max-time 300 -o blender-5.2.2-linux-x64.tar.xz https://download.blender.org/release/Blender5.2/blender-5.2.2-linux-x64.tar.xz; then
+            curl -fLsS --connect-timeout 30 --max-time 300 -o blender-5.2.2-linux-x64.tar.xz https://mirror.blender.org/release/Blender5.2/blender-5.2.2-linux-x64.tar.xz
+          fi
+          if ! curl -fLsS --connect-timeout 30 --max-time 60 -o blender-5.2.2.sha256 https://download.blender.org/release/Blender5.2/blender-5.2.2.sha256; then
+            curl -fLsS --connect-timeout 30 --max-time 60 -o blender-5.2.2.sha256 https://mirror.blender.org/release/Blender5.2/blender-5.2.2.sha256
+          fi
+          grep 'blender-5.2.2-linux-x64.tar.xz' blender-5.2.2.sha256 | sha256sum -c -
+          tar -xf blender-5.2.2-linux-x64.tar.xz
+          echo "$RUNNER_TEMP/blender522/blender-5.2.2-linux-x64" >> "$GITHUB_PATH"
+      - name: Native Blender EGL/Workbench requirements
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq libegl1 libgl1 libglx-mesa0 libgbm1 libx11-6 libxkbcommon0 libxi6 libxfixes3 libxrender1 libxcursor1 libxinerama1
+      - name: Native Blender high-resolution original ear geometry driven by hidden 3D curve, without tube rendering
+        shell: bash
+        run: |
+          set -euo pipefail
+          blender -b --python research/animation_v078/true_mesh_curve_guided_fold.py
+          test -s v078_integrated_ear_fold/V078_NATIVE_EMBEDDED_EAR_FOLD_CANDIDATE.blend
+          test -s v078_integrated_ear_fold/V078_REAL_SURFACE_FOLD_RECEIPT.json
+      - name: Fresh Blender reopen and strict source, manifold, bilateral and artist HOLD checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          blender -b v078_integrated_ear_fold/V078_NATIVE_EMBEDDED_EAR_FOLD_CANDIDATE.blend --python-expr "import bpy; o=bpy.data.objects; assert o['V078_NEAR_REAL_SURFACE_FOLD'].type=='MESH' and o['V078_FAR_MIRRORED_REAL_SURFACE_FOLD'].type=='MESH'; assert len(o['V078_NEAR_REAL_SURFACE_FOLD'].data.vertices)==3314; assert len([x for x in bpy.data.images if x.packed_file])>=3; print('V078_NEW_REAL_MESH_FOLD_SAVED_REOPEN_PASS_ART_HOLD')"
+          python - <<'PY'
+          import json,pathlib,hashlib
+          p=pathlib.Path("v078_integrated_ear_fold")
+          d=json.loads((p/"V078_REAL_SURFACE_FOLD_RECEIPT.json").read_text())
+          assert d['status'].startswith('NATIVE_SOURCE_GUIDED_REAL_MESH_FOLD_TECH_PASS')
+          assert not d['art_approved'] and not d['native_crease_brush_used']
+          assert d['original_mesh_and_curve_data_preserved'] and d['packed_cc0_refs_preserved']
+          assert d['mesh_deformation']['ridge_vertices']>=8 and d['mesh_deformation']['trough_vertices']>=8
+          assert abs(d['mesh_deformation']['volume_change_percent'])<3
+          assert d['paired_world_xyz_max_mirror_error']<1e-5
+          for name,h in {**d['before_renders'],**d['after_renders']}.items():
+              assert hashlib.sha256((p/name).read_bytes()).hexdigest()==h
+          assert hashlib.sha256((p/"V078_NATIVE_EMBEDDED_EAR_FOLD_CANDIDATE.blend").read_bytes()).hexdigest()==d['native_saved_blend_sha256']
+          print('V078_REAL_FOLD_GEOMETRY_TECH_PASS; ART_HOLD')
+          PY
+          find v078_integrated_ear_fold -type f -print0 | sort -z | xargs -0 sha256sum > v078_integrated_ear_fold/SHA256SUMS.txt
+      - name: Preserve real evidence or honest failure receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v078-native-integrated-surface-ear-fold-evidence
+          path: v078_integrated_ear_fold/
+          retention-days: 7
+          if-no-files-found: warn
+
+# V077 new source-protected A/B comparison; no artist approval.
+
+# V078 first source-locked actual curve-guided surface deformation: tech != artist approval.

@@ -79,3 +79,5 @@ jobs:
           path: v071_body_fusion/
           retention-days: 7
           if-no-files-found: warn
+
+# Independent repeat: source Python and all declared parameters unchanged; distinct runner/commit event.

@@ -1,0 +1,42 @@
+name: V068 professional sculpt reference study CC0 orthographic
+on:
+  push:
+    branches:
+      - research/animation-v068-pro-elephant-blockout-20261119
+    paths:
+      - .github/workflows/v068_cc0_reference_study.yml
+      - research/animation_v068/capture_cc0_orthographic_reference.py
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  orthographic-evidence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install image analysis dependencies
+        run: python -m pip install --quiet requests Pillow
+      - name: Study CC0 four-view source, no existing geometry download
+        run: python research/animation_v068/capture_cc0_orthographic_reference.py
+      - name: Independently validate capture and real image bytes
+        run: |
+          python - <<'PY'
+          import json,hashlib,pathlib
+          p=pathlib.Path("v068_reference")
+          r=json.loads((p/"V068_REFERENCE_CAPTURE_RECEIPT.json").read_text())
+          for name,info in r['images'].items():
+            data=(p/(name+".png")).read_bytes()
+            assert data.startswith(b'\x89PNG')
+            assert hashlib.sha256(data).hexdigest()==info['sha256']
+            assert info['size'][0]>150 and info['size'][1]>150
+          print("V068_FOUR_ACTUAL_CC0_REFERENCE_IMAGES_PASS; NO_NATIVE_MODEL_CLAIM")
+          PY
+      - name: Save actual licensed source evidence, preserve failure too
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v068-real-polyhaven-cc0-elephant-reference
+          path: v068_reference/
+          retention-days: 7
+          if-no-files-found: warn

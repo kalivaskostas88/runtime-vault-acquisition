@@ -77,3 +77,5 @@ jobs:
           path: v072_targeted_smooth/
           retention-days: 7
           if-no-files-found: warn
+
+# V072 repeat: native script and frozen numeric preflight unchanged; fresh runner proof.

@@ -103,6 +103,20 @@ try:
   o["stage"]="V074_EAR_FAN_SHAPE_BLOCKOUT_ART_HOLD"
   o["source"]="V072_TRUE_SAVED_SOURCE"
   o["species"]="UNSPECIFIED_STYLIZED_ELEPHANT"
+ # Source-proven symmetry repair: Blender Edit Mode may produce different last-bit
+ # floating coordinates for equivalent independently transformed left/right assets.
+ # Preserve the same frozen design scale, don't relax the symmetry gate:
+ # clone the already transformed NEAR mesh datablock for the opposite FAR ear.
+ # Both original ears had identical LOCAL source mesh SHA and their WORLD
+ # locations are opposite in Y, hence the same local geometry preserves symmetry.
+ local_before_symmetry={o.name:coords_hash(o) for o in ears}
+ r["symmetry_repair_provenance"]={"initial_transformed_local_sha256":local_before_symmetry,
+    "first_run_failed":"44474315835",
+    "cause":"BOTH native Edit-Mode resizes returned FINISHED, but local-vertex byte hashes differed",
+    "repair":"FAR ear receives deep copy of transformed NEAR native ear mesh datablock; frozen scale/position same"}
+ if len(set(local_before_symmetry.values()))!=1:
+  ears[1].data=ears[0].data.copy()
+ assert ears[0].data!=ears[1].data,"Require separate mesh datablocks even after symmetry lock"
  final_bb={o.name:box(o) for o in ears}
  ear_mesh_sha={o.name:coords_hash(o) for o in ears}
  r["after_ear_mesh_sha256"]=ear_mesh_sha

@@ -1,0 +1,81 @@
+name: V071 Native 3 Mass Voxel Sculpt Fusion - Source & Art Gates
+on:
+  push:
+    branches:
+      - research/animation-v070-lesson-source-remesh-20261119
+    paths:
+      - .github/workflows/v071_original_three_body_voxel.yml
+      - research/animation_v071/three_mass_voxel_native_proof.py
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  bounded-native-mechanical-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Retrieve exact prior validated V068 original native Blender file
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p v068_blockout
+          gh run download 44459128305 --repo kalivaskostas88/runtime-vault-acquisition -n v068-original-elephant-teacher-first-mass-blockout -D v068_blockout
+          test -s v068_blockout/V068_ELEPHANT_MASS_BLOCKOUT.blend
+          echo "5c31b092ea84a8bf50cbe25bdb5f7cef94a54127175c34d70c8cb2ed45beb31f  v068_blockout/V068_ELEPHANT_MASS_BLOCKOUT.blend" | sha256sum -c -
+      - name: Official Blender 5.2.2 vendor SHA check, official mirror fallback
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/blender522"
+          cd "$RUNNER_TEMP/blender522"
+          if ! curl -fLsS --connect-timeout 30 --max-time 300 -o blender-5.2.2-linux-x64.tar.xz https://download.blender.org/release/Blender5.2/blender-5.2.2-linux-x64.tar.xz; then
+            curl -fLsS --connect-timeout 30 --max-time 300 -o blender-5.2.2-linux-x64.tar.xz https://mirror.blender.org/release/Blender5.2/blender-5.2.2-linux-x64.tar.xz
+          fi
+          if ! curl -fLsS --connect-timeout 30 --max-time 60 -o blender-5.2.2.sha256 https://download.blender.org/release/Blender5.2/blender-5.2.2.sha256; then
+            curl -fLsS --connect-timeout 30 --max-time 60 -o blender-5.2.2.sha256 https://mirror.blender.org/release/Blender5.2/blender-5.2.2.sha256
+          fi
+          grep 'blender-5.2.2-linux-x64.tar.xz' blender-5.2.2.sha256 | sha256sum -c -
+          tar -xf blender-5.2.2-linux-x64.tar.xz
+          echo "$RUNNER_TEMP/blender522/blender-5.2.2-linux-x64" >> "$GITHUB_PATH"
+      - name: Install native Blender runtime requirements
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq libegl1 libgl1 libglx-mesa0 libgbm1 libx11-6 libxkbcommon0 libxi6 libxfixes3 libxrender1 libxcursor1 libxinerama1
+          blender --version | head -4
+      - name: Run ONLY source-locked disposable three-mass Blender sculpt union
+        shell: bash
+        run: |
+          set -euo pipefail
+          blender -b --python research/animation_v071/three_mass_voxel_native_proof.py
+          test -s v071_body_fusion/V071_THREE_BODY_FUSION_CANDIDATE.blend
+          test -s v071_body_fusion/V071_NATIVE_BODY_FUSION_RECEIPT.json
+      - name: Fresh process reopen and validate real native output + preserved narrow gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          blender -b v071_body_fusion/V071_THREE_BODY_FUSION_CANDIDATE.blend --python-expr "import bpy; o=bpy.data.objects['01_BARREL_BODY']; assert o.get('stage')=='RESEARCH_BODY_CORE_FUSION_NOT_ART_APPROVED'; assert '02_CHEST_SHOULDER' not in bpy.data.objects and '03_BACK_RUMP' not in bpy.data.objects; assert len([i for i in bpy.data.images if i.packed_file])>=3; print('V071_FRESH_REOPEN_BOUNDED_BODY_ONLY_PASS')"
+          python - <<'PY'
+          import pathlib,hashlib,json
+          p=pathlib.Path('v071_body_fusion')
+          x=json.loads((p/'V071_NATIVE_BODY_FUSION_RECEIPT.json').read_text())
+          assert x['status'].startswith('NATIVE_BOUNDED_MECHANICAL_PASS') and x['art']=='HOLD'
+          assert x['native_remesh']['result']['components']==1 and x['join_only_negative_control']['components']==3
+          assert all(not v for v in x['other_objects_mutated'].values())
+          for file,h in x['view_render_sha256'].items():
+              assert hashlib.sha256((p/file).read_bytes()).hexdigest()==h
+          assert hashlib.sha256((p/'V071_THREE_BODY_FUSION_CANDIDATE.blend').read_bytes()).hexdigest()==x['saved_file_sha256']
+          print('V071_REAL_PROVENANCE_MESH_ROI_HASH_RECEIPT_PASS; ART_HOLD')
+          PY
+          find v071_body_fusion -type f -print0 | sort -z | xargs -0 sha256sum > v071_body_fusion/SHA256SUMS.txt
+      - name: Preserve real proof or failure without overstating art approval
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v071-actual-three-mass-blender-proof
+          path: v071_body_fusion/
+          retention-days: 7
+          if-no-files-found: warn

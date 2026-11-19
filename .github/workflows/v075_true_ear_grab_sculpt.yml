@@ -79,3 +79,5 @@ jobs:
           path: v075_ear_grab/
           retention-days: 7
           if-no-files-found: warn
+
+# V075 independently repeat same verified native Grab script and frozen preflight on new runner.

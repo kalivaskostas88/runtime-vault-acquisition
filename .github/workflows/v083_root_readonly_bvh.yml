@@ -1,0 +1,80 @@
+name: V083 Read-Only Actual V082 Ear Root Head BVH Geometry Diagnosis
+on:
+  push:
+    branches:
+      - research/animation-v083-professional-ear-root-source-diagnostic-20261119
+    paths:
+      - .github/workflows/v083_root_readonly_bvh.yml
+      - research/animation_v083/readonly_native_v082_root_bvh_diagnosis.py
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  original-v082-ear-root-BVH-source-diagnosis:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch exact protected V082 original Blender source and verify saved bytes SHA
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p v082_open_pinna_surface
+          gh run download 44552915211 --repo kalivaskostas88/runtime-vault-acquisition -n v082-original-native-open-quad-pinna-evidence -D v082_open_pinna_surface
+          echo "73597cc408e68f767df1423e127553ef34004a5ddb672b4ee894ca7ec7073f74  v082_open_pinna_surface/V082_ORIGINAL_OPEN_SURFACE_EAR_PROOF.blend" | sha256sum -c -
+      - name: Download official Blender 5.2.2 with vendor SHA; official mirror fallback
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/blender522"
+          cd "$RUNNER_TEMP/blender522"
+          if ! curl -fLsS --connect-timeout 30 --max-time 300 -o blender-5.2.2-linux-x64.tar.xz https://download.blender.org/release/Blender5.2/blender-5.2.2-linux-x64.tar.xz; then
+            curl -fLsS --connect-timeout 30 --max-time 300 -o blender-5.2.2-linux-x64.tar.xz https://mirror.blender.org/release/Blender5.2/blender-5.2.2-linux-x64.tar.xz
+          fi
+          if ! curl -fLsS --connect-timeout 30 --max-time 60 -o blender-5.2.2.sha256 https://download.blender.org/release/Blender5.2/blender-5.2.2.sha256; then
+            curl -fLsS --connect-timeout 30 --max-time 60 -o blender-5.2.2.sha256 https://mirror.blender.org/release/Blender5.2/blender-5.2.2.sha256
+          fi
+          grep 'blender-5.2.2-linux-x64.tar.xz' blender-5.2.2.sha256 | sha256sum -c -
+          tar -xf blender-5.2.2-linux-x64.tar.xz
+          echo "$RUNNER_TEMP/blender522/blender-5.2.2-linux-x64" >> "$GITHUB_PATH"
+      - name: Native Blender EGL/Workbench requirements
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq libegl1 libgl1 libglx-mesa0 libgbm1 libx11-6 libxkbcommon0 libxi6 libxfixes3 libxrender1 libxcursor1 libxinerama1
+      - name: Actual source-locked Blender head/ear BVH nearest root and surface crossings, no edits
+        shell: bash
+        run: |
+          set -euo pipefail
+          blender -b --python research/animation_v083/readonly_native_v082_root_bvh_diagnosis.py
+          test -s v083_root_readonly/V083_ACTUAL_EAR_ROOT_WORLD_BVH_RECEIPT.json
+          python - <<'PY'
+          import json,pathlib,math
+          p=pathlib.Path("v083_root_readonly/V083_ACTUAL_EAR_ROOT_WORLD_BVH_RECEIPT.json")
+          d=json.loads(p.read_text())
+          assert d["status"].startswith("REAL_NATIVE_READONLY_ROOT_BVH_DIAGNOSTIC_PASS")
+          assert not d["fusion_done"] and not d["artist_approved"]
+          assert d["all_original_geometry_and_transforms_sha_unchanged"]
+          assert d["all_original_packed_photo_refs_unchanged"]
+          assert len(d["ear_geometry"])==2
+          for name,v in d["ear_geometry"].items():
+              assert v["raw_surface"]["verts"]==70
+              assert v["evaluated_solid"]["verts"]==1850
+              assert v["raw_root_to_head_unsigned_surface_distance"]["n"]==10
+              assert math.isfinite(v["raw_root_to_head_unsigned_surface_distance"]["max"])
+              assert isinstance(v["evaluated_ear_head_triangle_overlap_pairs"],int)
+          print("V083_ACTUAL_PROFESSIONAL_FIRST_ROOT_BVH_SOURCE_SAFE_PASS__ART_HOLD")
+          PY
+          find v083_root_readonly -type f -print0 | sort -z | xargs -0 sha256sum > v083_root_readonly/SHA256SUMS.txt
+      - name: Preserve real evidence or honest failure receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v083-v082-source-readonly-root-BVH-geometry-evidence
+          path: v083_root_readonly/
+          retention-days: 7
+          if-no-files-found: warn
+
+# V083 diagnostic only; geometry remains V082 protected, no premature voxel merge.

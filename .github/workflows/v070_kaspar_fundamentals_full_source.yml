@@ -1,0 +1,45 @@
+name: V070 Original Free Licensed Kaspar Sculpting Fundamentals
+on:
+  push:
+    branches:
+      - research/animation-v070-lesson-source-remesh-20261119
+    paths:
+      - .github/workflows/v070_kaspar_fundamentals_full_source.yml
+      - research/animation_v070/capture_kaspar_fundamentals_full_public.py
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  original-ccby-teacher-audiovisual-study:
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@v4
+      - name: Official original-source video reading dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg
+          python -m pip install --quiet pillow requests
+      - name: Obtain explicitly public original MP4; retain attribution and honest review status
+        run: python research/animation_v070/capture_kaspar_fundamentals_full_public.py
+      - name: Preserve attributed original-derived temporal evidence and receipts
+        if: always()
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          if [ -f research/animation_v070/FUNDAMENTALS_VIDEO_RECEIPT.json ]; then git add research/animation_v070/FUNDAMENTALS_VIDEO_RECEIPT.json; fi
+          if [ -f research/animation_v070/FUNDAMENTALS_OFFICIAL_CAPTIONS.txt ]; then git add research/animation_v070/FUNDAMENTALS_OFFICIAL_CAPTIONS.txt; fi
+          if [ -d research/animation_v070/fundamentals_contact_b64 ]; then git add research/animation_v070/fundamentals_contact_b64; fi
+          if ! git diff --cached --quiet; then
+            git commit -m 'V070 original free licensed Kaspar fundamentals source evidence'
+            git push origin HEAD:research/animation-v070-lesson-source-remesh-20261119
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v070-kaspar-fundamentals-evidence
+          path: |
+            research/animation_v070/FUNDAMENTALS_VIDEO_RECEIPT.json
+            research/animation_v070/FUNDAMENTALS_OFFICIAL_CAPTIONS.txt
+          retention-days: 7
+          if-no-files-found: warn

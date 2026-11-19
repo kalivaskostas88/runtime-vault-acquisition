@@ -1,0 +1,38 @@
+name: V070 Original Teacher Lesson Availability and Rights Check
+on:
+  push:
+    branches:
+      - research/animation-v070-lesson-source-remesh-20261119
+    paths:
+      - .github/workflows/v070_teacher_lesson_source_probe.yml
+      - research/animation_v070/probe_original_lesson_sources.py
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  teacher-source-access:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install minimal public-page inspection dependency
+        run: python -m pip install --quiet requests
+      - name: Inspect real official lesson pages, no bypass and no new art
+        run: python research/animation_v070/probe_original_lesson_sources.py
+      - name: Preserve factual availability receipt
+        if: always()
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          if [ -f research/animation_v070/SOURCE_ACCESS_RECEIPT.json ]; then git add research/animation_v070/SOURCE_ACCESS_RECEIPT.json; fi
+          if ! git diff --cached --quiet; then
+            git commit -m 'V070 original teacher lesson page access evidence only'
+            git push origin HEAD:research/animation-v070-lesson-source-remesh-20261119
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v070-original-professional-lesson-availability
+          path: research/animation_v070/SOURCE_ACCESS_RECEIPT.json
+          retention-days: 7
+          if-no-files-found: warn

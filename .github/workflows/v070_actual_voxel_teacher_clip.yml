@@ -1,0 +1,44 @@
+name: V070 Original CC-BY Voxel Remesher Video Study
+on:
+  push:
+    branches:
+      - research/animation-v070-lesson-source-remesh-20261119
+    paths:
+      - .github/workflows/v070_actual_voxel_teacher_clip.yml
+      - research/animation_v070/capture_original_voxel_teacher_clip.py
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  original-embedded-teacher:
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install FFmpeg plus requests and Pillow
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg
+          python -m pip install --quiet requests pillow
+      - name: Capture the actually publicly embedded teacher clip only
+        run: python research/animation_v070/capture_original_voxel_teacher_clip.py
+      - name: Persist factual receipt and attributed internal contact boards
+        if: always()
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          if [ -f research/animation_v070/VOXEL_CLIP_CAPTURE_RECEIPT.json ]; then git add research/animation_v070/VOXEL_CLIP_CAPTURE_RECEIPT.json; fi
+          if [ -d research/animation_v070/teacher_contact_b64 ]; then git add research/animation_v070/teacher_contact_b64; fi
+          if ! git diff --cached --quiet; then
+            git commit -m 'V070 factual licensed teacher voxel remesh clip contacts; no watched claim'
+            git push origin HEAD:research/animation-v070-lesson-source-remesh-20261119
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v070-public-teacher-voxel-remesh-research
+          path: |
+            research/animation_v070/VOXEL_CLIP_CAPTURE_RECEIPT.json
+            research/animation_v070/teacher_contact_b64/
+          retention-days: 7
+          if-no-files-found: warn

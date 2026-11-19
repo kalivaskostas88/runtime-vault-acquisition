@@ -123,7 +123,7 @@ try:
   dup.hide_render=True;dup.hide_set(True)
  assert all(local_hash(bpy.data.objects[n])==h for n,h in originals.items()),"V076 original resource was mutated"
  assert refs=={img.name:tuple(img.size) for img in bpy.data.images if img.packed_file}
- assert sorted(n for n in bpy.data.objects if not n.startswith("V077_"))==original_names
+ assert sorted(o.name for o in bpy.data.objects if not o.name.startswith("V077_"))==original_names
  r["all_original_meshes_curves_unchanged"]=True
  r["three_packed_cc0_references_unchanged"]=True
  # This proof is feasibility, not an approved ear-sculpting change.

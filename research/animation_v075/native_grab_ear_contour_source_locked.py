@@ -151,13 +151,14 @@ try:
  for i in range(EVENTS):
   t=i/(EVENTS-1)
   xy=a.lerp(native_target,t)
+  local_target=ear.matrix_world.inverted() @ ORIGIN.lerp(END,t)
   stroke.append(dict(name="stroke",mouse=(float(xy.x),float(xy.y)),
       mouse_event=(int(xy.x),int(xy.y)),
-      location=(0.,0.,0.),is_start=i==0,pressure=1.0,time=1.+i/60.0,
+      location=tuple(float(v) for v in local_target),is_start=i==0,pressure=1.0,time=1.+i/60.0,
       size=1.,x_tilt=0.,y_tilt=0.))
  with bpy.context.temp_override(**c):
   assert bpy.ops.sculpt.brush_stroke.poll(),"Native Grab brush operator cannot poll"
-  result=bpy.ops.sculpt.brush_stroke(stroke=stroke,override_location=True)
+  result=bpy.ops.sculpt.brush_stroke(stroke=stroke,override_location=False)
  assert "FINISHED" in result,result
  bpy.ops.object.mode_set(mode="OBJECT")
  for n,v in hidden.items():objects[n].hide_set(v)
@@ -174,6 +175,9 @@ try:
  max_z_up=max([change[i].z for i in moved],default=0)
  volume_delta_pct=(measure(ear)["volume"]/before[NEAR]["volume"]-1)*100
  status["stroke_actual"]={"asset":brush.name,"operator":"bpy.ops.sculpt.brush_stroke",
+     "native_location_source":"EXPLICIT_LOCAL_MESH_COORDINATES",
+     "override_location":False,"stroke_local_from":list(stroke[0]["location"]),
+     "stroke_local_to":list(stroke[-1]["location"]),
      "events":len(stroke),"screen_from_xy":[float(x) for x in a],
      "screen_to_xy":[float(x) for x in b],"moved_near_ear_vertices":len(moved),
      "peak_displacement":peak,"root_near_head_max_displacement":rootmax,

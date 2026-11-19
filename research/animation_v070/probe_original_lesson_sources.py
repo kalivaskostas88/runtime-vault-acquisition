@@ -15,19 +15,21 @@ URLS={
 }
 class Inspect(HTMLParser):
  def __init__(self):
-  super().__init__();self.stack=[];self.links=[];self.media=[];self.headings=[];self.fragments=[];self.in_script=False
+  super().__init__();self.stack=[];self.links=[];self.media=[];self.headings=[];self.fragments=[];self.in_script=False;self.current_heading="";self._capture_heading=False
  def handle_starttag(self,t,attrs):
   d=dict(attrs);self.stack.append(t)
+  if t in {"h1","h2","h3"}: self._capture_heading=True
   if t=="a" and d.get("href"):self.links.append(d.get("href"))
-  if t in {"video","source","iframe","track"}:self.media.append({"tag":t,"url":d.get("src") or d.get("data-src") or "", "type":d.get("type") or ""})
+  if t in {"video","source","iframe","track"}:self.media.append({"tag":t,"url":d.get("src") or d.get("data-src") or "", "type":d.get("type") or "", "section":self.current_heading})
  def handle_endtag(self,t):
+  if t in {"h1","h2","h3"}:self._capture_heading=False
   if self.stack:self.stack.pop()
  def handle_data(self,d):
   s=" ".join(d.split())
   if not s:return
   if any(x in self.stack for x in ("script","style","noscript")):return
   self.fragments.append(s)
-  if any(x in self.stack for x in ("h1","h2","h3")):self.headings.append(s[:150])
+  if any(x in self.stack for x in ("h1","h2","h3")):self.headings.append(s[:150]);self.current_heading=s[:150]
 s=requests.Session();s.headers.update({"User-Agent":"Mozilla/5.0 (compatible; Blender Research Verification; education)"})
 out={"schema":"V070_ORIGINAL_TEACHER_LESSON_ACCESS_PROBE","date_utc":datetime.datetime.now(datetime.timezone.utc).isoformat(),"method":"requests public GET, HTMLParser; no auth, no paywall bypass","native_blender":"NOT_RUN","art":"HOLD","actual_media_watched":False,"audio_listened":False,"pages":{}}
 for label,url in URLS.items():
@@ -43,7 +45,7 @@ for label,url in URLS.items():
   "visible_text_chars":len(txt),"headings":list(dict.fromkeys(parsed.headings))[:50],
   "explicit_mp4_links":explicitly_downloadable[:10],"media_elements_count":len(media),
   "media_element_types":[{"tag":x["tag"],"host":urlparse(urljoin(url,x["url"])).netloc if x["url"] else None} for x in media[:20]],
-  "public_video_candidates":[{"tag":x["tag"],"host":urlparse(urljoin(url,x["url"])).netloc,"path":urlparse(urljoin(url,x["url"])).path,"type":x["type"]} for x in media if x["url"] and urlparse(urljoin(url,x["url"])).path.lower().endswith((".mp4",".webm",".ogv",".m3u8"))][:40],
+  "public_video_candidates":[{"tag":x["tag"],"host":urlparse(urljoin(url,x["url"])).netloc,"path":urlparse(urljoin(url,x["url"])).path,"type":x["type"],"section":x.get("section")} for x in media if x["url"] and urlparse(urljoin(url,x["url"])).path.lower().endswith((".mp4",".webm",".ogv",".m3u8"))][:40],
   "free_text_indicator":bool(re.search(r"\bFree\b",txt)),"license_cc_by_explicit":bool(re.search(r"\bCC[- ]?BY\b",txt,re.I))})
   # Store small context snippets for decisions, NOT a reproduction of original lessons.
   examples=[]

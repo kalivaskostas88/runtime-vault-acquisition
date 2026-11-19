@@ -1,0 +1,70 @@
+name: V073 Native read-only elephant head and leg joint interface diagnosis
+on:
+  push:
+    branches:
+      - research/animation-v073-anatomical-interface-diagnostic-20261119
+    paths:
+      - .github/workflows/v073_readonly_native_joint_analysis.yml
+      - research/animation_v073/read_only_real_native_joint_interface.py
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  honest-structural-diagnostic-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 27
+    steps:
+      - uses: actions/checkout@v4
+      - name: Obtain the exact archived V072 original native file
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p v072_targeted_smooth
+          gh run download 44468180166 --repo kalivaskostas88/runtime-vault-acquisition -n v072-teacher-targeted-native-smooth-evidence -D v072_targeted_smooth
+          echo "e551ec647ff1714b341567f6512ecf92344f229f672ae04ef37bab590cb5591d  v072_targeted_smooth/V072_SMALL_SMOOTH_CANDIDATE.blend" | sha256sum -c -
+      - name: Official Blender 5.2.2 vendor checksum and verified mirror fallback
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/blender522"
+          cd "$RUNNER_TEMP/blender522"
+          if ! curl -fLsS --connect-timeout 30 --max-time 300 -o blender-5.2.2-linux-x64.tar.xz https://download.blender.org/release/Blender5.2/blender-5.2.2-linux-x64.tar.xz; then
+            curl -fLsS --connect-timeout 30 --max-time 300 -o blender-5.2.2-linux-x64.tar.xz https://mirror.blender.org/release/Blender5.2/blender-5.2.2-linux-x64.tar.xz
+          fi
+          if ! curl -fLsS --connect-timeout 30 --max-time 60 -o blender-5.2.2.sha256 https://download.blender.org/release/Blender5.2/blender-5.2.2.sha256; then
+            curl -fLsS --connect-timeout 30 --max-time 60 -o blender-5.2.2.sha256 https://mirror.blender.org/release/Blender5.2/blender-5.2.2.sha256
+          fi
+          grep 'blender-5.2.2-linux-x64.tar.xz' blender-5.2.2.sha256 | sha256sum -c -
+          tar -xf blender-5.2.2-linux-x64.tar.xz
+          echo "$RUNNER_TEMP/blender522/blender-5.2.2-linux-x64" >> "$GITHUB_PATH"
+      - name: Native execution prerequisites
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq libegl1 libgl1 libglx-mesa0 libgbm1 libx11-6 libxkbcommon0 libxi6 libxfixes3 libxrender1 libxcursor1 libxinerama1
+      - name: Analyze the actual artist interfaces without changing any model
+        shell: bash
+        run: |
+          set -euo pipefail
+          blender -b --python research/animation_v073/read_only_real_native_joint_interface.py
+          python - <<'PY'
+          import json,hashlib
+          p="v073_joint_diagnostic/V073_REAL_ORIGINAL_INTERFACE_RECEIPT.json"
+          d=json.load(open(p))
+          assert d['status'].startswith("NATIVE_READONLY_INTERFACE_DIAGNOSTIC_PASS")
+          assert len(d['interfaces'])==8
+          assert all(x["art_status"].endswith("NOT_ART_APPROVED") for x in d["interfaces"].values())
+          assert d["no_other_mesh_mutation"] and d["original_packed_refs_unchanged"] and d["object_count_unchanged"]
+          print("V073_NATIVE_READ_ONLY_PROOF: 8 source pieces, protected original preserved, ART_HOLD")
+          PY
+          sha256sum v073_joint_diagnostic/V073_REAL_ORIGINAL_INTERFACE_RECEIPT.json > v073_joint_diagnostic/SHA256SUMS.txt
+      - name: Preserve real diagnostic or honest failed evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v073-readonly-true-original-head-leg-interface-evidence
+          path: v073_joint_diagnostic/
+          retention-days: 7
+          if-no-files-found: warn

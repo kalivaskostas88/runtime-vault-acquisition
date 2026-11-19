@@ -84,3 +84,5 @@ jobs:
 # V077 new source-protected A/B comparison; no artist approval.
 
 # V078 first source-locked actual curve-guided surface deformation: tech != artist approval.
+
+# V078 independent fresh GitHub runner repeat; unchanged source, geometry script, and all frozen fold parameters.

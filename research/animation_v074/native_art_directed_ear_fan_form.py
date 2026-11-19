@@ -117,6 +117,20 @@ try:
  if len(set(local_before_symmetry.values()))!=1:
   ears[1].data=ears[0].data.copy()
  assert ears[0].data!=ears[1].data,"Require separate mesh datablocks even after symmetry lock"
+ # The initial successful TECH run revealed a distinct WORLD mirror failure:
+ # same local mesh hashes do not imply that ear placement is mirrored, because
+ # native Edit transform can shift the mesh local centroid during pivot resizing.
+ # Reposition FAR to be the mirror of NEAR in the actual world coordinate system.
+ ny=box(ears[0])[1];fy=box(ears[1])[1]
+ delta=(((-ny[1])-fy[0])+((-ny[0])-fy[1]))/2.0
+ ears[1].location.y+=delta
+ mirror_near=sorted(float((ears[0].matrix_world@v.co).y) for v in ears[0].data.vertices)
+ mirror_far=sorted(float((ears[1].matrix_world@v.co).y) for v in ears[1].data.vertices)
+ mirror_error=max(abs(a+b) for a,b in zip(mirror_near,reversed(mirror_far)))
+ r["world_symmetry_repair"]={"previous_run":"44474588085","defect":"same local geometry SHA but 0.13 world-space paired Y offset","delta_far_y":delta,
+    "predeclared_stricter_world_y_vertex_mirror_tolerance":1e-5,
+    "max_mirrored_world_y_vertex_difference":mirror_error}
+ assert mirror_error<1e-5,"Native left/right ear vertices still not world-mirrored; ART HOLD"
  final_bb={o.name:box(o) for o in ears}
  ear_mesh_sha={o.name:coords_hash(o) for o in ears}
  r["after_ear_mesh_sha256"]=ear_mesh_sha

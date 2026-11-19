@@ -1,0 +1,81 @@
+name: V075 Genuine Native Grab Elephant Ear Contour With Head Contact
+on:
+  push:
+    branches:
+      - research/animation-v075-native-grab-ear-contour-20261119
+    paths:
+      - .github/workflows/v075_true_ear_grab_sculpt.yml
+      - research/animation_v075/native_grab_ear_contour_source_locked.py
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  teacher-led-original-ear-sculpt:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Obtain exact verified original V074 result from GitHub artifact
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p v074_ear_art_blockout
+          gh run download 44475304586 --repo kalivaskostas88/runtime-vault-acquisition -n v074-actual-original-ear-form-native-evidence -D v074_ear_art_blockout
+          test -s v074_ear_art_blockout/V074_ORIGINAL_EAR_FAN_BLOCKOUT_CANDIDATE.blend
+          echo "b29e7f6aed50c0165656c1bbb820972e2c738dfb3ef784d2b6dbfbd1a62aca22  v074_ear_art_blockout/V074_ORIGINAL_EAR_FAN_BLOCKOUT_CANDIDATE.blend" | sha256sum -c -
+      - name: Blender Foundation 5.2.2 official binary and vendor SHA, vendor mirror fallback
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/blender522"
+          cd "$RUNNER_TEMP/blender522"
+          if ! curl -fLsS --connect-timeout 30 --max-time 300 -o blender-5.2.2-linux-x64.tar.xz https://download.blender.org/release/Blender5.2/blender-5.2.2-linux-x64.tar.xz; then
+            curl -fLsS --connect-timeout 30 --max-time 300 -o blender-5.2.2-linux-x64.tar.xz https://mirror.blender.org/release/Blender5.2/blender-5.2.2-linux-x64.tar.xz
+          fi
+          if ! curl -fLsS --connect-timeout 30 --max-time 60 -o blender-5.2.2.sha256 https://download.blender.org/release/Blender5.2/blender-5.2.2.sha256; then
+            curl -fLsS --connect-timeout 30 --max-time 60 -o blender-5.2.2.sha256 https://mirror.blender.org/release/Blender5.2/blender-5.2.2.sha256
+          fi
+          grep 'blender-5.2.2-linux-x64.tar.xz' blender-5.2.2.sha256 | sha256sum -c -
+          tar -xf blender-5.2.2-linux-x64.tar.xz
+          echo "$RUNNER_TEMP/blender522/blender-5.2.2-linux-x64" >> "$GITHUB_PATH"
+      - name: Native Blender headless viewport package prerequisites
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq libegl1 libgl1 libglx-mesa0 libgbm1 libx11-6 libxkbcommon0 libxi6 libxfixes3 libxrender1 libxcursor1 libxinerama1
+      - name: Actual sculpt Grab asset and native brush stroke, real original ear
+        shell: bash
+        run: |
+          set -euo pipefail
+          blender -b --python research/animation_v075/native_grab_ear_contour_source_locked.py
+          test -s v075_ear_grab/V075_REAL_GRAB_EAR_CONTOUR_CANDIDATE.blend
+          test -s v075_ear_grab/V075_GENUINE_GRAB_EAR_RECEIPT.json
+      - name: Fresh Blender 5.2.2 reopen, source and geometry gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          blender -b v075_ear_grab/V075_REAL_GRAB_EAR_CONTOUR_CANDIDATE.blend --python-expr "import bpy; o=bpy.data.objects; assert o['06_EAR_NEAR'].get('native_brush')=='Grab'; assert o['06_EAR_FAR'].get('native_brush')=='Grab'; assert o['04_HEAD'].type=='MESH'; assert len([i for i in bpy.data.images if i.packed_file])>=3; print('V075_SAVED_REAL_GRAB_SCULPT_REOPEN_PASS')"
+          python - <<'PY'
+          import pathlib,json,hashlib
+          p=pathlib.Path("v075_ear_grab")
+          r=json.loads((p/"V075_GENUINE_GRAB_EAR_RECEIPT.json").read_text())
+          assert r["status"].startswith("NATIVE_ACTUAL_GRAB_BRUSH_SCOPED_TECH_PASS")
+          assert r["stroke_actual"]["asset"]=="Grab" and r["stroke_actual"]["moved_near_ear_vertices"]>=8
+          assert r["art_approved"] is False and r["all_others_unchanged"] and r["three_packed_refs_unchanged"]
+          assert len(r["ear_to_head_intersections_after"])==2 and all(x>0 for x in r["ear_to_head_intersections_after"].values())
+          for n,h in {**r["before_renders"],**r["after_renders"]}.items():
+            assert hashlib.sha256((p/n).read_bytes()).hexdigest()==h
+          assert hashlib.sha256((p/"V075_REAL_GRAB_EAR_CONTOUR_CANDIDATE.blend").read_bytes()).hexdigest()==r["result_blend_sha256"]
+          print("V075_SOURCE_LOCKED_REAL_BRUSH_PASS_ART_HOLD")
+          PY
+          find v075_ear_grab -type f -print0 | sort -z | xargs -0 sha256sum > v075_ear_grab/SHA256SUMS.txt
+      - name: Always preserve honest result or failed diagnostic receipts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v075-real-original-grab-ear-contour-evidence
+          path: v075_ear_grab/
+          retention-days: 7
+          if-no-files-found: warn

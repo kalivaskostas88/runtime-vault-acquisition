@@ -1,6 +1,6 @@
 {
   "schema": "V070_ORIGINAL_TEACHER_LESSON_ACCESS_PROBE",
-  "date_utc": "2026-11-19T05:13:45.091563+00:00",
+  "date_utc": "2026-11-19T05:14:35.635269+00:00",
   "method": "requests public GET, HTMLParser; no auth, no paywall bypass",
   "native_blender": "NOT_RUN",
   "art": "HOLD",
@@ -13,7 +13,7 @@
       "http_status": 200,
       "final_host": "studio.blender.org",
       "bytes": 176219,
-      "html_sha256": "aecd834518be967133a25a5a60a91a9c6970e7119747bafe5b3794772684380c",
+      "html_sha256": "6b53deb4aa602e8dcae020baec39230b1b16ca77573cefd2194065958c5a1794",
       "visible_text_sha256": "0a89a47a1f625192fa00d01e0853bbded220cadeaee48b0fc652833fdbc39f8c",
       "visible_text_chars": 25641,
       "headings": [
@@ -132,85 +132,99 @@
           "tag": "source",
           "host": "studio.blender.org",
           "path": "/files/78/ed/78ed744b154f120e6cc6e7619c65d8e1-1.mp4",
-          "type": ""
+          "type": "",
+          "section": "Brushes"
         },
         {
           "tag": "source",
           "host": "studio.blender.org",
           "path": "/files/81/95/8195da4ea477ab6149717477cb19362a-1.mp4",
-          "type": ""
+          "type": "",
+          "section": "Brushes"
         },
         {
           "tag": "source",
           "host": "studio.blender.org",
           "path": "/files/b3/88/b388eeffae2e6a28f23c315fa24abcad-1-720p.mp4",
-          "type": ""
+          "type": "",
+          "section": "Keeping it Symmetrical"
         },
         {
           "tag": "source",
           "host": "studio.blender.org",
           "path": "/files/16/f3/16f3485f8c290a43295834919f691c8e-1-720p.mp4",
-          "type": ""
+          "type": "",
+          "section": "Keeping it Symmetrical"
         },
         {
           "tag": "source",
           "host": "studio.blender.org",
           "path": "/files/05/31/0531415aa26267eb6d5e78761f859a17-1.mp4",
-          "type": ""
+          "type": "",
+          "section": "Changing the Overall Shape"
         },
         {
           "tag": "source",
           "host": "studio.blender.org",
           "path": "/files/4e/73/4e7348f5f064ed1eb9470da770cf566c-1-1080p.mp4",
-          "type": ""
+          "type": "",
+          "section": "The Voxel Remesher"
         },
         {
           "tag": "source",
           "host": "studio.blender.org",
           "path": "/files/85/a0/85a00c290359bc1755c5e8495a4c7013-1.mp4",
-          "type": ""
+          "type": "",
+          "section": "Login to view this content"
         },
         {
           "tag": "source",
           "host": "studio.blender.org",
           "path": "/files/ac/3a/ac3a9e60a28ad2f26d92d559b62da52d-1.mp4",
-          "type": ""
+          "type": "",
+          "section": "Dynamic Topology & the Snake Hook"
         },
         {
           "tag": "source",
           "host": "studio.blender.org",
           "path": "/files/79/18/7918deba12b7c66635a47d1ac2024aea-1-1080p.mp4",
-          "type": ""
+          "type": "",
+          "section": "Dynamic Resolution"
         },
         {
           "tag": "source",
           "host": "studio.blender.org",
           "path": "/files/20/b8/20b8bf7a625b795b0a802142a9901878-1.mp4",
-          "type": ""
+          "type": "",
+          "section": "Dynamic Resolution"
         },
         {
           "tag": "source",
           "host": "studio.blender.org",
           "path": "/files/56/88/568866144aeddab77cc2d14e55611bb2-1-1080p.mp4",
-          "type": ""
+          "type": "",
+          "section": "Inflating the mesh"
         },
         {
           "tag": "source",
           "host": "studio.blender.org",
           "path": "/files/cf/e8/cfe83d18c6ed912825fd65e79827e677-1.mp4",
-          "type": ""
+          "type": "",
+          "section": "Keeping it Sharp"
         },
         {
           "tag": "source",
           "host": "studio.blender.org",
           "path": "/files/dd/08/dd0871b6a999491ce7332d829a307da7-1-1080p.mp4",
-          "type": ""
+          "type": "",
+          "section": "Mini Assignment"
         },
         {
           "tag": "source",
           "host": "studio.blender.org",
           "path": "/files/a9/9d/a99d1c7ef46613cfa9ef04102d5dabfc-1.mp4",
-          "type": ""
+          "type": "",
+          "section": "Importing the reference image"
         }
       ],
       "free_text_indicator": true,
@@ -260,7 +274,7 @@
       "http_status": 200,
       "final_host": "studio.blender.org",
       "bytes": 151280,
-      "html_sha256": "cf6d5c48f544a3075d53ede41cb49c75192bdf8cdd55367cb1b0cb6f0c6c3299",
+      "html_sha256": "5b7a4a45e2e7674c25b38a7a0c43ec328e11e4e54b75ac74771e401c06e69976",
       "visible_text_sha256": "e349d1961251ee8ec60f52aae0c7043b9ec94a0fd86875b1f8fe07a6464581f7",
       "visible_text_chars": 17556,
       "headings": [
@@ -371,73 +385,85 @@
           "tag": "source",
           "host": "studio.blender.org",
           "path": "/files/5b/c9/5bc90a0496a183187071c29532f67f35-1.mp4",
-          "type": ""
+          "type": "",
+          "section": "Keep Around Versions"
         },
         {
           "tag": "source",
           "host": "studio.blender.org",
           "path": "/files/da/bd/dabd7504652c7f19c17bd3ea7aac61b0-1.mp4",
-          "type": ""
+          "type": "",
+          "section": "Masking"
         },
         {
           "tag": "source",
           "host": "studio.blender.org",
           "path": "/files/36/ee/36ee35cf0c5ab383c70e73b760adfd8d-1.mp4",
-          "type": ""
+          "type": "",
+          "section": "Face Sets & Hiding"
         },
         {
           "tag": "source",
           "host": "studio.blender.org",
           "path": "/files/3b/b1/3bb1067f913b4c67958643e6cf09efa2-1.mp4",
-          "type": ""
+          "type": "",
+          "section": "Auto-Masking"
         },
         {
           "tag": "source",
           "host": "studio.blender.org",
           "path": "/files/0e/bd/0ebd3f6780a58f72e66ee194d291951f-1.mp4",
-          "type": ""
+          "type": "",
+          "section": "Auto-Masking"
         },
         {
           "tag": "source",
           "host": "studio.blender.org",
           "path": "/files/4a/fc/4afcd29e86ab4a902b853cb17d72dfc5-1.mp4",
-          "type": ""
+          "type": "",
+          "section": "Expand Masks & Transforming"
         },
         {
           "tag": "source",
           "host": "studio.blender.org",
           "path": "/files/5d/87/5d87a1c73fe0a948231d30f461785595-1.mp4",
-          "type": ""
+          "type": "",
+          "section": "Expand Masks & Transforming"
         },
         {
           "tag": "source",
           "host": "studio.blender.org",
           "path": "/files/49/61/49619e69fcd99679a413edc8c0dbd6ce-1.mp4",
-          "type": ""
+          "type": "",
+          "section": "Expand Masks & Transforming"
         },
         {
           "tag": "source",
           "host": "studio.blender.org",
           "path": "/files/a7/af/a7affd27fd0a7f86064a5a3446f6ea31-1.mp4",
-          "type": ""
+          "type": "",
+          "section": "Expanding & Painting Face Sets"
         },
         {
           "tag": "source",
           "host": "studio.blender.org",
           "path": "/files/ef/b8/efb87ff60f74641bffba85785cc4f7a0-1.mp4",
-          "type": ""
+          "type": "",
+          "section": "Masking your Face Sets"
         },
         {
           "tag": "source",
           "host": "studio.blender.org",
           "path": "/files/e1/86/e18622ce32f0b14e43ebdcd2087a9c45-1.mp4",
-          "type": ""
+          "type": "",
+          "section": "Posing Made Easy"
         },
         {
           "tag": "source",
           "host": "studio.blender.org",
           "path": "/files/df/9e/df9e27e0e4074cd8f7295f0ee993c5f5-1.mp4",
-          "type": ""
+          "type": "",
+          "section": "Posing Made Easy"
         }
       ],
       "free_text_indicator": true,
@@ -483,7 +509,7 @@
       "http_status": 200,
       "final_host": "studio.blender.org",
       "bytes": 150552,
-      "html_sha256": "01efff8d4d7b208ae6f54713da5e97f07373eccf46597c7e899ea5650925288f",
+      "html_sha256": "a2721938317ffc180dd56fc58efa24deadd38fee3b0b9e94bf67b2b5ae5207d9",
       "visible_text_sha256": "e242491af1f97726d7cd5eecd3f11ceca4233623490b44e3c8412e7d801f7343",
       "visible_text_chars": 17090,
       "headings": [
@@ -591,85 +617,99 @@
           "tag": "source",
           "host": "studio.blender.org",
           "path": "/files/66/93/6693a7dd78656e51893fabd73b883966-1-720p.mp4",
-          "type": ""
+          "type": "",
+          "section": "Blocking the Gnome"
         },
         {
           "tag": "source",
           "host": "studio.blender.org",
           "path": "/files/4f/34/4f34f1ce94995022380f3929f37f3615-1-720p.mp4",
-          "type": ""
+          "type": "",
+          "section": "Non-destructive Mirroring"
         },
         {
           "tag": "source",
           "host": "studio.blender.org",
           "path": "/files/16/72/1672fd5807a41fc9738247ef8bf56273-1.mp4",
-          "type": ""
+          "type": "",
+          "section": "Modeling a Base Mesh"
         },
         {
           "tag": "source",
           "host": "studio.blender.org",
           "path": "/files/7b/90/7b901783b338461dc6fede7213d3b80f-1.mp4",
-          "type": ""
+          "type": "",
+          "section": "Modeling a Base Mesh"
         },
         {
           "tag": "source",
           "host": "studio.blender.org",
           "path": "/files/da/66/da66fd2f480a98a9bf71cfa6d7fa0327-1.mp4",
-          "type": ""
+          "type": "",
+          "section": "Modeling a Base Mesh"
         },
         {
           "tag": "source",
           "host": "studio.blender.org",
           "path": "/files/fc/4e/fc4ec07e8bd5c4ce7b8f19b2067bc742-1.mp4",
-          "type": ""
+          "type": "",
+          "section": "Trimming Shapes"
         },
         {
           "tag": "source",
           "host": "studio.blender.org",
           "path": "/files/2e/d9/2ed92779377c67aab8e4124e9b19df3f-1.mp4",
-          "type": ""
+          "type": "",
+          "section": "Trimming Shapes"
         },
         {
           "tag": "source",
           "host": "studio.blender.org",
           "path": "/files/98/63/986346d56fc801f265d5513ba00503cd-1.mp4",
-          "type": ""
+          "type": "",
+          "section": "Trimming Shapes"
         },
         {
           "tag": "source",
           "host": "studio.blender.org",
           "path": "/files/d0/70/d0706b33b3c03c10195e5d5910e1361b-1.mp4",
-          "type": ""
+          "type": "",
+          "section": "Switching Objects"
         },
         {
           "tag": "source",
           "host": "studio.blender.org",
           "path": "/files/67/4f/674f7245b5084c483323c70d1430ccc9-1.mp4",
-          "type": ""
+          "type": "",
+          "section": "Switching Objects"
         },
         {
           "tag": "source",
           "host": "studio.blender.org",
           "path": "/files/1f/1e/1f1edfa49a1b1e40e764ec9ba8eacf5e-1.mp4",
-          "type": ""
+          "type": "",
+          "section": "Base Meshes via the Skin Modifier"
         },
         {
           "tag": "source",
           "host": "studio.blender.org",
           "path": "/files/bf/4b/bf4b96e77eb351988affd23007569b9e-1.mp4",
-          "type": ""
+          "type": "",
+          "section": "Rough Base Mesh Modeling"
         },
         {
           "tag": "source",
           "host": "studio.blender.org",
           "path": "/files/37/52/375293e493234d6df3ba2f25188218e8-1.mp4",
-          "type": ""
+          "type": "",
+          "section": "More Asymmetry"
         },
         {
           "tag": "source",
           "host": "studio.blender.org",
           "path": "/files/c9/a1/c9a161cc3bdf6a188a979a08ce3f0658-1.mp4",
-          "type": ""
+          "type": "",
+          "section": "More Asymmetry"
         }
       ],
       "free_text_indicator": true,

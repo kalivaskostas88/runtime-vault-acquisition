@@ -96,7 +96,10 @@ try:
  objects=bpy.data.objects;ears=[objects[NEAR],objects[FAR]]
  assert all(x.type=="MESH" and x.get("stage")=="V074_EAR_FAN_SHAPE_BLOCKOUT_ART_HOLD" for x in ears)
  assert all(all(abs(float(a)-1)<1e-6 for a in x.scale) for x in ears)
- assert len({x.name for x in objects if x.get("stage")})>=12
+ stage_parts={x.name for x in objects if x.get("stage")}
+ status["source_stage_part_count"]=len(stage_parts)
+ status["source_stage_part_names"]=sorted(stage_parts)
+ assert len(stage_parts)==11,("V071 joined 3 body objects into one: expected exactly 11 original parts",len(stage_parts))
  assert mesh_hash(ears[0])==mesh_hash(ears[1]),"V074 ears not local mesh-equal"
  original_objs=sorted(o.name for o in objects)
  untouched={o.name:other_fingerprint(o) for o in objects if o.type in {"MESH","CURVE"} and o.name not in [NEAR,FAR]}

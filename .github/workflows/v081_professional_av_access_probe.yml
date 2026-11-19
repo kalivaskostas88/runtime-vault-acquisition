@@ -1,0 +1,29 @@
+name: V081 Professional-First Official Real Video Source Access Probe
+on:
+  push:
+    branches:
+      - research/animation-v081-professional-real-video-first-20261119
+    paths:
+      - .github/workflows/v081_professional_av_access_probe.yml
+      - research/animation_v081/probe_official_teacher_public_video.py
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  official-professional-lesson-first:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install only webpage inspection dependency (no expensive tool credits)
+        run: python -m pip install --quiet requests
+      - name: Detect genuine official public original video and license, not inferred viewing
+        run: python research/animation_v081/probe_official_teacher_public_video.py
+      - name: Preserve real source discovery evidence
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v081-official-original-teacher-video-access-receipt
+          path: research/animation_v081/V081_OFFICIAL_PROFESSIONAL_AV_ACCESS_PREFLIGHT.json
+          retention-days: 7
+          if-no-files-found: warn

@@ -1,0 +1,29 @@
+name: V083 Official Professional Ear Root Video Source Discovery
+on:
+  push:
+    branches:
+      - research/animation-v083-professional-ear-root-source-diagnostic-20261119
+    paths:
+      - .github/workflows/v083_teacher_root_video_source.yml
+      - research/animation_v083/probe_official_ear_root_teacher_videos.py
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-first-no-geometry:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install only public page parser
+        run: python -m pip install --quiet requests beautifulsoup4
+      - name: Inspect actual official public lesson video sources and accessible headings
+        run: python research/animation_v083/probe_official_ear_root_teacher_videos.py
+      - name: Keep only own source-index evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v083-teacher-video-official-source-index
+          path: research/animation_v083/V083_OFFICIAL_TEACHER_ROOT_VIDEO_INDEX.json
+          retention-days: 7
+          if-no-files-found: warn

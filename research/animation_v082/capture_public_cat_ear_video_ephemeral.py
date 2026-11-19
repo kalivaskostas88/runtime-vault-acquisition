@@ -19,7 +19,9 @@ rec={"schema":"V082_BLENDER_SECRETS_ACTUAL_ANIMAL_EAR_VISUAL_TEACHER_STUDY",
 "visual_frames_personally_examined":False,"continuous_full_av_watched":False,
 "status":"INIT"}
 def run(*args,timeout=300):
- return subprocess.run(args,check=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True,timeout=timeout).stdout
+ p=subprocess.run(args,stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True,timeout=timeout)
+ if p.returncode:raise RuntimeError("command "+str(args[:3])+" failed: "+p.stderr[-1900:])
+ return p.stdout
 try:
  meta=json.loads(run("yt-dlp","--no-warnings","--no-playlist","--dump-single-json",URL,timeout=90))
  rec["video_metadata"]={k:meta.get(k) for k in ("title","uploader","duration","webpage_url","license","is_live")}

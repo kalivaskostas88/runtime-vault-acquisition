@@ -78,3 +78,5 @@ jobs:
           if-no-files-found: warn
 
 # V083 diagnostic only; geometry remains V082 protected, no premature voxel merge.
+
+# V083 independent exact read-only root world/BVH diagnostic repeat; same protected V082 source and same computation.

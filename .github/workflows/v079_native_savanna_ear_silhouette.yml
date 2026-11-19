@@ -1,0 +1,88 @@
+name: V079 Original African Savanna Elephant Ear Broad Flap - Native Silhouette
+on:
+  push:
+    branches:
+      - research/animation-v079-african-savanna-ear-major-silhouette-20261119
+    paths:
+      - .github/workflows/v079_native_savanna_ear_silhouette.yml
+      - research/animation_v079/african_savanna_major_ear_silhouette.py
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  original-african-savanna-broad-ear-flap:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch exact V078 real native integrated-fold source with SHA
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p v078_integrated_ear_fold
+          gh run download 44519132588 --repo kalivaskostas88/runtime-vault-acquisition -n v078-native-integrated-surface-ear-fold-evidence -D v078_integrated_ear_fold
+          echo "5f4e7357c8147e60894a011deebf87ba05c2ff8200f3b64382235d0fb6325a71  v078_integrated_ear_fold/V078_NATIVE_EMBEDDED_EAR_FOLD_CANDIDATE.blend" | sha256sum -c -
+      - name: Download official Blender 5.2.2 with vendor SHA; official mirror fallback
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/blender522"
+          cd "$RUNNER_TEMP/blender522"
+          if ! curl -fLsS --connect-timeout 30 --max-time 300 -o blender-5.2.2-linux-x64.tar.xz https://download.blender.org/release/Blender5.2/blender-5.2.2-linux-x64.tar.xz; then
+            curl -fLsS --connect-timeout 30 --max-time 300 -o blender-5.2.2-linux-x64.tar.xz https://mirror.blender.org/release/Blender5.2/blender-5.2.2-linux-x64.tar.xz
+          fi
+          if ! curl -fLsS --connect-timeout 30 --max-time 60 -o blender-5.2.2.sha256 https://download.blender.org/release/Blender5.2/blender-5.2.2.sha256; then
+            curl -fLsS --connect-timeout 30 --max-time 60 -o blender-5.2.2.sha256 https://mirror.blender.org/release/Blender5.2/blender-5.2.2.sha256
+          fi
+          grep 'blender-5.2.2-linux-x64.tar.xz' blender-5.2.2.sha256 | sha256sum -c -
+          tar -xf blender-5.2.2-linux-x64.tar.xz
+          echo "$RUNNER_TEMP/blender522/blender-5.2.2-linux-x64" >> "$GITHUB_PATH"
+      - name: Native Blender EGL/Workbench requirements
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq libegl1 libgl1 libglx-mesa0 libgbm1 libx11-6 libxkbcommon0 libxi6 libxfixes3 libxrender1 libxcursor1 libxinerama1
+      - name: Real stylized savanna flap primary form work on owned V078 duplicate, not new wrinkles
+        shell: bash
+        run: |
+          set -euo pipefail
+          blender -b --python research/animation_v079/african_savanna_major_ear_silhouette.py
+          test -s v079_savanna_ear_silhouette/V079_ORIGINAL_SAVANNA_EAR_FLAP_NATIVE_CANDIDATE.blend
+          test -s v079_savanna_ear_silhouette/V079_ACTUAL_BROAD_EAR_SILHOUETTE_RECEIPT.json
+      - name: Independent Blender process fresh reopen and strict safety/art separation gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          blender -b v079_savanna_ear_silhouette/V079_ORIGINAL_SAVANNA_EAR_FLAP_NATIVE_CANDIDATE.blend --python-expr "import bpy; o=bpy.data.objects; assert len(o['V079_NEAR_SAVANNA_FLAP_CANDIDATE'].data.vertices)==3314; assert len(o['V079_FAR_MIRRORED_SAVANNA_FLAP_CANDIDATE'].data.vertices)==3314; assert len([i for i in bpy.data.images if i.packed_file])>=3; print('V079_ORIGINAL_EAR_ANATOMY_BROAD_SILHOUETTE_FRESH_REOPEN_PASS_ART_HOLD')"
+          python - <<'PY'
+          import pathlib,json,hashlib
+          p=pathlib.Path("v079_savanna_ear_silhouette")
+          d=json.loads((p/"V079_ACTUAL_BROAD_EAR_SILHOUETTE_RECEIPT.json").read_text())
+          assert d["status"].startswith("NATIVE_REAL_MAJOR_SILHOUETTE_TECH_PASS")
+          assert d["art_approved"] is False and d["independent_artist_review"] is False
+          assert d["source_geometry_untouched"] and d["packed_photos_unchanged"]
+          assert d["original_near_mesh_deformation"]["root_max"]<1e-5
+          assert d["mirror_full_xyz_max_difference"]<1e-5
+          assert abs(d["original_near_mesh_deformation"]["volume_change_percent"])<27
+          for name,h in {**d["before_renders"],**d["after_renders"]}.items():
+            assert hashlib.sha256((p/name).read_bytes()).hexdigest()==h
+          assert hashlib.sha256((p/"V079_ORIGINAL_SAVANNA_EAR_FLAP_NATIVE_CANDIDATE.blend").read_bytes()).hexdigest()==d["saved_native_blend_sha256"]
+          print("V079_REAL_MESH_SAVANNA_EAR_FLAP_TECH_PASS_ART_HOLD")
+          PY
+          find v079_savanna_ear_silhouette -type f -print0 | sort -z | xargs -0 sha256sum > v079_savanna_ear_silhouette/SHA256SUMS.txt
+      - name: Preserve real evidence or honest failure receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v079-original-savanna-ear-flap-evidence
+          path: v079_savanna_ear_silhouette/
+          retention-days: 7
+          if-no-files-found: warn
+
+# V077 new source-protected A/B comparison; no artist approval.
+
+# V079 original broad form experiment; not yet independent professional art PASS.
+
+# V079 original broad form experiment; not yet independent professional art PASS.

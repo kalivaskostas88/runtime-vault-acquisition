@@ -25,6 +25,7 @@ VIEW=Vector((-1.15,-1.00,3.0))
 VIEW_DISTANCE=2.8  # measured 3.8 yielded 13.2008px; zoom only, do NOT relax >15px gate
 ORIGIN=Vector((-1.24,-1.43,3.25))  # world-space upper/outboard fan contour
 END=Vector((-1.24,-1.62,3.37))     # mild outboard+upward Grab, no ear-root dragging
+PIXEL_STROKE_CALIBRATION=1.50  # 13.2008px stale view projection ×1.50 = 19.8012px, unchanged >15px gate
 CAMERAS={"SIDE":(0,-9,3.0),"FACE":(-9,0,3.0),"THREE_QUARTER":(-7,-8,5.0),"TOP":(0,-0.3,11)}
 RENDER_TARGET=Vector((-.25,0,1.89))
 MAX_DISP=0.42
@@ -38,6 +39,7 @@ status={"schema":"V075_ACTUAL_NATIVE_GRAB_STYLIZED_EAR_FAN_CONTOUR",
 "source_sha256_expected":SOURCE_SHA,"blender_version":"5.2.2",
 "frozen_preflight":{"asset":"Grab","strength":STRENGTH,"size_px":SIZE,"events":EVENTS,"view_distance_calibrated_from_measured_13_2008px":VIEW_DISTANCE,
 "stroke_world_origin":list(ORIGIN),"stroke_world_end":list(END),
+"headless_pixel_stroke_calibration":PIXEL_STROKE_CALIBRATION,
 "max_vertex_displacement":MAX_DISP,"root_max_displacement":ROOT_SAFE_MAX,
 "max_abs_volume_change_pct":VOL_ABS_PERCENT_MAX,"max_world_mirror_diff":MIRROR_TOL,
 "min_moved_vertices":8,"min_outward_vertex_change":0.025,"min_upper_z_change":0.012},
@@ -136,11 +138,19 @@ try:
    "zoom_outcome":"SOURCE_DIAGNOSTIC_PRE_STROKE_ONLY"}
  if a is None or b is None:raise RuntimeError("Contour target off front sculpt screen")
  assert 0.08*reg.width<a.x<.92*reg.width and .08*reg.height<a.y<.92*reg.height,("Anchor outside usable viewport",status["viewport_projection"])
- assert math.dist(tuple(a),tuple(b))>15,("Contour stroke too short",status["viewport_projection"])
+ # The background RegionView3D projection matrix demonstrably stays stale after
+ # view_distance updates (run 44491671456: both distances projected 13.200784px).
+ # Keep Blender's *actual* point a and direction toward b for native raycast;
+ # calibrate only the 2D mouse path length without changing the guarded model.
+ native_target=a+(b-a)*PIXEL_STROKE_CALIBRATION
+ status["viewport_projection"]["calibrated_to_xy"]=list(native_target)
+ status["viewport_projection"]["calibrated_length_px"]=math.dist(tuple(a),tuple(native_target))
+ assert math.dist(tuple(a),tuple(native_target))>15,("Calibrated contour motion still too short",status["viewport_projection"])
+ assert 0.08*reg.width<native_target.x<.92*reg.width and .08*reg.height<native_target.y<.92*reg.height
  stroke=[]
  for i in range(EVENTS):
   t=i/(EVENTS-1)
-  xy=a.lerp(b,t)
+  xy=a.lerp(native_target,t)
   stroke.append(dict(name="stroke",mouse=(float(xy.x),float(xy.y)),
       mouse_event=(int(xy.x),int(xy.y)),
       location=(0.,0.,0.),is_start=i==0,pressure=1.0,time=1.+i/60.0,

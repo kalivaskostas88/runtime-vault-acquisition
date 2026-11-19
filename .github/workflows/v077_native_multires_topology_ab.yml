@@ -23,8 +23,8 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p v076_curve_ear_rim
-          gh run download 44498625671 --repo kalivaskostas88/runtime-vault-acquisition -n v077-native-multires-original-ear-ab-evidence -D v076_curve_ear_rim
-          echo "2c537d34ec5eb68ec1b7ba1b99677f68f5730fae2b3e24efd474f548b4d4e99d  v077_topology_preflight/V077_NATIVE_MULTRES_A_B_READINESS.blend" | sha256sum -c -
+          gh run download 44498625671 --repo kalivaskostas88/runtime-vault-acquisition -n v076-real-blender-curve-elephant-ear-rim-evidence -D v076_curve_ear_rim
+          echo "2c537d34ec5eb68ec1b7ba1b99677f68f5730fae2b3e24efd474f548b4d4e99d  v076_curve_ear_rim/V076_ACTUAL_NATIVE_CURVE_GUIDED_EAR_RIM_CANDIDATE.blend" | sha256sum -c -
       - name: Download official Blender 5.2.2 with vendor SHA; official mirror fallback
         shell: bash
         run: |

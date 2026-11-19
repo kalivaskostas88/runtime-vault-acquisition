@@ -54,7 +54,7 @@ ellipsoid("04_HEAD",(-1.42,0,2.70),(0.76,0.67,0.75))
 ellipsoid("05_MUZZLE_ROOT",(-1.89,0,2.52),(0.44,0.48,0.46),16,10)
 # Side-profile of broad ears is important; flat geometry oriented in X/Z plane.
 for sign,label in ((-1,"NEAR"),(1,"FAR")):
-    ellipsoid(f"06_EAR_{label}",(-1.07,sign*0.71,2.88),(0.50,0.14,0.67),18,12)
+    ellipsoid(f"06_EAR_{label}",(-1.12,sign*0.86,2.90),(0.52,0.49,0.64),18,12)
 # Stagger four feet slightly along X so separate forms read in profile.
 for x,side,name in [(-0.79,-0.53,"FRONT_NEAR"),(-0.60,0.53,"FRONT_FAR"),(1.34,-0.52,"REAR_NEAR"),(1.15,0.52,"REAR_FAR")]:
     foot("07_LEG_"+name,x,side,base_radius=0.42,z=0.86)

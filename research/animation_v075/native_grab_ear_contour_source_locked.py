@@ -18,7 +18,7 @@ SOURCE=pathlib.Path("v074_ear_art_blockout/V074_ORIGINAL_EAR_FAN_BLOCKOUT_CANDID
 SOURCE_SHA="b29e7f6aed50c0165656c1bbb820972e2c738dfb3ef784d2b6dbfbd1a62aca22"
 NEAR,FAR="06_EAR_NEAR","06_EAR_FAR"
 # PRE-FROZEN original design — not supposed to be universal teacher settings.
-STRENGTH=0.24  # teacher radius/strength local repair after measured +12.6009% volume run 44492336888
+STRENGTH=0.14  # measured native displacement 12.6009pct @0.64 and 4.72535pct @0.24; forecast ~2.76pct at 0.14, same 3pct stop gate
 SIZE=65  # reduced brush radius protects compact thin flap; art world start/end unchanged
 EVENTS=61
 VIEW=Vector((-1.15,-1.00,3.0))
@@ -37,7 +37,7 @@ status={"schema":"V075_ACTUAL_NATIVE_GRAB_STYLIZED_EAR_FAN_CONTOUR",
 "original_anatomy_reference":"San Diego Zoo / elephant species variation, generic stylized artistic result not species approved",
 "new_specific_teacher_full_AV_watched":False,"actual_native_grab_claim":True,
 "source_sha256_expected":SOURCE_SHA,"blender_version":"5.2.2",
-"prior_rejected_native_grab":"run 44492336888: 105/200 verts, 12.6009pct volume expansion; old strength 0.64, size 105",
+"prior_rejected_native_grab":"run 44492336888 105/200 verts 12.6009pct @strength 0.64 size105; run 44492640356 105/200 verts 4.72535pct @strength 0.24 size65",
 "frozen_preflight":{"asset":"Grab","strength":STRENGTH,"size_px":SIZE,"events":EVENTS,"view_distance_calibrated_from_measured_13_2008px":VIEW_DISTANCE,
 "stroke_world_origin":list(ORIGIN),"stroke_world_end":list(END),
 "headless_pixel_stroke_calibration":PIXEL_STROKE_CALIBRATION,

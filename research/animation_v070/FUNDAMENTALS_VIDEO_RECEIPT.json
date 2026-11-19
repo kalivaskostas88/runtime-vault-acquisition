@@ -1,0 +1,38 @@
+{
+  "schema": "V070_OFFICIAL_FREE_CC_BY_KASPAR_SCULPTING_FUNDAMENTALS",
+  "source": "https://studio.blender.org/training/stylized-character-workflow/5d5e6141b01c790d39b7ed4e/",
+  "teacher": "Julien Kaspar / Blender Studio (2019, Blender 2.80)",
+  "license": "CC-BY if officially declared in original page",
+  "status": "ORIGINAL_PUBLIC_FULL_MOVIE_CAPTURED_HALF_FPS_INDEXED_STUDY_PENDING",
+  "downloaded": true,
+  "actually_watched": false,
+  "audio_actually_listened": false,
+  "blender_522_compatibility_proved": false,
+  "native_remesh": "NOT_RUN",
+  "art": "HOLD",
+  "official_link": "https://studio.blender.org/download-source/files/9b/9b96df6588d9480ea9861de7c2472586/9b96df6588d9480ea9861de7c2472586-1080p.mp4",
+  "source_html_sha256": "68e2c7ea05d1aa470de6ba0f5b4f7d793be97e9f51f75bac76ad3a2f96730d3e",
+  "http_status": 200,
+  "download_final_host": "studio.blender.org",
+  "original_mp4_sha256": "0a5fae320e164bcb5b6219fb444e0df2612ce581df1ef806ae92d789ddc62eb7",
+  "bytes": 134340218,
+  "duration_sec": 1511.189333,
+  "streams": [
+    {
+      "codec_type": "video",
+      "codec": "h264"
+    },
+    {
+      "codec_type": "audio",
+      "codec": "aac"
+    }
+  ],
+  "official_subtitle_links": [
+    "https://studio.blender.org/api/videos/track/193/9b/9b96df6588d9480ea9861de7c2472586/9b96df6588d9480ea9861de7c2472586.vtt"
+  ],
+  "captions_sha256": "fbc02a9dca5f0defae7cfbfa251c0d3d0fe88e97928e580b8aa7a61b6be6f828",
+  "half_fps_frame_count": 756,
+  "full_span_contacts_count": 16,
+  "source_video_full_review": "NOT_YET_VISUALLY_REVIEWED",
+  "audio_review": "NOT_LISTENED"
+}

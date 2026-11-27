@@ -13,19 +13,26 @@ probe=json.loads(run('ffprobe','-v','error','-show_format','-show_streams','-of'
 dur=float(probe['format']['duration'])
 if not 495<dur<499:raise ValueError('Duration mismatch')
 out.mkdir(parents=True,exist_ok=False)
-(out/'ATTRIBUTION.md').write_text("""Ise agbegilere.webm — Yoruba Wikimedians User Group CC-BY-SA/Yoruba Wikimedians User Group. Source: https://commons.wikimedia.org/wiki/File:Ise_agbegilere.webm (29 September 2022). Tunde Oladimeji, producer/director; Mikaeel Sodiq and Dansu Peter, executive producers; Isaac Olatunde, supervising producer; Bayo Ajibola, cinematography and sound; Olabode Lawal, editor and montage; Adijat Moboluwaduro, chants; Toba Jegede, backing tracks; Fadare Faniyi Tayo, location manager; Olaniyan Olushola, advisor. License https://creativecommons.org/licenses/by-sa/4.0/. Changes: sampled stills, resized, labelled and assembled; no endorsement. All media-derived outputs CC BY-SA 4.0. Original not stored. Requested seek times, not verified PTS.\n""",encoding='utf-8')
-times=sorted(set(list(range(0,int(dur),5))+[round(dur-0.3,3)]))
+(out/'ATTRIBUTION.md').write_text("""Ise agbegilere.webm — Yoruba Wikimedians User Group CC-BY-SA/Yoruba Wikimedians User Group. Source: https://commons.wikimedia.org/wiki/File:Ise_agbegilere.webm (29 September 2022). Tunde Oladimeji, producer/director; Mikaeel Sodiq and Dansu Peter, executive producers; Isaac Olatunde, supervising producer; Bayo Ajibola, cinematography and sound; Olabode Lawal, editor and montage; Adijat Moboluwaduro, chants; Toba Jegede, backing tracks; Fadare Faniyi Tayo, location manager; Olaniyan Olushola, advisor. License https://creativecommons.org/licenses/by-sa/4.0/. Changes: sampled stills, resized, labelled and assembled; no endorsement. All media-derived outputs CC BY-SA 4.0. Original not stored. Nominal five-second filter grid, not verified original PTS.\n""",encoding='utf-8')
+times=[]
 frames=[];sheets={}
 tmp=src.parent/'r076_frames';tmp.mkdir(exist_ok=False)
+# Single sequential decode, bounded threads; filter grid is not exact original PTS.
+cmd=['ffmpeg','-nostdin','-v','error','-threads','2','-i',str(src),'-map','0:v:0','-vf','fps=1/5:start_time=0:round=near','-filter_threads','1','-threads','1','-q:v','3','-start_number','0',str(tmp/'f%03d.jpg')]
+proc=subprocess.run(cmd,capture_output=True,text=True)
+if proc.returncode:raise RuntimeError(proc.stderr[-2000:])
+files=sorted(tmp.glob('f*.jpg'))
+if abs(len(files)-dur/5)>1.5:raise ValueError('Unexpected grid coverage')
+times=[i*5 for i in range(len(files))]
 for j in range(0,len(times),12):
     chunk=times[j:j+12];sheet=Image.new('RGB',(1440,300*math.ceil(len(chunk)/3)),'#202020');d=ImageDraw.Draw(sheet)
     for k,t in enumerate(chunk):
         p=tmp/f'f{j+k:03}.jpg'
-        run('ffmpeg','-nostdin','-v','error','-ss',str(t),'-i',str(src),'-frames:v','1','-q:v','3',str(p))
+        if not p.exists():raise ValueError('Missing grid image')
         with Image.open(p) as img:
-            img.thumbnail((470,265));x=k%3*480;y=k//3*300;sheet.paste(img,(x,y));d.text((x+5,y+270),f'Requested {t:.3f}s',fill='white')
-        frames.append({'requested_seconds':t,'temporary_frame_sha256':sha(p)})
+            img.thumbnail((470,265));x=k%3*480;y=k//3*300;sheet.paste(img,(x,y));d.text((x+5,y+270),f'Grid {t:.3f}s',fill='white')
+        frames.append({'nominal_grid_seconds':t,'temporary_frame_sha256':sha(p)})
     name=f'CONTACT_{j//12:02}.jpg';sheet.save(out/name,quality=90);sheets[name]=sha(out/name)
-r={'source_sha256':sha(src),'source_bytes':src.stat().st_size,'duration_seconds':dur,'streams':[{'codec_type':s['codec_type'],'codec_name':s['codec_name'],'width':s.get('width'),'height':s.get('height')} for s in probe['streams']],'sample_count':len(frames),'requested_interval_seconds':5,'frames':frames,'contact_sha256':sheets,'time_kind':'requested seek time; decoded PTS not verified','visual_review':'NOT_PERFORMED','audio_review':'NOT_PERFORMED','transcript':'NOT_PERFORMED','status':'CAPTURE_ONLY'}
+r={'source_sha256':sha(src),'source_bytes':src.stat().st_size,'duration_seconds':dur,'streams':[{'codec_type':s['codec_type'],'codec_name':s['codec_name'],'width':s.get('width'),'height':s.get('height')} for s in probe['streams']],'sample_count':len(frames),'requested_interval_seconds':5,'frames':frames,'contact_sha256':sheets,'time_kind':'nominal five-second filter grid; original decoded PTS not verified','visual_review':'NOT_PERFORMED','audio_review':'NOT_PERFORMED','transcript':'NOT_PERFORMED','status':'CAPTURE_ONLY'}
 (out/'CAPTURE.json').write_text(json.dumps(r,indent=2)+'\n',encoding='utf-8')
 print('Captured',len(frames),'samples',len(sheets),'sheets')

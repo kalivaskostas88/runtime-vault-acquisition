@@ -1,0 +1,421 @@
+{
+  "source_sha256": "ce7495ac832a8309ba6e478b00412fece90d39f930750c9c53a27004bf1755ac",
+  "audio_sha256": "06d5544409e344e565fc49e67fee6f295071a8be63e4a5ab8847cd1626ac995f",
+  "audio_seconds": 313.1535,
+  "ffmpeg_exit": 0,
+  "ffmpeg_warnings": "[matroska,webm @ 0x558f37e3ef80] File ended prematurely\n[opus @ 0x558f37e41d00] Error parsing Opus packet header.\n",
+  "declared_duration": 496.925,
+  "prior_video_last_pts": 313.104,
+  "asr_model": "small",
+  "status": "RAW_ASR_UNVALIDATED",
+  "windows": [
+    {
+      "range": [
+        85,
+        165
+      ],
+      "language": "yo",
+      "language_probability": 0.6809251308441162,
+      "segments": [
+        {
+          "start": 85.66,
+          "end": 89.0,
+          "text": " ,iembre,",
+          "avg_logprob": -3.433905320782815,
+          "no_speech_prob": 0.0933007076382637
+        },
+        {
+          "start": 89.0,
+          "end": 90.0,
+          "text": " eve,",
+          "avg_logprob": -3.433905320782815,
+          "no_speech_prob": 0.0933007076382637
+        },
+        {
+          "start": 90.0,
+          "end": 91.0,
+          "text": " time,",
+          "avg_logprob": -3.433905320782815,
+          "no_speech_prob": 0.0933007076382637
+        },
+        {
+          "start": 91.0,
+          "end": 92.0,
+          "text": " time another day",
+          "avg_logprob": -3.433905320782815,
+          "no_speech_prob": 0.0933007076382637
+        },
+        {
+          "start": 92.0,
+          "end": 94.88,
+          "text": " ,",
+          "avg_logprob": -3.433905320782815,
+          "no_speech_prob": 0.0933007076382637
+        },
+        {
+          "start": 94.88,
+          "end": 95.96,
+          "text": " me and",
+          "avg_logprob": -3.433905320782815,
+          "no_speech_prob": 0.0933007076382637
+        },
+        {
+          "start": 95.96,
+          "end": 97.08,
+          "text": " me.",
+          "avg_logprob": -3.433905320782815,
+          "no_speech_prob": 0.0933007076382637
+        },
+        {
+          "start": 97.08,
+          "end": 98.36,
+          "text": " Us",
+          "avg_logprob": -3.433905320782815,
+          "no_speech_prob": 0.0933007076382637
+        },
+        {
+          "start": 98.36,
+          "end": 100.16,
+          "text": "ange",
+          "avg_logprob": -3.433905320782815,
+          "no_speech_prob": 0.0933007076382637
+        },
+        {
+          "start": 100.16,
+          "end": 103.88,
+          "text": " ,",
+          "avg_logprob": -3.433905320782815,
+          "no_speech_prob": 0.0933007076382637
+        },
+        {
+          "start": 103.88,
+          "end": 106.24,
+          "text": " 00",
+          "avg_logprob": -3.433905320782815,
+          "no_speech_prob": 0.0933007076382637
+        },
+        {
+          "start": 106.24,
+          "end": 107.64,
+          "text": " ....",
+          "avg_logprob": -3.433905320782815,
+          "no_speech_prob": 0.0933007076382637
+        },
+        {
+          "start": 107.64,
+          "end": 108.48,
+          "text": " new",
+          "avg_logprob": -3.433905320782815,
+          "no_speech_prob": 0.0933007076382637
+        },
+        {
+          "start": 108.48,
+          "end": 110.28,
+          "text": " iev",
+          "avg_logprob": -3.433905320782815,
+          "no_speech_prob": 0.0933007076382637
+        },
+        {
+          "start": 110.28,
+          "end": 111.96,
+          "text": " here",
+          "avg_logprob": -3.433905320782815,
+          "no_speech_prob": 0.0933007076382637
+        },
+        {
+          "start": 111.96,
+          "end": 113.08,
+          "text": " ,",
+          "avg_logprob": -3.433905320782815,
+          "no_speech_prob": 0.0933007076382637
+        },
+        {
+          "start": 113.08,
+          "end": 114.16,
+          "text": " here",
+          "avg_logprob": -3.433905320782815,
+          "no_speech_prob": 0.0933007076382637
+        },
+        {
+          "start": 114.16,
+          "end": 119.94,
+          "text": "  body alsoтрq",
+          "avg_logprob": -4.294989193187041,
+          "no_speech_prob": 0.194644033908844
+        },
+        {
+          "start": 119.94,
+          "end": 136.1,
+          "text": "  equipment",
+          "avg_logprob": -4.294989193187041,
+          "no_speech_prob": 0.194644033908844
+        },
+        {
+          "start": 136.1,
+          "end": 140.1,
+          "text": "  body",
+          "avg_logprob": -4.294989193187041,
+          "no_speech_prob": 0.194644033908844
+        },
+        {
+          "start": 140.1,
+          "end": 143.1,
+          "text": "AAAAAAAAA",
+          "avg_logprob": -3.330695833478655,
+          "no_speech_prob": 0.07885222136974335
+        }
+      ]
+    },
+    {
+      "range": [
+        170,
+        240
+      ],
+      "language": "yo",
+      "language_probability": 0.7619844079017639,
+      "segments": [
+        {
+          "start": 170.0,
+          "end": 179.88,
+          "text": " bleep",
+          "avg_logprob": -4.120589362250434,
+          "no_speech_prob": 0.2674044668674469
+        },
+        {
+          "start": 192.9,
+          "end": 197.52,
+          "text": " ーい",
+          "avg_logprob": -4.120589362250434,
+          "no_speech_prob": 0.2674044668674469
+        },
+        {
+          "start": 202.02,
+          "end": 234.66,
+          "text": " ૸���ൌതༀ�right",
+          "avg_logprob": -3.061459405081613,
+          "no_speech_prob": 0.1843925267457962
+        },
+        {
+          "start": 234.66,
+          "end": 237.36,
+          "text": "  senate –  part kept changes made on life",
+          "avg_logprob": -3.5367142132350375,
+          "no_speech_prob": 0.17525453865528107
+        },
+        {
+          "start": 237.36,
+          "end": 239.14,
+          "text": "   part kept changes made",
+          "avg_logprob": -3.5367142132350375,
+          "no_speech_prob": 0.17525453865528107
+        },
+        {
+          "start": 239.3,
+          "end": 240.3,
+          "text": "  part kept changes made",
+          "avg_logprob": -3.5367142132350375,
+          "no_speech_prob": 0.17525453865528107
+        }
+      ]
+    },
+    {
+      "range": [
+        240,
+        313
+      ],
+      "language": "yo",
+      "language_probability": 0.7830910682678223,
+      "segments": [
+        {
+          "start": 240.0,
+          "end": 242.06,
+          "text": " presented  »:  graders",
+          "avg_logprob": -4.190745905825966,
+          "no_speech_prob": 0.17328497767448425
+        },
+        {
+          "start": 242.06,
+          "end": 242.94,
+          "text": "  ý ßestly",
+          "avg_logprob": -4.190745905825966,
+          "no_speech_prob": 0.17328497767448425
+        },
+        {
+          "start": 243.02,
+          "end": 243.34,
+          "text": " uencia",
+          "avg_logprob": -4.190745905825966,
+          "no_speech_prob": 0.17328497767448425
+        },
+        {
+          "start": 243.34,
+          "end": 243.92,
+          "text": "  supre",
+          "avg_logprob": -4.190745905825966,
+          "no_speech_prob": 0.17328497767448425
+        },
+        {
+          "start": 243.98,
+          "end": 244.68,
+          "text": " wiście",
+          "avg_logprob": -4.190745905825966,
+          "no_speech_prob": 0.17328497767448425
+        },
+        {
+          "start": 244.68,
+          "end": 244.84,
+          "text": " �",
+          "avg_logprob": -4.190745905825966,
+          "no_speech_prob": 0.17328497767448425
+        },
+        {
+          "start": 244.88,
+          "end": 245.32,
+          "text": " �",
+          "avg_logprob": -4.190745905825966,
+          "no_speech_prob": 0.17328497767448425
+        },
+        {
+          "start": 246.34,
+          "end": 247.16,
+          "text": "  advertis",
+          "avg_logprob": -4.190745905825966,
+          "no_speech_prob": 0.17328497767448425
+        },
+        {
+          "start": 248.32,
+          "end": 249.04,
+          "text": " Ma let",
+          "avg_logprob": -4.190745905825966,
+          "no_speech_prob": 0.17328497767448425
+        },
+        {
+          "start": 250.92,
+          "end": 251.92,
+          "text": "  челов",
+          "avg_logprob": -4.190745905825966,
+          "no_speech_prob": 0.17328497767448425
+        },
+        {
+          "start": 252.14,
+          "end": 253.82,
+          "text": " Myhow",
+          "avg_logprob": -4.190745905825966,
+          "no_speech_prob": 0.17328497767448425
+        },
+        {
+          "start": 253.82,
+          "end": 271.16,
+          "text": " kaha",
+          "avg_logprob": -4.190745905825966,
+          "no_speech_prob": 0.17328497767448425
+        },
+        {
+          "start": 271.16,
+          "end": 275.06,
+          "text": " � регᵗ� cousin ᵗᵘ viscos 소리 ∺",
+          "avg_logprob": -1.7768085055881075,
+          "no_speech_prob": 0.2562881112098694
+        },
+        {
+          "start": 275.06,
+          "end": 277.06,
+          "text": " ʋᵍᵔᵗʃʁ çao",
+          "avg_logprob": -1.7768085055881075,
+          "no_speech_prob": 0.2562881112098694
+        },
+        {
+          "start": 277.06,
+          "end": 279.54,
+          "text": " ᶀᶁᵗᵉᵉᵉ",
+          "avg_logprob": -1.7768085055881075,
+          "no_speech_prob": 0.2562881112098694
+        },
+        {
+          "start": 279.54,
+          "end": 281.98,
+          "text": " ᵗᶁᵉᵉᵉᵉilles ᵃ ᵃᶂᵒᵉᵉᵉᵉ",
+          "avg_logprob": -1.7768085055881075,
+          "no_speech_prob": 0.2562881112098694
+        },
+        {
+          "start": 281.98,
+          "end": 287.66,
+          "text": " ʈᵦᶅᵉ ᵒᵉ ᵁ ᵣᵉᵉ ᵗᵉᵉ ᵏᶁᵉᵉ",
+          "avg_logprob": -1.7768085055881075,
+          "no_speech_prob": 0.2562881112098694
+        },
+        {
+          "start": 287.66,
+          "end": 290.82,
+          "text": " ʁᶁᵉ ᵜ�牛 ᵊᶇᵒᵉ",
+          "avg_logprob": -1.7768085055881075,
+          "no_speech_prob": 0.2562881112098694
+        },
+        {
+          "start": 290.82,
+          "end": 291.92,
+          "text": " ʂᵒᵉ ᵓᵉᵉmaker 몸",
+          "avg_logprob": -1.7768085055881075,
+          "no_speech_prob": 0.2562881112098694
+        },
+        {
+          "start": 291.92,
+          "end": 295.0,
+          "text": " జ vários方面ais cage",
+          "avg_logprob": -3.3604812217971025,
+          "no_speech_prob": 0.1572050303220749
+        },
+        {
+          "start": 295.0,
+          "end": 297.76,
+          "text": " జ various health services",
+          "avg_logprob": -3.3604812217971025,
+          "no_speech_prob": 0.1572050303220749
+        },
+        {
+          "start": 297.76,
+          "end": 299.22,
+          "text": " జgranate",
+          "avg_logprob": -3.3604812217971025,
+          "no_speech_prob": 0.1572050303220749
+        },
+        {
+          "start": 299.22,
+          "end": 311.32,
+          "text": " జ -->Richards",
+          "avg_logprob": -3.3604812217971025,
+          "no_speech_prob": 0.1572050303220749
+        },
+        {
+          "start": 311.32,
+          "end": 312.64,
+          "text": " జunciating",
+          "avg_logprob": -3.3604812217971025,
+          "no_speech_prob": 0.1572050303220749
+        },
+        {
+          "start": 312.64,
+          "end": 315.78,
+          "text": " జ gardens",
+          "avg_logprob": -3.3604812217971025,
+          "no_speech_prob": 0.1572050303220749
+        },
+        {
+          "start": 315.78,
+          "end": 319.38,
+          "text": " జ ranking",
+          "avg_logprob": -3.3604812217971025,
+          "no_speech_prob": 0.1572050303220749
+        },
+        {
+          "start": 319.38,
+          "end": 321.08,
+          "text": " జ amongst",
+          "avg_logprob": -3.3604812217971025,
+          "no_speech_prob": 0.1572050303220749
+        }
+      ]
+    }
+  ]
+}

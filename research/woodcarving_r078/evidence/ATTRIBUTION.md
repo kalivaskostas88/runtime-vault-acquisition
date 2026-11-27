@@ -1,0 +1,1 @@
+Ise agbegilere.webm — Yoruba Wikimedians User Group, CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0/ ; original and full credits https://commons.wikimedia.org/wiki/File:Ise_agbegilere.webm . Changes: independent audio extraction and automated timestamped transcription; derived transcript CC BY-SA 4.0; no endorsement. No audio uploaded.

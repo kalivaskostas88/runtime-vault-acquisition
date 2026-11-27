@@ -1,0 +1,32 @@
+name: R070 CC0 capture pilot
+on:
+  push:
+    branches: [research/woodcarving-r069-cc0]
+    paths:
+      - '.github/workflows/woodcarving-r070-cc0.yml'
+permissions:
+  contents: write
+jobs:
+  capture:
+    if: github.ref == 'refs/heads/research/woodcarving-r069-cc0' && github.event.repository.private == false
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg python3-pil
+      - name: Capture bounded CC0 source
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --max-time 120 --max-filesize 23740143 --proto '=https' --user-agent 'WoodcarvingResearch/1.0 (educational CC0 capture)' --output "$RUNNER_TEMP/wood.webm" 'https://upload.wikimedia.org/wikipedia/commons/8/8e/Wood_curving_process_4.webm'
+          /usr/bin/python3 research/woodcarving_r069/R069_CAPTURE.py "$RUNNER_TEMP/wood.webm" research/woodcarving_r069/cc0_evidence
+      - name: Commit only permitted public evidence
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add research/woodcarving_r069/cc0_evidence
+          git commit -m 'R070 CC0 frame evidence'
+          git push origin HEAD:research/woodcarving-r069-cc0

@@ -17,7 +17,7 @@ jobs:
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y -qq ffmpeg python3-pil
-      - name: Capture licensed original
+      - name: Capture licensed original via sequential decode
         run: |
           set -euo pipefail
           curl --fail --silent --show-error --max-time 120 --max-filesize 34865152 --proto '=https' --user-agent 'WoodcarvingResearch/1.0 (educational CC BY-SA capture)' --output "$RUNNER_TEMP/ise.webm" 'https://upload.wikimedia.org/wikipedia/commons/7/78/Ise_agbegilere.webm'

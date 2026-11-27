@@ -1,0 +1,133 @@
+{
+  "source_sha256": "e36bccb68ce5ba0be1b7931801f9ffb6cf815e60f18b00461729c9c3098c5019",
+  "source_size": 332428914,
+  "duration": 1231.096533,
+  "excerpt_seconds": [
+    0,
+    70
+  ],
+  "audio_sha256": "e42ea8d05fcf28475970ae8cc8440e0bf7bdcc2266bc7472e5c33813deeb9515",
+  "model": "small",
+  "engine": "faster-whisper 1.2.1",
+  "detected_language": "bg",
+  "language_probability": 0.7102205753326416,
+  "segments": [
+    {
+      "start": 0.0,
+      "end": 19.0,
+      "text": "С окупаничарството са резбата се занимавам векя некои си 10-12 години, от сам и от почнато кога почнам да го изучвам ов и занайет, кажа на занайет или уметност, не знам.",
+      "avg_logprob": -0.5353199599625228,
+      "no_speech_prob": 0.49382561445236206,
+      "compression_ratio": 1.7085714285714286
+    },
+    {
+      "start": 19.0,
+      "end": 31.0,
+      "text": "са къв да навлезам малко по-злабо, които е по-широко шо ви се векло в тайните на Копани частото и малте не до негде къде са навлезам.",
+      "avg_logprob": -0.4550937276799232,
+      "no_speech_prob": 0.8756713271141052,
+      "compression_ratio": 2.066371681415929
+    },
+    {
+      "start": 31.0,
+      "end": 41.0,
+      "text": "Работам претежно на орел от дърво, сом пробвал и да работам и в отреща, която ще е малко по-цвъста и по-тешка за работа от дърво.",
+      "avg_logprob": -0.4550937276799232,
+      "no_speech_prob": 0.8756713271141052,
+      "compression_ratio": 2.066371681415929
+    },
+    {
+      "start": 41.0,
+      "end": 49.0,
+      "text": "Съм пръвал да работам и в акуша, са пръвал и в ябълка, са дърво от ябълка и ябълкница.",
+      "avg_logprob": -0.48882717849644086,
+      "no_speech_prob": 0.6659911274909973,
+      "compression_ratio": 1.9385245901639345
+    },
+    {
+      "start": 49.0,
+      "end": 57.0,
+      "text": "Али все пък орелот е към мене основно средство за работа, което се срятнува на моите дела.",
+      "avg_logprob": -0.48882717849644086,
+      "no_speech_prob": 0.6659911274909973,
+      "compression_ratio": 1.9385245901639345
+    },
+    {
+      "start": 57.0,
+      "end": 68.0,
+      "text": "Ем изработил негде какво стотина резви, претежна се в мали формати от А3 до максимум А5,",
+      "avg_logprob": -0.48882717849644086,
+      "no_speech_prob": 0.6659911274909973,
+      "compression_ratio": 1.9385245901639345
+    },
+    {
+      "start": 68.0,
+      "end": 70.0,
+      "text": "Али!",
+      "avg_logprob": -0.720827579498291,
+      "no_speech_prob": 0.2974734306335449,
+      "compression_ratio": 0.4666666666666667
+    }
+  ],
+  "frames": [
+    {
+      "requested_seconds": 0,
+      "file": "f00.jpg",
+      "sha256": "bdf8560844c42539e388348843221f777f20ec72a28e6335ee31beea224635e6"
+    },
+    {
+      "requested_seconds": 10,
+      "file": "f01.jpg",
+      "sha256": "d61a3285e7516af7ec133878297c8ed26b83ae2fd4f25b44d2af79ead9b418b2"
+    },
+    {
+      "requested_seconds": 20,
+      "file": "f02.jpg",
+      "sha256": "8dfe5c0dca93217a17bad614f0441653533a14998517dea2b2e7dddf66b4266f"
+    },
+    {
+      "requested_seconds": 30,
+      "file": "f03.jpg",
+      "sha256": "9a0f51b9605a6460ab91ced75a91d5087433eb6d1344c268324fe6d4178f3152"
+    },
+    {
+      "requested_seconds": 35,
+      "file": "f04.jpg",
+      "sha256": "4098cfc50508f295301978b13b869c12fa3bd7cc2e6d5958bb07996cd1cacff7"
+    },
+    {
+      "requested_seconds": 40,
+      "file": "f05.jpg",
+      "sha256": "3c0cf48af7f3194deb12aa7f0b39c039819b9bac6011f062e544e3e81be5ee74"
+    },
+    {
+      "requested_seconds": 45,
+      "file": "f06.jpg",
+      "sha256": "41ce62e44038bda9c22515c80e1de9aba76cbbc2bdf4d8024f2a3b9d8b33417c"
+    },
+    {
+      "requested_seconds": 50,
+      "file": "f07.jpg",
+      "sha256": "2d52b3ff30c44561973e3cd0067535192925ef705016d61de7eaaa4b92be2367"
+    },
+    {
+      "requested_seconds": 58,
+      "file": "f08.jpg",
+      "sha256": "a891ee0ffb69d22dc6394c207c4572737d0fb49e4d082fe567aaa0d98106822d"
+    },
+    {
+      "requested_seconds": 65,
+      "file": "f09.jpg",
+      "sha256": "44daeb0cb3ad2d1838f3eab252819e52632c0dd8d29f014c001fd63360c8533f"
+    },
+    {
+      "requested_seconds": 69,
+      "file": "f10.jpg",
+      "sha256": "40f9d9789a37c9f8325cc7ab1810962c31508ee9a6fbbfcd36a1153af2f6635f"
+    }
+  ],
+  "contact_sha256": "388141f0d0ef12d49cb7a85aee6d5bbe44f98c8f401ce58ea0dc04b38dea04af",
+  "status": "RAW_ASR_UNVALIDATED",
+  "perceptual_audio_review": false,
+  "translation_review": false
+}

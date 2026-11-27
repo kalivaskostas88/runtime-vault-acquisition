@@ -1,0 +1,1 @@
+Source: Копаничари.ogv, Petrovskyz, Wikimedia Commons, 30 June 2015. CC BY-SA 4.0: https://creativecommons.org/licenses/by-sa/4.0/ . Source: https://commons.wikimedia.org/wiki/File:Копаничари.ogv . Changes: excerpt 0–70 s; sampled/resized stills, automated transcription. All media-derived outputs here CC BY-SA 4.0. No endorsement. Machine output unreviewed.
